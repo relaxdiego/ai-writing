@@ -68,7 +68,7 @@ def band(a: dict, b: dict) -> float:
     return 2 * math.sqrt(a["sem"] ** 2 + b["sem"] ** 2)
 
 
-def report(cur: dict, base: dict, rules: list[str]) -> str:
+def report(cur: dict, base: dict, rules: list[str], judge: dict | None) -> str:
     L = []
     L.append(f"# Eval report — {cur['run']}\n")
     L.append(f"- **arm** {cur['arm']}" + (f" · rules `{', '.join(rules)}`" if rules else ""))
@@ -103,6 +103,60 @@ def report(cur: dict, base: dict, rules: list[str]) -> str:
     L.append("\n\n*Band is two pooled standard errors of the difference between "
              "the arms' means. At 12 prompts there is no power for significance "
              "testing; this is effect size against measured variance.*\n")
+    if judge:
+        L.append(judge_section(judge))
+    return "\n".join(L)
+
+
+def judge_section(j: dict) -> str:
+    """The judge record (DESIGN.md 10), including the swap-disagreement rate.
+
+    The disagreement rate is reported beside the win counts and not buried,
+    because it is the reading that says how much of the result is position bias
+    rather than prose: a pair whose two orders disagree has told us nothing.
+    """
+    t = j["totals"]
+    L = ["\n## Blinded pairwise judge\n"]
+    L.append(f"- **judge** `{j['judge_model']}`, minimal system prompt, same clean room")
+    L.append(f"- **substrate** {j['substrate'].upper()} · **pairing** {j['pairing']}"
+             f" · **rubric** `{j['rubric_sha256'][:16]}`")
+    L.append(f"- **control** {j['control_run']}")
+    L.append(f"- {t['judgements']} judgements over {t['pairs']} pairs, "
+             f"each pair twice with the sides swapped · ${t['cost_usd']:.2f}\n")
+    L.append("| outcome | pairs | share |")
+    L.append("|---|---:|---:|")
+    n = t["judged_pairs"] or 1
+    for label, key in (("treatment preferred", "treatment_wins"),
+                       ("control preferred", "control_wins"),
+                       ("tie (the two orders disagreed)", "ties")):
+        L.append(f"| {label} | {t[key]} | {100 * t[key] / n:.1f}% |")
+    win = t["treatment_win_rate_of_decided"]
+    L.append(f"\nTreatment wins **{win}%** of the pairs the judge decided "
+             f"consistently. Swap-disagreement rate **{t['swap_disagreement_rate']}%**; "
+             f"the judge picked whichever text was shown first in "
+             f"**{t['first_position_pick_rate']}%** of readable judgements, against "
+             f"50% for an unbiased judge.")
+
+    # Split by register because the corpus deliberately holds two of them, and a
+    # rule that helps a chat reply can hurt a document a reader will scan.
+    regs = sorted({p.get("register") for p in j["pairs"] if p.get("register")})
+    if len(regs) > 1:
+        L.append("\n| register | treatment | control | tie |")
+        L.append("|---|---:|---:|---:|")
+        for r in regs:
+            rows = [p for p in j["pairs"] if p.get("register") == r]
+            c = {k: sum(1 for p in rows if p["outcome"] == k)
+                 for k in ("treatment", "control", "tie")}
+            L.append(f"| {r} | {c['treatment']} | {c['control']} | {c['tie']} |")
+        lost = sorted({p["prompt_id"] for p in j["pairs"]
+                       if p["outcome"] == "control"})
+        if lost:
+            L.append(f"\nThe control was preferred on {', '.join(f'`{x}`' for x in lost)}. "
+                     f"A prompt the control wins is where the rules cost something, "
+                     f"and is the first place to read rather than to measure.")
+    if t["unreadable_pairs"]:
+        L.append(f"\n**{t['unreadable_pairs']} pairs were unreadable** and are "
+                 f"excluded; see `judge.json`.")
     return "\n".join(L)
 
 
@@ -125,7 +179,9 @@ def main() -> int:
         if not bp.is_file():
             bp.write_text(json.dumps(base, indent=2), encoding="utf-8")
         rules = [r.strip() for r in args.rules.split(",") if r.strip()]
-        md = report(res, base, rules)
+        jp = run / "judge.json"
+        judge = json.loads(jp.read_text()) if jp.is_file() else None
+        md = report(res, base, rules, judge)
         (run / "report.md").write_text(md, encoding="utf-8")
         print(md)
     return 0

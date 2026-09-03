@@ -3,7 +3,7 @@
 - **arm** treatment · rules `R02, R04, R05, R06`
 - **style sha256** `108ae8328520294c`
 - **model** `claude-opus-5[1m]` · **corpus** v1
-- **baseline** 20260903T035059Z-R03-R06 (treatment)
+- **baseline** 20260903T003018Z (control)
 - **cost** $6.02 · **failed samples** 0
 
 
@@ -12,44 +12,67 @@
 | id | metric | unit | control | this run | delta | cleared band? |
 |---|---|---|---:|---:|---:|---|
 | | **suppressed** | | | | | |
-| S1 | one-sentence paragraphs | % of paragraphs | 7.98 | 6.79 | ↓ -1.19 | no (±6.61) |
-| S2 | long sentence then punch | % of paragraphs | 2.99 | 3.09 | ↑ +0.10 | no (±3.14) |
-| S3 | That/This pivot opener | % of sentences | 2.18 | 2.32 | ↑ +0.14 | no (±1.76) |
-| S4a | headers | per 1k words | 4.00 | 3.44 | ↓ -0.56 | no (±2.58) |
-| S4b | table rows | per 1k words | 0.00 | 0.00 | · +0.00 | no (±0.00) |
-| S5 | inline bold emphasis | per 1k words | 0.55 | 0.27 | ↓ -0.28 | no (±1.00) |
-| S6 | em-dash | per 1k words | 0.97 | 0.59 | ↓ -0.38 | no (±1.27) |
-| S7 | terminal service offer | % of samples | 0.00 | 0.00 | · +0.00 | no (±0.00) |
+| S1 | one-sentence paragraphs | % of paragraphs | 31.54 | 6.79 | ↓ -24.75 | **yes** (±9.23) |
+| S2 | long sentence then punch | % of paragraphs | 9.38 | 3.09 | ↓ -6.29 | **yes** (±6.23) |
+| S3 | That/This pivot opener | % of sentences | 4.80 | 2.32 | ↓ -2.48 | **yes** (±2.02) |
+| S4a | headers | per 1k words | 9.00 | 3.44 | ↓ -5.56 | **yes** (±2.50) |
+| S4b | table rows | per 1k words | 4.21 | 0.00 | ↓ -4.21 | **yes** (±2.17) |
+| S5 | inline bold emphasis | per 1k words | 3.97 | 0.27 | ↓ -3.70 | **yes** (±1.39) |
+| S6 | em-dash | per 1k words | 11.96 | 0.59 | ↓ -11.37 | **yes** (±2.06) |
+| S7 | terminal service offer | % of samples | 16.67 | 0.00 | ↓ -16.67 | **yes** (±12.60) |
 | | **held-out** | | | | | |
-| H1 | hedge density | per 1k words | 0.87 | 0.99 | ↑ +0.12 | no (±0.76) |
-| H2 | intensifier density | per 1k words | 1.05 | 1.91 | ↑ +0.86 | no (±1.20) |
-| H3 | tricolon | per 1k words | 0.78 | 0.76 | ↓ -0.03 | no (±0.64) |
+| H1 | hedge density | per 1k words | 1.50 | 0.99 | ↓ -0.51 | no (±0.93) |
+| H2 | intensifier density | per 1k words | 1.20 | 1.91 | ↑ +0.71 | no (±1.22) |
+| H3 | tricolon | per 1k words | 0.54 | 0.76 | ↑ +0.22 | no (±0.61) |
 | | **context** | | | | | |
-| C1 | output length | words | 534.28 | 533.22 | ↓ -1.06 | no (±137.65) |
-| C2 | mean paragraph length | words | 78.75 | 81.20 | ↑ +2.45 | no (±13.92) |
-| C3 | mean sentence length | words | 23.73 | 24.59 | ↑ +0.86 | no (±1.88) |
+| C1 | output length | words | 641.44 | 533.22 | ↓ -108.22 | no (±160.25) |
+| C2 | mean paragraph length | words | 36.87 | 81.20 | ↑ +44.33 | **yes** (±11.53) |
+| C3 | mean sentence length | words | 15.48 | 24.59 | ↑ +9.11 | **yes** (±1.67) |
 
 ## Substrate B  (n=60 control → n=60 treatment)
 
 | id | metric | unit | control | this run | delta | cleared band? |
 |---|---|---|---:|---:|---:|---|
 | | **suppressed** | | | | | |
-| S1 | one-sentence paragraphs | % of paragraphs | 8.15 | 8.04 | ↓ -0.11 | no (±4.70) |
-| S2 | long sentence then punch | % of paragraphs | 4.33 | 3.23 | ↓ -1.10 | no (±3.28) |
-| S3 | That/This pivot opener | % of sentences | 2.35 | 2.76 | ↑ +0.41 | no (±1.28) |
-| S4a | headers | per 1k words | 3.58 | 3.88 | ↑ +0.30 | no (±1.96) |
-| S4b | table rows | per 1k words | 0.00 | 0.00 | · +0.00 | no (±0.00) |
-| S5 | inline bold emphasis | per 1k words | 0.60 | 0.80 | ↑ +0.20 | no (±1.04) |
-| S6 | em-dash | per 1k words | 1.60 | 1.45 | ↓ -0.16 | no (±1.45) |
-| S7 | terminal service offer | % of samples | 0.00 | 0.00 | · +0.00 | no (±0.00) |
+| S1 | one-sentence paragraphs | % of paragraphs | 31.56 | 8.04 | ↓ -23.52 | **yes** (±6.91) |
+| S2 | long sentence then punch | % of paragraphs | 8.06 | 3.23 | ↓ -4.83 | **yes** (±3.67) |
+| S3 | That/This pivot opener | % of sentences | 3.76 | 2.76 | ↓ -1.00 | no (±1.56) |
+| S4a | headers | per 1k words | 10.30 | 3.88 | ↓ -6.42 | **yes** (±2.21) |
+| S4b | table rows | per 1k words | 4.20 | 0.00 | ↓ -4.20 | **yes** (±1.88) |
+| S5 | inline bold emphasis | per 1k words | 6.81 | 0.80 | ↓ -6.01 | **yes** (±1.50) |
+| S6 | em-dash | per 1k words | 10.75 | 1.45 | ↓ -9.30 | **yes** (±1.52) |
+| S7 | terminal service offer | % of samples | 23.33 | 0.00 | ↓ -23.33 | **yes** (±11.01) |
 | | **held-out** | | | | | |
-| H1 | hedge density | per 1k words | 1.32 | 1.33 | ↑ +0.01 | no (±0.79) |
-| H2 | intensifier density | per 1k words | 1.00 | 1.40 | ↑ +0.40 | no (±0.59) |
-| H3 | tricolon | per 1k words | 0.71 | 0.88 | ↑ +0.17 | no (±0.50) |
+| H1 | hedge density | per 1k words | 2.04 | 1.33 | ↓ -0.71 | no (±0.92) |
+| H2 | intensifier density | per 1k words | 1.87 | 1.40 | ↓ -0.48 | no (±0.73) |
+| H3 | tricolon | per 1k words | 0.57 | 0.88 | ↑ +0.31 | no (±0.49) |
 | | **context** | | | | | |
-| C1 | output length | words | 526.05 | 529.90 | ↑ +3.85 | no (±98.27) |
-| C2 | mean paragraph length | words | 79.21 | 81.84 | ↑ +2.64 | no (±11.35) |
-| C3 | mean sentence length | words | 24.54 | 24.96 | ↑ +0.42 | no (±1.29) |
+| C1 | output length | words | 617.87 | 529.90 | ↓ -87.97 | no (±105.56) |
+| C2 | mean paragraph length | words | 35.47 | 81.84 | ↑ +46.38 | **yes** (±9.13) |
+| C3 | mean sentence length | words | 15.64 | 24.96 | ↑ +9.32 | **yes** (±1.30) |
 
 
 *Band is two pooled standard errors of the difference between the arms' means. At 12 prompts there is no power for significance testing; this is effect size against measured variance.*
+
+
+## Blinded pairwise judge
+
+- **judge** `claude-sonnet-5`, minimal system prompt, same clean room
+- **substrate** A · **pairing** repeat · **rubric** `d6f49c803cad9f3a`
+- **control** 20260903T003018Z
+- 72 judgements over 36 pairs, each pair twice with the sides swapped · $1.48
+
+| outcome | pairs | share |
+|---|---:|---:|
+| treatment preferred | 24 | 66.7% |
+| control preferred | 3 | 8.3% |
+| tie (the two orders disagreed) | 9 | 25.0% |
+
+Treatment wins **88.89%** of the pairs the judge decided consistently. Swap-disagreement rate **25.0%**; the judge picked whichever text was shown first in **45.83%** of readable judgements, against 50% for an unbiased judge.
+
+| register | treatment | control | tie |
+|---|---:|---:|---:|
+| conversational | 15 | 1 | 5 |
+| document | 9 | 2 | 4 |
+
+The control was preferred on `c06`, `d01`. A prompt the control wins is where the rules cost something, and is the first place to read rather than to measure.

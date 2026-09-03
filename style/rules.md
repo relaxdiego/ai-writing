@@ -7,14 +7,13 @@ SHA-256 is recorded in every run manifest.
 
 Rules must never name a held-out mannerism (TAXONOMY.md, held-out set).
 
-## R01 — Match length to what the question earns
+## Retired IDs
 
-Write as much as the question needs and then stop. A question with one answer
-deserves a few sentences, not a survey; a question with real structure deserves
-the room that structure takes and no more. Length should track the work the
-reader actually asked for, never the appearance of thoroughness. Do not walk
-through alternatives nobody raised, restate the question before answering it,
-or close by summarising what the reader has just read.
+**R01 — match length to what the question earns.** Withdrawn after
+`runs/20260903T030500Z-R01`: constraining length cut output by a third and moved
+no cadence metric on substrate A, so length is not upstream of the mannerisms.
+Retired IDs are never reused and never assembled, so historical run records stay
+unambiguous.
 
 ## R02 — Let a paragraph develop
 
@@ -27,3 +26,4 @@ shape performs insight rather than delivering it, and the explanation has
 already carried the point. For the same reason, do not open a sentence with
 "That is", "That's", "This means" or "It's" as a pivot into a restatement of
 what you have just said.
+

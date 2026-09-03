@@ -1,0 +1,230 @@
+# AI-Writing Eval Harness — Design
+
+Author instructions that suppress AI mannerisms in Claude Code's prose, and prove
+the effect with reproducible measurements rather than impressions.
+
+This file is the decision record. Every choice below was settled deliberately;
+where a decision has a known weakness, the weakness is stated rather than hidden.
+
+---
+
+## 1. What varies, what is held fixed
+
+The **treatment** is a numbered rule file (`style/rules.md`, rules `R01`–`Rnn`)
+assembled into a single prompt and injected with `--append-system-prompt-file`.
+
+Everything else is pinned: the full model ID (`claude-opus-5[1m]`, never the
+`opus` alias), the CLI version, the corpus version, and the contents of a
+synthesized config directory.
+
+The CLI exposes no temperature, seed, or top-p control. Every measurement is
+therefore a distribution, not a value, and no amount of harness care will make a
+single run repeatable. This constraint shapes the rest of the design.
+
+## 2. Two substrates
+
+Claude Code's default system prompt is roughly 15k tokens and already contains
+substantial anti-mannerism style guidance. A style file appended to it is an
+addendum to an existing regime. So every question gets asked twice:
+
+| | **Substrate B** — fast loop | **Substrate A** — the gate |
+|---|---|---|
+| System prompt | minimal stub via `--system-prompt` | Claude Code default |
+| Question | does this rule work *at all*? | does it add anything *on top of the default*? |
+| Runs per prompt | N=5 | N=3 |
+| Role | drafting aid | acceptance criterion |
+
+B is cheap and gives legible effect sizes, but it measures in a lab that does not
+resemble deployment. A rule can pass B and do nothing in A. **B never grants
+acceptance; only A does.**
+
+## 3. Corpus
+
+`corpus/v1/` holds 12 frozen prompts: 7 conversational and 5 document.
+
+Conversational prose is where most mannerisms live, but it normally arises after
+real work. Tool use adds large variance and cost, so the register is elicited
+instead with synthetic staged transcripts ("here is what you just did — report
+it") and direct technical questions. Fixtures are synthetic and committed, so the
+corpus stays byte-stable for years with no external repo drifting underneath it.
+
+**The corpus is immutable.** New prompts create `corpus/v2/`; `v1` is never
+edited. A mutated corpus silently invalidates every historical comparison.
+
+## 4. Measurement
+
+Three layers, because no one of them is trustworthy alone.
+
+**4.1 Deterministic detectors.** Regex and heuristic scorers over output text,
+reported as **normalized rates per 1,000 words**. Rates rather than counts so
+samples of different lengths compare; a **vector of independent metrics with no
+composite headline score**, because collapsing eight distinct tics into one
+number hides fixing two while worsening three.
+
+Detectors are derived empirically from a real baseline run, not from an a-priori
+list of known LLM tells, so they describe the tics this model actually has.
+
+**4.2 The Goodhart guard.** A detector that counts what the rules forbid is a
+tautology, not a measurement. Two defenses: a **held-out detector set that the
+rules are forbidden to name explicitly**, and the pairwise judge below, which
+cannot be gamed by token avoidance.
+
+**4.3 Blinded pairwise judge.** Sonnet, running under a minimal system prompt in
+the same clean room, so that Anthropic's own style guidance is not silently one
+of the judges. Every pair is judged **twice with positions swapped** and
+disagreements counted as ties, because LLM position bias is large enough to
+manufacture fake wins. The rubric asks which text reads as though a competent
+human wrote it, not which avoids named mannerisms.
+
+Absolute 1-5 rubric scoring was considered and rejected as the least reliable of
+the LLM-judge forms.
+
+**4.4 Human spot-check.** Every report carries excerpts: the samples that changed
+most since the previous run, plus two fixed samples present in every report so
+drift the detectors miss stays visible.
+
+**4.5 Acceptance.** A change counts only when it moves a metric outside the
+measured noise band. Effect sizes against measured variance — at n=12 prompts
+there is no power for significance testing, and reporting a p-value would imply
+rigor the sample size cannot support.
+
+## 5. Clean room
+
+A scratch `CLAUDE_CONFIG_DIR` is synthesized per run with `.credentials.json`
+copied in at mode 600 and removed by an exit trap.
+
+This is required, not stylistic: both stronger isolation levers break
+subscription auth. Measured on v2.1.259:
+
+| Setup | Result |
+|---|---|
+| `claude -p` from an empty dir | works |
+| `--bare` | `Not logged in` — reads only `ANTHROPIC_API_KEY`/`apiKeyHelper` |
+| `CLAUDE_CONFIG_DIR=/tmp/clean` | `Not logged in` |
+| `CLAUDE_CONFIG_DIR` + copied credentials | **works** |
+| `--setting-sources "" --strict-mcp-config` | works |
+
+Flags applied on top of the scratch dir, belt-and-braces:
+
+    --setting-sources ""        --strict-mcp-config
+    --disable-slash-commands    --permission-mode dontAsk
+    --permission-prompts none   --disallowed-tools <all>
+    --system-prompt-snapshot off
+    --max-budget-usd <cap>
+
+`--system-prompt-snapshot off` matters specifically because the appended prompt
+changes between runs, which is the exact case snapshotting would poison.
+
+The scratch dir alone should suffice. The redundant flags mean one bug in dir
+synthesis does not silently contaminate a month of results.
+
+**Upgrade path:** an `ANTHROPIC_API_KEY` enables `--bare`, which skips hooks,
+LSP, plugin sync, auto-memory, keychain reads, and CLAUDE.md discovery at the
+source rather than by flag. That is the strictest room available and should be
+adopted if a key becomes available.
+
+**Provenance.** Every run writes `manifest.json`: full model ID, `claude
+--version`, corpus version, SHA-256 of the assembled style prompt, exact argv,
+synthesized config dir contents, git SHA, and UTC timestamp. Committed results
+without provenance are uninterpretable later.
+
+## 6. Economics
+
+The frozen control arm is measured **once and reused**, so a routine iteration
+runs treatment only: roughly 96 samples. The one-time noise floor is 10 repeats
+across 12 prompts.
+
+Cost estimates start from one measured sample at $0.0404 and are replaced with
+real figures after the baseline run. Per-run `modelUsage` gives exact token
+counts and cost, so spend is tracked precisely rather than guessed.
+
+## 7. Noise floor
+
+10 repeats per prompt on the control arm, establishing a per-detector variance
+band. Re-measured when the pinned model ID changes, the CLI version changes
+materially, or the corpus version bumps.
+
+The harness compares the current manifest against the floor's manifest and
+**refuses to report a verdict when they diverge**. The realistic failure is not a
+bad estimate but a silently stale one: comparing today's run against a band
+measured on a model that no longer exists.
+
+## 8. Rules and ablation
+
+Rules are numbered and individually addressable, assembled into the injected
+prompt at runtime. IDs cost nothing now and are painful to retrofit onto months
+of history keyed to unnumbered prose. They also give reports and commit messages
+a shared vocabulary.
+
+Single-rule ablation (`--ablate R07`) is supported but **opt-in**, used when a
+metric moves and the cause is unclear. Routine full ablation is
+`rules x prompts x N` runs and is a bad trade at these prices.
+
+## 9. Run mechanics
+
+Parallelism of 4 with exponential-backoff retry. Failed, refused, and truncated
+samples are recorded in the manifest, excluded from metrics, and **reported
+loudly**. Silent dropping is the dangerous option: a failure mode correlated with
+the treatment would bias results invisibly. If a style rule starts triggering
+refusals or truncation, that is a finding about the rule.
+
+No CI. Headless auth is unavailable on push, threshold gating would fail routine
+commits, and the runs cost money — spending should be deliberate.
+
+## 10. Results and retention
+
+Results are committed. `runs/<utc>-<sha>/` holds `manifest.json`, `samples/`,
+`result.json`, and `report.md`. Comparison is against **both** a permanently
+frozen zero-instruction control (absolute effect of the whole style file) and the
+previous run (marginal effect of this edit).
+
+**Raw outputs are kept forever, plain text, never gzipped.** The reason is
+retroactive re-scoring: a detector written in month three can be backfilled
+across all history, but only if the raw text survived. That is worth far more
+than the disk. Plain rather than compressed so outputs stay greppable and
+diffable.
+
+`report.md` carries a header (style SHA, model, corpus version, cost, sample
+count), a metric table (frozen control / previous / current / delta / cleared the
+noise band?), the judge record including swap-disagreement rate, any failed
+samples listed explicitly, and the excerpt block.
+
+## 11. Layout and stack
+
+Stdlib Python 3.13 and bash, zero dependencies. The detectors are regex and
+arithmetic and the statistics are means and standard deviations; scipy buys
+nothing and a dependency-free harness still runs in two years.
+
+    corpus/v1/      frozen prompts
+    style/rules.md  numbered rules R01..Rnn
+    build/          assembled prompt (derived, gitignored, SHA in manifest)
+    harness/        cleanroom.sh, run.py, detectors/, judge.py, report.py
+    baseline/       frozen control outputs and noise floor
+    runs/           committed per-run results
+
+    devbox run eval          full run, both substrates
+    devbox run eval-quick    substrate B only
+    devbox run baseline      re-measure the noise floor
+
+## 12. Build order
+
+1. Clean-room runner, manifest, corpus v1
+2. Baseline run, no style file, both substrates
+3. **Hard stop.** Raw outputs handed over for the mannerism taxonomy to be named
+   from the evidence, not from a summary of it
+4. Detectors, including the held-out set
+5. Noise floor
+6. Pairwise judge and report generation
+7. First `style.md`, first scored iteration
+
+Packaging (output-style and `CLAUDE.md` adapters) is deferred until the evals say
+the instructions are worth shipping. `build/style.prompt.md` is the manual
+escape hatch meanwhile.
+
+## 13. Known project risk
+
+The design rests on substrate A showing measurable movement, and it may not.
+Claude Code's default prompt already does much of this work. If A comes back flat
+across the board, that is a real finding, and the response would be to shift from
+appending toward replacing the system prompt. This is learned around step 7,
+after the build.

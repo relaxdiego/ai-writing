@@ -18,12 +18,21 @@ because the stack it sits in cleared.
 
 | rule | owns | evidence |
 |---|---|---|
-| R07 | S1 corrected, K3 | **inherited, not re-measured.** From R02 undivided: S1 corrected 19.91 -> 4.48 in `20260903T193603Z-ablate-R02`, and K3 64.9 -> 36.7 band 12.10 in `20260903T092452Z-R02-collateral` |
+| R07 | S1 corrected, K3 | **inherited, not re-measured.** From R02 undivided: the floating-fragment residue of S1, pooled and uncapped, 19.91 -> 4.48 against 11.22 without R02, in `20260903T193603Z-ablate-R02`; and K3 64.9 -> 36.7 band 12.10 in `20260903T092452Z-R02-collateral` |
 | R08 | K1, K2, K4 | **inherited, not re-measured.** From R02's collateral clauses, `20260903T092452Z-R02-collateral`: K1 0.80 -> 4.63 band 1.79, K2 0.86 -> 1.29 band 0.24, K4 0.00 -> 0.27 band 0.11 |
 | R09 | S2, S3 — **claimed, not earned** | `20260903T193603Z-ablate-R02` removed R02 undivided and moved S2 by +0.09 against a band of 3.55 and S3 by -1.20 against a band of 1.73. Neither clears. The rule is kept pending its own ablation, not on evidence |
 | R04 | S4b, shared | marginal on R02, `20260903T035059Z-R03-R06`: 2.16 -> 0.00, band 0.84. R02 alone had already taken S4b 4.21 -> 2.16 against a band of 1.20, which the old band hid; R04 finishes it rather than owning it |
 | R05 | S7 | ablation, `20260903T042140Z-ablate-R05`: removing it returns S7 to 16.67, the control rate exactly, clearing on both substrates |
 | R06 | S6 | marginal on R02, `20260903T035059Z-R03-R06`: 8.44 -> 0.97, band 1.04 |
+
+**Two estimators of S1 are in circulation, and a figure is meaningless without
+saying which.** The shipped detector averages a per-sample percentage and counts
+only sentences of 25 words or fewer. The R02 ablation was argued on a pooled,
+uncapped count instead. On the control the two read 29.84 and 35.55. Both
+estimators, and both of the other two combinations, rank the arms the same way
+in both directions, so the ablation's finding survives the choice; the numbers
+quoted for it do not survive being mixed. Where this file gives a corrected S1 it
+now says which estimator produced it.
 
 **R07, R08 and R09 are R02 divided, and no run has yet measured them apart.**
 Every figure in this file below this line, and every figure in `TAXONOMY.md`,

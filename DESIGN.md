@@ -131,12 +131,28 @@ without provenance are uninterpretable later.
 ## 6. Economics
 
 The frozen control arm is measured **once and reused**, so a routine iteration
-runs treatment only: roughly 96 samples. The one-time noise floor is 10 repeats
-across 12 prompts.
+runs treatment only: 96 samples. The one-time noise floor is 10 repeats across
+12 prompts.
 
-Cost estimates start from one measured sample at $0.0404 and are replaced with
-real figures after the baseline run. Per-run `modelUsage` gives exact token
-counts and cost, so spend is tracked precisely rather than guessed.
+**Measured on the step-2 baseline** (96 samples, both substrates, 96/96 ok):
+
+    total          $6.60        wall clock 826s (~14 min) at concurrency 4
+    per sample     $0.0688 mean, $0.017 min, $0.2366 max
+    output length  627 words mean, 688 median, 42-1452 range
+
+This is materially higher than the pre-run guess of $2-3. The guess extrapolated
+from a 14-token test reply; real outputs run 400-1000 words and Opus output
+tokens dominate the bill. Prompt caching helps the input side only.
+
+**A routine treatment iteration therefore costs about $6-7, and a full
+control-plus-treatment comparison about $13.** The one-time noise floor (10
+repeats x 12 prompts on one arm) is roughly $8-14. Budget accordingly: this is
+not a harness to re-run casually on every edit, which is the reason substrate B
+exists as a cheaper drafting loop and the frozen control is reused rather than
+re-measured.
+
+Per-run `modelUsage` gives exact token counts and cost, so spend is tracked
+precisely rather than guessed.
 
 ## 7. Noise floor
 

@@ -12,14 +12,16 @@
 | id | metric | unit | control | this run | delta | cleared band? |
 |---|---|---|---:|---:|---:|---|
 | | **suppressed** | | | | | |
-| S1 | one-sentence paragraphs | % of paragraphs | 31.54 | 6.79 | ↓ -24.75 | **yes** (±5.53) |
-| S2 | long sentence then punch | % of paragraphs | 6.62 | 3.04 | ↓ -3.58 | **yes** (±3.17) |
-| S3 | That/This pivot opener | % of sentences | 4.80 | 2.32 | ↓ -2.48 | **yes** (±1.82) |
+| S1 | one-sentence paragraphs | % of paragraphs | 29.84 | 6.64 | ↓ -23.20 | **yes** (±5.64) |
+| S2 | long sentence then punch | % of paragraphs | 6.87 | 3.06 | ↓ -3.81 | **yes** (±3.22) |
+| S3 | That/This pivot opener | % of sentences | 4.86 | 2.33 | ↓ -2.53 | **yes** (±1.83) |
 | S4a | headers | per 1k words | 9.00 | 3.44 | ↓ -5.56 | **yes** (±0.84) |
 | S4b | table rows | per 1k words | 4.21 | 0.00 | ↓ -4.21 | **yes** (±0.86) |
 | S5 | inline bold emphasis | per 1k words | 3.97 | 0.27 | ↓ -3.70 | **yes** (±1.32) |
 | S6 | em-dash | per 1k words | 11.96 | 0.59 | ↓ -11.37 | **yes** (±1.28) |
 | S7 | terminal service offer | % of samples | 16.67 | 0.00 | ↓ -16.67 | **yes** (±11.11) |
+| S8 | arrow as connective | per 1k words | 1.69 | 0.00 | ↓ -1.69 | **yes** (±0.51) |
+| S9 | unattached label | per 1k words | 1.43 | 0.04 | ↓ -1.39 | **yes** (±0.49) |
 | | **held-out** | | | | | |
 | H1 | hedge density | per 1k words | 1.50 | 0.99 | ↓ -0.51 | no (±0.87) |
 | H2 | intensifier density | per 1k words | 1.20 | 1.91 | ↑ +0.71 | no (±1.15) |
@@ -31,22 +33,24 @@
 | K4 | grid tables | per 1k words | 0.60 | 0.00 | ↓ -0.60 | **yes** (±0.17) |
 | | **context** | | | | | |
 | C1 | output length | words | 641.44 | 533.22 | ↓ -108.22 | **yes** (±47.49) |
-| C2 | mean paragraph length | words | 36.87 | 81.20 | ↑ +44.33 | **yes** (±5.62) |
-| C3 | mean sentence length | words | 15.48 | 24.59 | ↑ +9.11 | **yes** (±1.06) |
+| C2 | mean paragraph length | words | 37.57 | 81.28 | ↑ +43.71 | **yes** (±5.63) |
+| C3 | mean sentence length | words | 15.64 | 24.61 | ↑ +8.98 | **yes** (±1.08) |
 
 ## Substrate B  (n=60 control → n=60 treatment)
 
 | id | metric | unit | control | this run | delta | cleared band? |
 |---|---|---|---:|---:|---:|---|
 | | **suppressed** | | | | | |
-| S1 | one-sentence paragraphs | % of paragraphs | 31.56 | 8.04 | ↓ -23.52 | **yes** (±4.55) |
-| S2 | long sentence then punch | % of paragraphs | 6.33 | 4.57 | ↓ -1.76 | no (±2.86) |
-| S3 | That/This pivot opener | % of sentences | 3.76 | 2.76 | ↓ -1.00 | no (±1.18) |
+| S1 | one-sentence paragraphs | % of paragraphs | 29.85 | 8.01 | ↓ -21.85 | **yes** (±4.47) |
+| S2 | long sentence then punch | % of paragraphs | 6.58 | 4.57 | ↓ -2.01 | no (±2.90) |
+| S3 | That/This pivot opener | % of sentences | 3.79 | 2.76 | ↓ -1.03 | no (±1.18) |
 | S4a | headers | per 1k words | 10.30 | 3.88 | ↓ -6.42 | **yes** (±0.59) |
 | S4b | table rows | per 1k words | 4.20 | 0.00 | ↓ -4.20 | **yes** (±0.87) |
 | S5 | inline bold emphasis | per 1k words | 6.81 | 0.80 | ↓ -6.01 | **yes** (±1.21) |
 | S6 | em-dash | per 1k words | 10.75 | 1.45 | ↓ -9.30 | **yes** (±1.06) |
 | S7 | terminal service offer | % of samples | 23.33 | 0.00 | ↓ -23.33 | **yes** (±9.13) |
+| S8 | arrow as connective | per 1k words | 0.91 | 0.00 | ↓ -0.91 | **yes** (±0.33) |
+| S9 | unattached label | per 1k words | 0.59 | 0.02 | ↓ -0.57 | **yes** (±0.38) |
 | | **held-out** | | | | | |
 | H1 | hedge density | per 1k words | 2.04 | 1.33 | ↓ -0.71 | **yes** (±0.68) |
 | H2 | intensifier density | per 1k words | 1.87 | 1.40 | ↓ -0.48 | no (±0.62) |
@@ -58,8 +62,8 @@
 | K4 | grid tables | per 1k words | 0.48 | 0.00 | ↓ -0.48 | **yes** (±0.10) |
 | | **context** | | | | | |
 | C1 | output length | words | 617.87 | 529.90 | ↓ -87.97 | **yes** (±25.41) |
-| C2 | mean paragraph length | words | 35.47 | 81.84 | ↑ +46.38 | **yes** (±4.28) |
-| C3 | mean sentence length | words | 15.64 | 24.96 | ↑ +9.32 | **yes** (±0.97) |
+| C2 | mean paragraph length | words | 36.24 | 81.83 | ↑ +45.58 | **yes** (±4.29) |
+| C3 | mean sentence length | words | 15.86 | 24.93 | ↑ +9.07 | **yes** (±0.97) |
 
 
 *Band is two pooled standard errors of the difference between the arms' means, built from within-prompt variance only: both arms answer the same 12 frozen prompts, so between-prompt spread cancels in the difference and is not noise. At 12 prompts there is no power for significance testing; this is effect size against measured variance.*

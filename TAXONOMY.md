@@ -30,7 +30,7 @@ lab as A, not a cleaner one.
 
 Rules in `style/rules.md` target these directly.
 
-### 1. One-sentence paragraphs — 30.0% A / 31.3% B of all paragraphs
+### 1. One-sentence paragraphs — 29.8% A / 29.9% B of all paragraphs
 
 The dominant defect. Nearly a third of paragraphs are a single sentence; mean
 paragraph length is 35 words. The prose asserts, breaks, asserts, breaks, and
@@ -103,15 +103,18 @@ metric for a shape the copyeditor does not object to. Nine marks on one prompt i
 enough to stop quoting S1 as the headline and not enough to retire it. Two
 measurable things fall out of the notes, and neither is in this taxonomy:
 
-| substrate A, 36 samples per arm | control | before the clauses | with the clauses |
-|---|---:|---:|---:|
-| arrows (`->`, `=>`, unicode), per 1k words, fences excluded | 1.72 | 0.00 | 0.03 |
-| samples containing an arrow | 39% | 0% | 3% |
-| unattached labels (`Unverified`, `Changes`) | 15 | 2 | 0 |
+**Both are now detectors — entries 8 and 9 below — and both are backfilled
+across every run.** The figures first reported here were `1.72 / 0.00 / 0.03` for
+the arrow and `15 / 2 / 0` for the label. The arrow rate is now `1.69` because
+the shipped detector divides by the whole word count, as every other rate in this
+file does, where the first count divided by prose words only. The label figures
+were raw counts; they are now a rate per 1k words. Neither correction changes a
+direction.
 
-`style/rules.md` never mentions an arrow; it fell to zero as a side effect of
-rules aimed elsewhere, and nothing measures it, so a rule change could bring it
-back unnoticed. That is the K-set argument running the other way.
+`style/rules.md` still never mentions an arrow. Both fell as a side effect of
+rules aimed elsewhere, which is exactly why they needed measuring: an unmeasured
+win is one a later rule change can undo unseen. That is the K-set argument
+running the other way.
 
 ### 2. Long analytic sentence closed by a short verdict — 10.4% A / 7.6% B of paragraphs
 
@@ -159,7 +162,62 @@ Typography standing in for intonation.
 
 Roughly one per 83 words, used where a comma, colon, or full stop would serve.
 
+### 7. Arrow as connective — 1.69 A / 0.91 B per 1k words, 39% of samples
+
+    Ran the suite: 8 passing -> 3 failing                     [a-control-c01-r1]
+
+The copyeditor named this three times while marking something else, which is
+what admits it under DESIGN.md 4.2b:
+
+> "The use of an arrow. That's not how a human writes and not what one normally
+> expects when reading." / "Too much ise of dashes, em dashes, arrows." / "That
+> arrow again."
+
+Every arrow in the control is the unicode form. Not one ASCII arrow appears in
+prose outside a code fence, so the detector's `->` and `=>` branches are there
+for a regression that has not happened yet rather than for anything measured.
+
+**Attribution: R02.** Backfilled, substrate A: control 1.69, R01 0.72, R02 0.08,
+and 0.00 to 0.03 in every run after. R02 is a cadence rule that does not mention
+punctuation, so the fall is collateral and nothing holds it there.
+
+### 8. Unattached label where a colon lead-in belongs — 1.43 A / 0.59 B per 1k words
+
+    **Unverified**
+
+    The 3600 default is still read by two other callers.      [a-control-c01-r1]
+
+> "Is that really its own sentence? Regardless, I think it should be 'The
+> following is unverified:' and be part of the following paragraph."
+
+A short one-line prose block, no terminal punctuation, that introduces the block
+below it rather than sectioning the document. The document's own first block is
+excluded, because a pull-request description that opens with its title is
+following its register rather than committing the defect — two treatment samples
+were false positives on exactly that before the exclusion.
+
+**Read this beside entry 4, not instead of it.** Fourteen of the control's
+fifteen hits are bold, so S4a already counts them among its headers. What S4a
+cannot say is that they are labels rather than sections: **8 of the 9 control
+samples carrying one are conversational**, the register where a reply should have
+no headers at all. That split is the finding; the rate alone would not show it.
+
+**Attribution: R02.** Control 1.43, R01 0.04, R02 0.00, and at or below 0.05
+thereafter.
+
+**Only two of the fifteen were marked by the copyeditor.** The other thirteen are
+this detector's inference from those two, and they have not been read. That is
+weaker evidence than entry 7 carries and the entry should be treated as
+provisional until they are.
+
 ## Held-out set
+
+**Entry numbers and detector ids are not one-to-one.** Entry 4 is split across
+S4a and S4b; entries 7 and 8 are implemented by S8 and S9. S7 has no numbered
+entry: the terminal service offer is listed below as held-out, but `detectors.py`
+registers S7 as *suppressed* and R05 is attributed on it. The list and the code
+disagree, and the list is the ratified one, so this is recorded rather than
+quietly fixed.
 
 Measured on every run but **never named in `style/rules.md`**. If the prose
 genuinely improves, these should improve alongside the suppressed set; if they

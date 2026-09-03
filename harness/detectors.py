@@ -18,11 +18,71 @@ import re
 from dataclasses import dataclass
 
 FENCE = re.compile(r"```.*?```", re.S)
+# Line-anchored, so a fence only ever opens and closes at the start of a line.
+FENCE_BLOCK = re.compile(r"^```.*?^```[^\n]*$", re.S | re.M)
 INLINE_MD = re.compile(r"\*\*|\*|`|_")
 HEADER = re.compile(r"^#{1,6}\s+\S", re.M)
 BOLD_HEADER = re.compile(r"^\*\*[^*\n]{2,70}\*\*:?\s*$", re.M)
 TABLE_ROW = re.compile(r"^\|.*\|\s*$", re.M)
 LIST_ITEM = re.compile(r"^\s*(?:[-*+]\s|\d+[.)]\s)")
+HRULE = re.compile(r"^\s*(?:-{3,}|\*{3,}|_{3,})\s*$")
+
+
+def unwrap(raw: str) -> str:
+    """Undo a whole answer wrapped in one code fence.
+
+    Two samples in `ablate-R03` return an entire README inside a ```markdown
+    fence. The non-greedy FENCE regex then pairs the outer opener with the
+    first inner closer, and every prose metric is computed on shell commands.
+    Nested same-length fences are ambiguous in general; this handles the case
+    that actually occurs -- the model fenced its whole reply. The inner fence
+    count is the guard, so an answer that really is one code block is left be.
+    """
+    lines = raw.strip().splitlines()
+    if len(lines) >= 2 and lines[0].startswith("```") and lines[-1].strip() == "```":
+        inner = "\n".join(lines[1:-1])
+        if inner.count("```") >= 2:
+            return inner
+    return raw
+
+
+def segment(raw: str) -> list[tuple[str, str]]:
+    """The document as classified blocks, in order, fences kept whole.
+
+    Detectors that cannot see a paragraph's neighbours misread it -- S1 proved
+    that three times over (DESIGN.md 4.2b). This is the shared view so that a
+    detector can ask what sits either side of a block.
+    """
+    out: list[tuple[str, str]] = []
+    pos = 0
+    for m in FENCE_BLOCK.finditer(raw):
+        out += _plain(raw[pos:m.start()])
+        out.append(("code", m.group(0)))
+        pos = m.end()
+    out += _plain(raw[pos:])
+    return out
+
+
+def _plain(chunk: str) -> list[tuple[str, str]]:
+    res = []
+    for block in re.split(r"\n\s*\n", chunk):
+        b = block.strip()
+        if not b:
+            continue
+        if HRULE.match(b):
+            kind = "rule"          # a horizontal rule is not a paragraph
+        elif b.startswith("#"):
+            kind = "header"
+        elif b.startswith("|"):
+            kind = "table"
+        elif b.startswith(">"):
+            kind = "quote"
+        elif LIST_ITEM.match(b):
+            kind = "list"
+        else:
+            kind = "prose"
+        res.append((kind, b))
+    return res
 
 
 @dataclass
@@ -31,18 +91,16 @@ class Doc:
     raw: str
 
     def __post_init__(self) -> None:
+        self.raw = unwrap(self.raw)
         self.words = len(self.raw.split()) or 1
-        body = FENCE.sub("", self.raw)
+        self.blocks = segment(self.raw)
 
-        # Prose paragraphs: blank-line blocks that are not headers, list items,
-        # table rows or blockquotes. Cadence is a property of prose, and list
-        # items would otherwise register as one-sentence paragraphs en masse.
-        self.paragraphs: list[str] = []
-        for block in re.split(r"\n\s*\n", body):
-            b = block.strip()
-            if not b or b.startswith(("#", "|", ">")) or LIST_ITEM.match(b):
-                continue
-            self.paragraphs.append(INLINE_MD.sub("", b))
+        # Prose paragraphs: blocks that are not headers, list items, table
+        # rows, blockquotes, horizontal rules or code. Cadence is a property of
+        # prose, and list items would otherwise register as one-sentence
+        # paragraphs en masse.
+        self.paragraphs: list[str] = [INLINE_MD.sub("", b)
+                                      for k, b in self.blocks if k == "prose"]
 
         self.para_sents = [self._split(p) for p in self.paragraphs]
         self.sentences = [s for group in self.para_sents for s in group]
@@ -154,6 +212,64 @@ def s5_inline_bold(d: Doc) -> float:
 def s6_em_dash(d: Doc) -> float:
     """Taxonomy 6 - default connective. Baseline 11.96/1k (A), 100% of samples."""
     return d.per_k(d.raw.count("—"))
+
+
+ARROW = re.compile(r"->|=>|[\u2192\u21d2\u2190\u21d0]")
+
+
+def s8_arrow(d: Doc) -> float:
+    """Taxonomy 7 - the arrow as connective. Per 1k words, fences excluded.
+
+    Named by the copyeditor three times over while they were marking something
+    else, which is what qualifies it under DESIGN.md 4.2b:
+    "The use of an arrow. That's not how a human writes."     [a-control-c01-r2]
+    "Too much ise of dashes, em dashes, arrows."              [a-control-c01-r3]
+    "That arrow again."                                       [a-control-c01-r3]
+
+    Evidence: "8 passing -> 3 failing" [a-control-c01-r1]. Baseline 1.69/1k (A),
+    39% of samples. Every arrow in the control is the unicode form; not one
+    ASCII arrow appears in prose outside a fence.
+
+    style/rules.md never names an arrow, so the fall to 0.03 is a side effect of
+    rules aimed elsewhere and nothing holds it there. That is the reason to
+    measure it: an unmeasured win is one a later rule change can undo unseen.
+    """
+    return d.per_k(len(ARROW.findall(FENCE_BLOCK.sub("", d.raw))))
+
+
+LABEL_MAX_WORDS = 12
+LABEL_STOPS = (".", "!", "?", ":", ",", ";")
+
+
+def s9_unattached_label(d: Doc) -> float:
+    """Taxonomy 8 - a bare label standing where a colon lead-in belongs.
+
+    A short prose block, one line, no terminal punctuation, that introduces the
+    block below it rather than sectioning the document. The copyeditor marked
+    two of these and said what they wanted instead:
+
+        Unverified                                            [a-control-c01-r1]
+        "Is that really its own sentence? Regardless, I think it should be
+        'The following is unverified:' and be part of the following paragraph."
+
+    The document's own first block is excluded: a pull-request description that
+    opens with its title is following the register, not committing the defect.
+
+    Read this beside S4a, not instead of it. Fourteen of the control's fifteen
+    hits are bold, so S4a already counts them among its headers; what S4a cannot
+    say is that they are labels rather than sections, and that they cluster in
+    the conversational register where a reply should have no headers at all.
+    """
+    n = 0
+    for i, (kind, text) in enumerate(d.blocks):
+        if kind != "prose" or i == 0 or i + 1 >= len(d.blocks):
+            continue
+        t = INLINE_MD.sub("", text).strip()
+        if "\n" in t or t.endswith(LABEL_STOPS):
+            continue
+        if 1 <= len(t.split()) <= LABEL_MAX_WORDS:
+            n += 1
+    return d.per_k(n)
 
 
 # ----------------------------------------------------------------- held out --
@@ -322,6 +438,8 @@ DETECTORS = [
     ("S5", "inline bold emphasis",      "per 1k words",    "suppressed", s5_inline_bold),
     ("S6", "em-dash",                   "per 1k words",    "suppressed", s6_em_dash),
     ("S7", "terminal service offer",    "% of samples",    "suppressed", s7_terminal_offer),
+    ("S8", "arrow as connective",       "per 1k words",    "suppressed", s8_arrow),
+    ("S9", "unattached label",          "per 1k words",    "suppressed", s9_unattached_label),
     ("H1", "hedge density",             "per 1k words",    "held-out",   h1_hedge_density),
     ("H2", "intensifier density",       "per 1k words",    "held-out",   h2_intensifier),
     ("H3", "tricolon",                  "per 1k words",    "held-out",   h3_tricolon),

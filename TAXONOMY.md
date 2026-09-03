@@ -87,6 +87,32 @@ one, which is worth four hits in the shipped run; and S1's 25-word cap drops 18
 of the control's 84 one-sentence paragraphs, so where the cap falls needs ruling
 alongside what it counts.
 
+**And the residue was named, as something S1 does not measure.** Nine control
+paragraphs marked, eight of them the defect, and the notes are about punctuation
+rather than shape: *"Em dashes, arrows, no conjunction. This isn't how a human
+writes."* / *"The use of an arrow. That's not how a human writes."* / *"That
+arrow again."* Six of the eight carry an em-dash or an arrow. The two that do not
+are a bare label standing where a colon lead-in belongs. The ninth settles it:
+
+    I only ran tests/test_session_cache.py, not the full suite, so other
+    callers depending on the 3600 default are unverified.   [a-control-c01-r3]
+
+A plain one-sentence paragraph, no punctuation tell, **passed**. So the
+one-sentence paragraph is not itself the defect, and S1 has been the headline
+metric for a shape the copyeditor does not object to. Nine marks on one prompt is
+enough to stop quoting S1 as the headline and not enough to retire it. Two
+measurable things fall out of the notes, and neither is in this taxonomy:
+
+| substrate A, 36 samples per arm | control | before the clauses | with the clauses |
+|---|---:|---:|---:|
+| arrows (`->`, `=>`, unicode), per 1k words, fences excluded | 1.72 | 0.00 | 0.03 |
+| samples containing an arrow | 39% | 0% | 3% |
+| unattached labels (`Unverified`, `Changes`) | 15 | 2 | 0 |
+
+`style/rules.md` never mentions an arrow; it fell to zero as a side effect of
+rules aimed elsewhere, and nothing measures it, so a rule change could bring it
+back unnoticed. That is the K-set argument running the other way.
+
 ### 2. Long analytic sentence closed by a short verdict — 10.4% A / 7.6% B of paragraphs
 
 A paragraph-final sentence of nine words or fewer directly after one of twenty

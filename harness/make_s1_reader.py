@@ -56,6 +56,49 @@ HRULE = re.compile(r"^\s*(?:-{3,}|\*{3,}|_{3,})\s*$")
 MARKS = re.compile(r"\*\*|\*|`|_")
 CAP = 25  # S1's own word cap, from detectors.s1_one_sentence_paragraphs
 
+# A ruling pasted back from the galley is baked into the next build. The marks
+# used to live only in the reader's browser, and a cleared browser lost a
+# afternoon's judging. They are the deliverable, so they belong in the repo and
+# in the page; localStorage now only holds what is newer than the file.
+KIND_OF = {"opening verdict": "opening", "list lead-in": "lead-in",
+           "floating fragment": "floating", "everything else": "floating"}
+VERDICT_OF = {"the defect": "defect", "not the defect": "clean",
+              "yes": "defect", "no": "clean"}
+
+
+def read_ruling(path: Path, rows: list[dict]) -> dict:
+    """Turn a pasted ruling table back into the galley's own store.
+
+    Rows are matched on prompt, repeat, kind and word count, consumed in
+    document order so that the two keys that are not unique still land on
+    distinct hits. Anything unmatched is reported rather than dropped silently.
+    """
+    if not path.is_file():
+        return {}
+    seed: dict[str, dict] = {}
+    pool: dict[tuple, list[dict]] = {}
+    for r in rows:
+        pool.setdefault((r["pid"], r["rep"], r["what"], r["words"]), []).append(r)
+
+    unmatched = 0
+    for line in path.read_text(encoding="utf-8").splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) == 4 and cells[0] in KIND_OF:          # the per-kind ruling
+            v = VERDICT_OF.get(cells[2].lower())
+            seed["rule:" + KIND_OF[cells[0]]] = {"v": v or "", "n": cells[3]}
+        elif len(cells) == 6 and "·" in cells[0]:            # one marked hit
+            pid, rep = cells[0].split("·r")
+            key = (pid, int(rep), KIND_OF.get(cells[2], cells[2]), int(cells[3]))
+            hits = pool.get(key) or []
+            if not hits:
+                unmatched += 1
+                continue
+            h = hits.pop(0)
+            seed["hit:" + h["id"]] = {"v": VERDICT_OF.get(cells[4], ""), "n": cells[5]}
+    if unmatched:
+        print(f"  warning: {unmatched} pasted rows matched no hit", file=sys.stderr)
+    return seed
+
 
 def hits_in(raw: str) -> tuple[list[dict], int]:
     """Every one-sentence prose paragraph, classified by what follows it."""
@@ -146,6 +189,10 @@ def build(run: Path, prev: Path, ctrl: Path, out: Path) -> None:
 
     for r in rows:
         r["id"] = f"{r['key']}:{r['index']}"
+    for r in ctrl_rows:
+        r["id"] = "ctrl:" + r["key"] + ":" + str(r["index"])
+
+    seed = read_ruling(REPO / "verdicts" / f"s1-{run.name}.md", rows)
 
     data = {
         "run": run.name, "prev_run": prev.name, "control_run": ctrl.name,
@@ -161,14 +208,14 @@ def build(run: Path, prev: Path, ctrl: Path, out: Path) -> None:
         "hits": rows,
         # The control's own residue: the defect at full strength, markable,
         # because it cannot be named from a run the rules have cleared of it.
-        "control_floating": [{**r, "id": "ctrl:" + r["key"] + ":" + str(r["index"])}
-                             for r in ctrl_rows if r["what"] == "floating"],
+        "control_floating": [r for r in ctrl_rows if r["what"] == "floating"],
+        "seed": seed,
     }
     out.write_text(TEMPLATE.replace("__DATA__", json.dumps(data)), encoding="utf-8")
     c = data["counts"]["now"]["all"]
     print(f"{out}  ({out.stat().st_size // 1024} KB, {len(rows)} hits: "
-          f"{c['opening']} opening, {c['lead-in']} lead-in, {c['floating']} floating; "
-          f"{len(data['control_floating'])} control fragments)")
+          f"{c['opening']} opening, {c['lead-in']} lead-in, {c['floating']} the rest; "
+          f"{len(data['control_floating'])} control hits; {len(seed)} marks restored)")
 
 
 TEMPLATE = r"""<title>What S1 Counts</title>
@@ -472,8 +519,11 @@ const DATA = JSON.parse(document.getElementById("data").textContent);
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const K = "s1ruling:" + DATA.run;
-let store = {};
-try { const r = localStorage.getItem(K); if (r) store = JSON.parse(r); } catch (e) {}
+// The recorded ruling ships with the page; the browser only holds what is
+// newer than it. Clearing the browser now costs nothing.
+let store = Object.assign({}, DATA.seed);
+try { const r = localStorage.getItem(K); if (r) Object.assign(store, JSON.parse(r)); }
+catch (e) {}
 const save = () => { try { localStorage.setItem(K, JSON.stringify(store)); } catch (e) {} };
 
 let section = "open", reg = "all";

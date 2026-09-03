@@ -336,7 +336,9 @@ def main() -> int:
         "corpus_prompts": [{"id": p.id, "register": p.register,
                             "path": p.path,
                             "sha256": sha256_file(REPO / p.path)} for p in prompts],
-        "style_file": style,
+        "style_file": (str(Path(style).relative_to(REPO))
+                       if style != "-" and str(Path(style)).startswith(str(REPO))
+                       else style),
         "style_sha256": sha256_file(Path(style)) if style != "-" else None,
         "model_requested": args.model,
         "cli_version": cli_version(),

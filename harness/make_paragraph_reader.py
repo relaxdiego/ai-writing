@@ -17,6 +17,7 @@ Usage: make_paragraph_reader.py <run-dir> <control-dir> <out.html> [--top N]
 
 import argparse
 import json
+import re
 import statistics as st
 from collections import Counter
 import sys
@@ -64,6 +65,28 @@ def spread(paras: list[dict]) -> dict:
             "longest": max(w), "over100": over, "over100pct": round(100 * over / len(w), 1)}
 
 
+GLOSS = re.compile(
+    r"^## (\w+) — (.+?)\n\n\*\*Wants\.\*\* (.*?)\n\n\*\*Owes\.\*\* (.*?)(?=\n\n## |\Z)",
+    re.S | re.M)
+
+
+def load_glosses(version: str) -> dict[str, dict]:
+    """Plain-language notes on what each prompt's reader wanted.
+
+    Kept beside corpus/<version>/ rather than inside it: the corpus is immutable
+    and the runner globs that directory, so a file added there would either
+    break the loader or become a thirteenth prompt. These are never sent to the
+    model. They exist so that judging the shape of an answer does not require
+    following its subject.
+    """
+    path = REPO / "corpus" / f"{version}-glosses.md"
+    if not path.is_file():
+        return {}
+    return {gid: {"name": name.strip(),
+                  "wants": " ".join(w.split()), "owes": " ".join(o.split())}
+            for gid, name, w, o in GLOSS.findall(path.read_text(encoding="utf-8"))}
+
+
 def build(run_dir: Path, ctrl_dir: Path, out: Path, top: int) -> None:
     paras, manifest = harvest(run_dir)
     ctrl_paras, ctrl_manifest = harvest(ctrl_dir)
@@ -74,6 +97,7 @@ def build(run_dir: Path, ctrl_dir: Path, out: Path, top: int) -> None:
     for p in sorted(ctrl_paras, key=lambda x: -x["words"]):
         anchor.setdefault(p["pid"], p)
 
+    glosses = load_glosses(manifest["corpus_version"])
     prompts = {}
     for p in manifest["corpus_prompts"]:
         body = (REPO / p["path"]).read_text(encoding="utf-8")
@@ -82,12 +106,14 @@ def build(run_dir: Path, ctrl_dir: Path, out: Path, top: int) -> None:
             "name": next((l.split(":", 1)[1].strip() for l in body.splitlines()
                           if l.startswith("name:")), p["id"]),
             "body": body.split("---", 2)[2].strip(),
+            "gloss": glosses.get(p["id"]),
         }
 
     entries = []
     for rank, p in enumerate(sorted(paras, key=lambda x: -x["words"])[:top], 1):
         a = anchor.get(p["pid"])
         entries.append({**p, "rank": rank, "prompt_name": prompts[p["pid"]]["name"],
+                        "gloss": prompts[p["pid"]]["gloss"],
                         "control": {"words": a["words"], "key": a["key"],
                                     "text": a["text"]} if a else None})
 
@@ -216,6 +242,19 @@ details.anchor .inner p{font-family:var(--serif);font-size:15.5px;line-height:1.
   margin:8px 0 0;white-space:pre-wrap}
 details.anchor .inner .who{font-family:var(--mono);font-size:10.5px;
   letter-spacing:.06em;text-transform:uppercase;color:var(--ink-faint)}
+details.gloss{margin:0 0 14px;max-width:70ch}
+details.gloss summary{font-family:var(--mono);font-size:11px;color:var(--ink-soft);
+  cursor:pointer;letter-spacing:.03em}
+details.gloss[open] summary{margin-bottom:10px}
+details.gloss .inner{padding:13px 16px;background:var(--sunk);
+  border-left:2px solid var(--ink-faint)}
+details.gloss p{margin:0;font-size:14px;line-height:1.6;color:var(--ink-soft)}
+details.gloss p + p{margin-top:9px}
+details.gloss b{font-family:var(--mono);font-size:10px;letter-spacing:.09em;
+  text-transform:uppercase;color:var(--ink-faint);display:block;margin-bottom:2px}
+.ref .gl{padding:12px 14px;background:var(--sunk);margin:10px 0 0;font-size:13.5px;
+  line-height:1.6;color:var(--ink-soft);border-left:2px solid var(--ink-faint)}
+.ref .gl p{margin:0} .ref .gl p + p{margin-top:8px}
 .verdict{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;align-items:center}
 .verdict button{font-family:var(--mono);font-size:11px;letter-spacing:.05em;
   text-transform:uppercase;padding:6px 13px;border:1px solid var(--rule);
@@ -365,6 +404,10 @@ function slip(e){
         ${e.echo ? `<span class="echoflag">${e.echo_n} sentences open with
           &ldquo;${esc(e.echo)}&rdquo;</span>` : ""}
       </div>
+      ${e.gloss ? `<details class="gloss"><summary>What the person asking
+        wanted, in plain words</summary><div class="inner">
+        <p><b>Wants</b>${esc(e.gloss.wants)}</p>
+        <p><b>A good answer owes them</b>${esc(e.gloss.owes)}</p></div></details>` : ""}
       <p class="para" data-view="prose">${esc(e.text)}</p>
       <ul class="shape" data-view="shape" hidden>${e.shape.map((s,i) =>
         `<li class="${s.echo ? "echo" : ""}"><span class="i">${i+1}</span>
@@ -453,6 +496,8 @@ $("copy").addEventListener("click", async () => {
 $("ref").innerHTML = Object.entries(DATA.prompts).map(([id, p]) =>
   `<details><summary><b>${esc(id)}</b>${esc(p.name)}
     <span class="chip">${esc(p.register)}</span></summary>
+    ${p.gloss ? `<div class="gl"><p><b>Wants.</b> ${esc(p.gloss.wants)}</p>
+      <p><b>A good answer owes them.</b> ${esc(p.gloss.owes)}</p></div>` : ""}
     <pre>${esc(p.body)}</pre></details>`).join("");
 
 draw();

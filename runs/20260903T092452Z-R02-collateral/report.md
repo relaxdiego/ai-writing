@@ -13,7 +13,7 @@
 |---|---|---|---:|---:|---:|---|
 | | **suppressed** | | | | | |
 | S1 | one-sentence paragraphs | % of paragraphs | 31.54 | 24.15 | ↓ -7.39 | **yes** (±6.20) |
-| S2 | long sentence then punch | % of paragraphs | 9.38 | 5.12 | ↓ -4.26 | no (±8.39) |
+| S2 | long sentence then punch | % of paragraphs | 6.62 | 4.78 | ↓ -1.84 | no (±3.91) |
 | S3 | That/This pivot opener | % of sentences | 4.80 | 2.62 | ↓ -2.19 | **yes** (±1.76) |
 | S4a | headers | per 1k words | 9.00 | 3.95 | ↓ -5.05 | **yes** (±0.87) |
 | S4b | table rows | per 1k words | 4.21 | 2.09 | ↓ -2.11 | **yes** (±1.12) |

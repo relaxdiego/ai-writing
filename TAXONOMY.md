@@ -223,7 +223,7 @@ of them, 0.60 to 0.24, and clears its band doing it. R04 finishes the job. On
 the same samples S4b reads -2.05 against a band of 1.20 and K4 reads -0.36
 against 0.21, so both see R02's contribution and K4 sees it with the better
 margin: counting tables rather than rows drops the variance of table size on top
-of table presence, the same estimator repair as pooling S2.
+of table presence, the same estimator repair since applied to S2.
 
 Under the band in force when R04 was attributed, S4b's band on R02 alone was
 2.81 and this was invisible, which is how R04 came to own S4b outright. It does

@@ -14,7 +14,7 @@ because the stack it sits in cleared.
 
 | rule | owns | evidence |
 |---|---|---|
-| R02 | S1, S3 | tested alone, `20260903T031737Z-R02`: S1 31.5 -> 8.0, S3 4.8 -> 1.0 |
+| R02 | S1, S2, S3 | tested alone, `20260903T031737Z-R02`: S1 31.5 -> 8.0, S3 4.8 -> 1.0, and S2 6.62 -> 3.21 against a band of 2.89 once S2 is pooled |
 | R02 collateral clauses | K1, K2, K3, K4 | marginal on the shipped set, `20260903T092452Z-R02-collateral`: K1 0.80 -> 4.63 band 1.79, K2 0.86 -> 1.29 band 0.24, K3 64.9 -> 36.7 band 12.10, K4 0.00 -> 0.27 band 0.11 |
 | R04 | S4b, shared | marginal on R02, `20260903T035059Z-R03-R06`: 2.16 -> 0.00, band 0.84. R02 alone had already taken S4b 4.21 -> 2.16 against a band of 1.20, which the old band hid; R04 finishes it rather than owning it |
 | R05 | S7 | ablation, `20260903T042140Z-ablate-R05`: removing it returns S7 to 16.67, the control rate exactly, clearing on both substrates |
@@ -41,13 +41,29 @@ close enough to a verdict line for the model to take it. Both metrics still
 clear against the control by a wide margin, so this is a cost to watch and not
 a failure, but S5 is a ratified defect and it partly came back.
 
-S2, the epigrammatic close, is owned by no rule that was written for it. R03 was
-and did nothing. Across four runs S2 instead tracks R05: 5.54 and 7.64 without
-it, 2.99 and 3.09 with it, and without R05 the metric does not clear against the
-control. The likely reading is that the epigram is a closing move, so an
-instruction to finish on the answer suppresses it as a side effect. The marginal
-band does not resolve this at n=3 per prompt and it is a hypothesis, not a
-result. Running the full noise floor is what would settle it.
+**S2 belongs to R02, and R05 never owned it.** The hypothesis that it did was an
+artifact of how S2 was counted. S2 averaged a per-sample percentage, so a reply
+with 3 paragraphs weighed as much as a document with 30; the arm's real rate is
+punch paragraphs over all paragraphs, pooled. Pooling it drops the per-sample
+spread from about 17 to about 6 and changes the reading:
+
+    arm             per-sample   pooled
+    control               9.38     6.62
+    R02 alone             5.54     3.21
+    stack without R05     7.64     4.94
+    shipped with R05      3.09     3.04
+
+R02 alone clears S2 against the control, 6.62 -> 3.21 against a band of 2.89,
+in a run R05 was not in. Ablating R05 from the shipped set moves S2 by +1.89
+against a band of 3.32 and clears nothing. Under the old count R02 alone reached
+only 5.54 and looked to have failed, which is what made R05 look necessary.
+
+R03 was written for S2 and did nothing; that verdict is unchanged. Substrate B
+does not confirm the attribution and does not contradict it either: no arm
+separates there at n=3, so S2 on B is unresolved. Substrate A is the gate.
+
+This also retires the noise floor as the way to settle S2, which is what the
+floor was last held to be blocking. It settled itself for nothing.
 
 ## Retired IDs
 

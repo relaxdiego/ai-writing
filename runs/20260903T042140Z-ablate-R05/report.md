@@ -13,7 +13,7 @@
 |---|---|---|---:|---:|---:|---|
 | | **suppressed** | | | | | |
 | S1 | one-sentence paragraphs | % of paragraphs | 31.54 | 7.19 | ↓ -24.35 | **yes** (±4.44) |
-| S2 | long sentence then punch | % of paragraphs | 9.38 | 7.64 | ↓ -1.74 | no (±8.77) |
+| S2 | long sentence then punch | % of paragraphs | 6.62 | 4.94 | ↓ -1.68 | no (±3.40) |
 | S3 | That/This pivot opener | % of sentences | 4.80 | 1.82 | ↓ -2.98 | **yes** (±1.61) |
 | S4a | headers | per 1k words | 9.00 | 3.54 | ↓ -5.45 | **yes** (±0.86) |
 | S4b | table rows | per 1k words | 4.21 | 0.00 | ↓ -4.21 | **yes** (±0.86) |
@@ -40,7 +40,7 @@
 |---|---|---|---:|---:|---:|---|
 | | **suppressed** | | | | | |
 | S1 | one-sentence paragraphs | % of paragraphs | 31.56 | 7.39 | ↓ -24.17 | **yes** (±3.96) |
-| S2 | long sentence then punch | % of paragraphs | 8.06 | 4.00 | ↓ -4.06 | **yes** (±3.92) |
+| S2 | long sentence then punch | % of paragraphs | 6.33 | 3.08 | ↓ -3.25 | **yes** (±2.81) |
 | S3 | That/This pivot opener | % of sentences | 3.76 | 3.24 | ↓ -0.52 | no (±1.28) |
 | S4a | headers | per 1k words | 10.30 | 4.01 | ↓ -6.29 | **yes** (±0.59) |
 | S4b | table rows | per 1k words | 4.20 | 0.37 | ↓ -3.82 | **yes** (±1.02) |

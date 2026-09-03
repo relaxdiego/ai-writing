@@ -27,7 +27,8 @@ import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from detectors import DETECTORS, score_text  # noqa: E402
+from detectors import (DETECTORS, DETECTORS_POOLED, count_text,  # noqa: E402
+                       score_text)
 
 REPO = Path(__file__).resolve().parent.parent
 META = {mid: (name, unit, kind) for mid, name, unit, kind, _ in DETECTORS}
@@ -43,26 +44,27 @@ def score_run(run_dir: Path) -> dict:
         per_sample.append({
             "key": s["key"], "substrate": s["substrate"], "prompt": s["prompt_id"],
             "register": s["register"], "scores": score_text(text),
+            "counts": count_text(text),
         })
 
     agg = {}
     for sub in sorted({x["substrate"] for x in per_sample}):
-        rows = [x["scores"] for x in per_sample if x["substrate"] == sub]
+        arm = [x for x in per_sample if x["substrate"] == sub]
         agg[sub] = {}
-        by_prompt: dict[str, list[dict]] = {}
-        for x in per_sample:
-            if x["substrate"] == sub:
-                by_prompt.setdefault(x["prompt"], []).append(x["scores"])
         for mid, _, _, _, _ in DETECTORS:
-            v = [r[mid] for r in rows]
+            v = arm_values(arm, mid)
+            by_prompt: dict[str, list[float]] = {}
+            for x, val in zip(arm, v):
+                by_prompt.setdefault(x["prompt"], []).append(val)
             sd = st.stdev(v) if len(v) > 1 else 0.0
+            within = pooled_within_sd(by_prompt)
             agg[sub][mid] = {
                 "mean": round(st.mean(v), 3), "sd": round(sd, 3),
                 "sem": round(sd / math.sqrt(len(v)), 3) if v else 0.0,
-                "sd_within": round(pooled_within_sd(by_prompt, mid), 3),
-                "sem_within": round(
-                    pooled_within_sd(by_prompt, mid) / math.sqrt(len(v)), 3) if v else 0.0,
+                "sd_within": round(within, 3),
+                "sem_within": round(within / math.sqrt(len(v)), 3) if v else 0.0,
                 "n": len(v), "n_prompts": len(by_prompt),
+                "pooled": mid in DETECTORS_POOLED,
             }
     return {
         "run": run_dir.name,
@@ -77,7 +79,7 @@ def score_run(run_dir: Path) -> dict:
     }
 
 
-def pooled_within_sd(by_prompt: dict[str, list[dict]], mid: str) -> float:
+def pooled_within_sd(by_prompt: dict[str, list[float]]) -> float:
     """SD of repeats within a prompt, pooled over prompts.
 
     The corpus is frozen and both arms answer the same 12 prompts, so the
@@ -86,13 +88,39 @@ def pooled_within_sd(by_prompt: dict[str, list[dict]], mid: str) -> float:
     thing that is noise, is how much two repeats of one prompt differ.
     """
     num = den = 0.0
-    for reps in by_prompt.values():
-        v = [r[mid] for r in reps]
+    for v in by_prompt.values():
         if len(v) < 2:
             continue
         num += (len(v) - 1) * st.variance(v)
         den += len(v) - 1
     return math.sqrt(num / den) if den else 0.0
+
+
+def arm_values(arm: list[dict], mid: str) -> list[float]:
+    """One value per sample, on the scale the arm's mean is reported in.
+
+    An ordinary metric contributes its own score. A pooled metric contributes a
+    linearized value instead: the arm's rate is the pooled ratio R = scale*N/D,
+    not the mean of per-sample ratios, and a sample's information about R is how
+    far its own numerator sits from what its denominator predicts. Writing that
+    residual out per sample keeps one estimator of R and lets the existing mean,
+    SD and within-prompt machinery run over it unchanged, so the band for a
+    pooled metric is built the same way as every other band.
+
+    A sample with an empty denominator contributes exactly R and so moves
+    nothing, which is right: it carries no evidence either way.
+    """
+    if mid not in DETECTORS_POOLED:
+        return [x["scores"][mid] for x in arm]
+    _, scale = DETECTORS_POOLED[mid]
+    pairs = [tuple(x["counts"][mid]) for x in arm]
+    N = sum(n for n, _ in pairs)
+    D = sum(d for _, d in pairs)
+    if not D:
+        return [0.0] * len(arm)
+    R = scale * N / D
+    n = len(pairs)
+    return [R + scale * n * (num - (N / D) * den) / D for num, den in pairs]
 
 
 def band(a: dict, b: dict) -> float:

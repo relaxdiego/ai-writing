@@ -88,6 +88,33 @@ def s2_long_then_punch(d: Doc) -> float:
     return round(100 * n / len(d.paragraphs), 2)
 
 
+def s2_counts(d: Doc) -> tuple[int, int]:
+    """S2's numerator and denominator, kept apart so the arm can pool them.
+
+    s2_long_then_punch returns one sample's percentage, and averaging those
+    percentages weighs a 3-paragraph reply the same as a 30-paragraph document.
+    The arm's real rate is punch paragraphs over all paragraphs, so score.py
+    sums these across the arm instead. See DETECTORS_POOLED."""
+    if not d.paragraphs:
+        return 0, 0
+    n = 0
+    for g in d.para_sents:
+        if len(g) < 2:
+            continue
+        lens = [len(s.split()) for s in g]
+        if lens[-1] <= 9 and max(lens[:-1]) >= 20:
+            n += 1
+    return n, len(d.paragraphs)
+
+
+# Metrics whose arm-level value is a pooled ratio rather than a mean of
+# per-sample ratios: {id: (counter, scale)}. Only S2 for now. S1, S3 and every
+# per-1k-word rate have the same shape and are not pooled yet, because changing
+# them moves the numbers R02 was attributed on and that is a decision, not a
+# repair. score.py --pooling-report measures what it would do to each.
+DETECTORS_POOLED = {"S2": (s2_counts, 100.0)}
+
+
 PIVOT = re.compile(r"^(?:That|This|It|Those|These)(?:'s|s|\s+(?:is|are|was|means|matters|alone))\b")
 
 
@@ -311,3 +338,9 @@ DETECTORS = [
 def score_text(text: str) -> dict[str, float]:
     d = Doc(text)
     return {mid: fn(d) for mid, _, _, _, fn in DETECTORS}
+
+
+def count_text(text: str) -> dict[str, tuple[int, int]]:
+    """Numerator and denominator for every pooled metric, per sample."""
+    d = Doc(text)
+    return {mid: fn(d) for mid, (fn, _) in DETECTORS_POOLED.items()}

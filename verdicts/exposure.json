@@ -1,5 +1,25 @@
 [
   {
+    "script": "galley/list-to-table",
+    "run": "20260903T202317Z-v2-control",
+    "labelled": true,
+    "what": "published artifact 7990f06c, both arms named",
+    "keys": [
+      "c02-r1",
+      "d05-r1"
+    ]
+  },
+  {
+    "script": "galley/list-to-table",
+    "run": "20260903T231128Z-R10-scan-not-length",
+    "labelled": true,
+    "what": "published artifact 7990f06c, both arms named, to judge the list-to-table trade",
+    "keys": [
+      "c02-r1",
+      "d05-r1"
+    ]
+  },
+  {
     "script": "make_paragraph_reader.py",
     "run": "20260903T003018Z",
     "labelled": false,

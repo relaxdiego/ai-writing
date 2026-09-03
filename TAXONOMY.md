@@ -231,6 +231,29 @@ not. Removing R04 alone would probably not bring the tables back. The likely rea
 third time, since a table row is an isolated short block as well, but no run
 isolates that and it stays a hypothesis.
 
+**The collation verdict, and it ratifies the set.** The clauses were read in
+`20260903T092452Z-R02-collateral` against the control and against the rules as
+they shipped (`harness/make_verdict_reader.py`). The copyeditor passed **15 of
+15 openings** as arriving first and **39 of 39** restored lists, tables and code
+blocks as real structure rather than prose in bullets. K3's risk was that the
+verdict would be stated and then buried anyway; K4's and K1's was that a rule
+telling the model to keep structure would be answered with pseudo-structure.
+Neither happened.
+
+One note came back, and it is not about either. On a 38-word opening that reads
+"The separate append-only store is solving a problem you don't have yet and
+creating two you do": *"However, '...and creating two you do' is not explained.
+Or maybe it is but is too far down that I didn't bother finding it."*
+[a-treatment-c04-r1] The two are explained, in the third and fourth paragraphs,
+as "the first decisive thing" and "the second decisive thing". Two things break
+the link. The paragraph immediately after the verdict is about write volume,
+which the verdict never promised, so the reader meets an unannounced detour
+first. And the payoff arrives in different words: the opening says *problems*
+and the body says *decisive things*, so a reader counting for the promised two
+has nothing to count. A verdict that makes a promise has to be redeemed in the
+promise's own vocabulary, in the paragraph that follows it. That is one note on
+one sample and it is recorded as an observation, not a detector.
+
 This is DESIGN.md 4.2b arriving a second time, and K3 and K4 make it a third
 and a fourth. The suppressed set counts what the rules forbid, the held-out set
 guards against token-dodging, and neither could see the rules destroying

@@ -12,57 +12,57 @@
 | id | metric | unit | control | this run | delta | cleared band? |
 |---|---|---|---:|---:|---:|---|
 | | **suppressed** | | | | | |
-| S1 | one-sentence paragraphs | % of paragraphs | 31.54 | 6.79 | ↓ -24.75 | **yes** (±9.23) |
-| S2 | long sentence then punch | % of paragraphs | 9.38 | 3.09 | ↓ -6.29 | **yes** (±6.23) |
-| S3 | That/This pivot opener | % of sentences | 4.80 | 2.32 | ↓ -2.48 | **yes** (±2.02) |
-| S4a | headers | per 1k words | 9.00 | 3.44 | ↓ -5.56 | **yes** (±2.50) |
-| S4b | table rows | per 1k words | 4.21 | 0.00 | ↓ -4.21 | **yes** (±2.17) |
-| S5 | inline bold emphasis | per 1k words | 3.97 | 0.27 | ↓ -3.70 | **yes** (±1.39) |
-| S6 | em-dash | per 1k words | 11.96 | 0.59 | ↓ -11.37 | **yes** (±2.06) |
-| S7 | terminal service offer | % of samples | 16.67 | 0.00 | ↓ -16.67 | **yes** (±12.60) |
+| S1 | one-sentence paragraphs | % of paragraphs | 31.54 | 6.79 | ↓ -24.75 | **yes** (±5.53) |
+| S2 | long sentence then punch | % of paragraphs | 9.38 | 3.09 | ↓ -6.29 | no (±6.55) |
+| S3 | That/This pivot opener | % of sentences | 4.80 | 2.32 | ↓ -2.48 | **yes** (±1.82) |
+| S4a | headers | per 1k words | 9.00 | 3.44 | ↓ -5.56 | **yes** (±0.84) |
+| S4b | table rows | per 1k words | 4.21 | 0.00 | ↓ -4.21 | **yes** (±0.86) |
+| S5 | inline bold emphasis | per 1k words | 3.97 | 0.27 | ↓ -3.70 | **yes** (±1.32) |
+| S6 | em-dash | per 1k words | 11.96 | 0.59 | ↓ -11.37 | **yes** (±1.28) |
+| S7 | terminal service offer | % of samples | 16.67 | 0.00 | ↓ -16.67 | **yes** (±11.11) |
 | | **held-out** | | | | | |
-| H1 | hedge density | per 1k words | 1.50 | 0.99 | ↓ -0.51 | no (±0.93) |
-| H2 | intensifier density | per 1k words | 1.20 | 1.91 | ↑ +0.71 | no (±1.22) |
-| H3 | tricolon | per 1k words | 0.54 | 0.76 | ↑ +0.22 | no (±0.61) |
+| H1 | hedge density | per 1k words | 1.50 | 0.99 | ↓ -0.51 | no (±0.87) |
+| H2 | intensifier density | per 1k words | 1.20 | 1.91 | ↑ +0.71 | no (±1.15) |
+| H3 | tricolon | per 1k words | 0.54 | 0.76 | ↑ +0.22 | no (±0.42) |
 | | **collateral** | | | | | |
-| K1 | list items | per 1k words | 10.78 | 0.80 | ↓ -9.98 | **yes** (±3.20) |
-| K2 | code blocks | per 1k words | 2.08 | 0.86 | ↓ -1.23 | no (±1.35) |
-| K3 | opening paragraph | words | 28.44 | 64.86 | ↑ +36.42 | **yes** (±15.60) |
-| K4 | grid tables | per 1k words | 0.60 | 0.00 | ↓ -0.60 | **yes** (±0.30) |
+| K1 | list items | per 1k words | 10.78 | 0.80 | ↓ -9.98 | **yes** (±1.89) |
+| K2 | code blocks | per 1k words | 2.08 | 0.86 | ↓ -1.23 | **yes** (±0.39) |
+| K3 | opening paragraph | words | 28.44 | 64.86 | ↑ +36.42 | **yes** (±10.07) |
+| K4 | grid tables | per 1k words | 0.60 | 0.00 | ↓ -0.60 | **yes** (±0.17) |
 | | **context** | | | | | |
-| C1 | output length | words | 641.44 | 533.22 | ↓ -108.22 | no (±160.25) |
-| C2 | mean paragraph length | words | 36.87 | 81.20 | ↑ +44.33 | **yes** (±11.53) |
-| C3 | mean sentence length | words | 15.48 | 24.59 | ↑ +9.11 | **yes** (±1.67) |
+| C1 | output length | words | 641.44 | 533.22 | ↓ -108.22 | **yes** (±47.49) |
+| C2 | mean paragraph length | words | 36.87 | 81.20 | ↑ +44.33 | **yes** (±5.62) |
+| C3 | mean sentence length | words | 15.48 | 24.59 | ↑ +9.11 | **yes** (±1.06) |
 
 ## Substrate B  (n=60 control → n=60 treatment)
 
 | id | metric | unit | control | this run | delta | cleared band? |
 |---|---|---|---:|---:|---:|---|
 | | **suppressed** | | | | | |
-| S1 | one-sentence paragraphs | % of paragraphs | 31.56 | 8.04 | ↓ -23.52 | **yes** (±6.91) |
-| S2 | long sentence then punch | % of paragraphs | 8.06 | 3.23 | ↓ -4.83 | **yes** (±3.67) |
-| S3 | That/This pivot opener | % of sentences | 3.76 | 2.76 | ↓ -1.00 | no (±1.56) |
-| S4a | headers | per 1k words | 10.30 | 3.88 | ↓ -6.42 | **yes** (±2.21) |
-| S4b | table rows | per 1k words | 4.20 | 0.00 | ↓ -4.20 | **yes** (±1.88) |
-| S5 | inline bold emphasis | per 1k words | 6.81 | 0.80 | ↓ -6.01 | **yes** (±1.50) |
-| S6 | em-dash | per 1k words | 10.75 | 1.45 | ↓ -9.30 | **yes** (±1.52) |
-| S7 | terminal service offer | % of samples | 23.33 | 0.00 | ↓ -23.33 | **yes** (±11.01) |
+| S1 | one-sentence paragraphs | % of paragraphs | 31.56 | 8.04 | ↓ -23.52 | **yes** (±4.55) |
+| S2 | long sentence then punch | % of paragraphs | 8.06 | 3.23 | ↓ -4.83 | **yes** (±3.24) |
+| S3 | That/This pivot opener | % of sentences | 3.76 | 2.76 | ↓ -1.00 | no (±1.18) |
+| S4a | headers | per 1k words | 10.30 | 3.88 | ↓ -6.42 | **yes** (±0.59) |
+| S4b | table rows | per 1k words | 4.20 | 0.00 | ↓ -4.20 | **yes** (±0.87) |
+| S5 | inline bold emphasis | per 1k words | 6.81 | 0.80 | ↓ -6.01 | **yes** (±1.21) |
+| S6 | em-dash | per 1k words | 10.75 | 1.45 | ↓ -9.30 | **yes** (±1.06) |
+| S7 | terminal service offer | % of samples | 23.33 | 0.00 | ↓ -23.33 | **yes** (±9.13) |
 | | **held-out** | | | | | |
-| H1 | hedge density | per 1k words | 2.04 | 1.33 | ↓ -0.71 | no (±0.92) |
-| H2 | intensifier density | per 1k words | 1.87 | 1.40 | ↓ -0.48 | no (±0.73) |
-| H3 | tricolon | per 1k words | 0.57 | 0.88 | ↑ +0.31 | no (±0.49) |
+| H1 | hedge density | per 1k words | 2.04 | 1.33 | ↓ -0.71 | **yes** (±0.68) |
+| H2 | intensifier density | per 1k words | 1.87 | 1.40 | ↓ -0.48 | no (±0.62) |
+| H3 | tricolon | per 1k words | 0.57 | 0.88 | ↑ +0.31 | **yes** (±0.30) |
 | | **collateral** | | | | | |
-| K1 | list items | per 1k words | 12.78 | 1.07 | ↓ -11.71 | **yes** (±2.31) |
-| K2 | code blocks | per 1k words | 2.23 | 1.03 | ↓ -1.19 | no (±1.23) |
-| K3 | opening paragraph | words | 27.92 | 67.10 | ↑ +39.18 | **yes** (±13.41) |
-| K4 | grid tables | per 1k words | 0.48 | 0.00 | ↓ -0.48 | **yes** (±0.22) |
+| K1 | list items | per 1k words | 12.78 | 1.07 | ↓ -11.71 | **yes** (±1.01) |
+| K2 | code blocks | per 1k words | 2.23 | 1.03 | ↓ -1.19 | **yes** (±0.38) |
+| K3 | opening paragraph | words | 27.92 | 67.10 | ↑ +39.18 | **yes** (±9.85) |
+| K4 | grid tables | per 1k words | 0.48 | 0.00 | ↓ -0.48 | **yes** (±0.10) |
 | | **context** | | | | | |
-| C1 | output length | words | 617.87 | 529.90 | ↓ -87.97 | no (±105.56) |
-| C2 | mean paragraph length | words | 35.47 | 81.84 | ↑ +46.38 | **yes** (±9.13) |
-| C3 | mean sentence length | words | 15.64 | 24.96 | ↑ +9.32 | **yes** (±1.30) |
+| C1 | output length | words | 617.87 | 529.90 | ↓ -87.97 | **yes** (±25.41) |
+| C2 | mean paragraph length | words | 35.47 | 81.84 | ↑ +46.38 | **yes** (±4.28) |
+| C3 | mean sentence length | words | 15.64 | 24.96 | ↑ +9.32 | **yes** (±0.97) |
 
 
-*Band is two pooled standard errors of the difference between the arms' means. At 12 prompts there is no power for significance testing; this is effect size against measured variance.*
+*Band is two pooled standard errors of the difference between the arms' means, built from within-prompt variance only: both arms answer the same 12 frozen prompts, so between-prompt spread cancels in the difference and is not noise. At 12 prompts there is no power for significance testing; this is effect size against measured variance.*
 
 
 ## Blinded pairwise judge

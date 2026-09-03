@@ -8,6 +8,13 @@ band.
 The band is 2x the pooled standard error of the difference between the two
 arms' means. With 12 prompts there is no power for significance testing, so
 this reports effect size against measured variance and says so.
+
+The standard error is built from within-prompt variance only. Both arms run the
+same 12 frozen prompts, so a prompt that simply draws longer answers than the
+others raises the mean of both arms alike and cancels in the difference. Taking
+the SD across all 36 samples folds that between-prompt spread into the noise
+term and inflates every band, on some metrics threefold. Only repeat-to-repeat
+variation is noise.
 """
 
 from __future__ import annotations
@@ -42,13 +49,20 @@ def score_run(run_dir: Path) -> dict:
     for sub in sorted({x["substrate"] for x in per_sample}):
         rows = [x["scores"] for x in per_sample if x["substrate"] == sub]
         agg[sub] = {}
+        by_prompt: dict[str, list[dict]] = {}
+        for x in per_sample:
+            if x["substrate"] == sub:
+                by_prompt.setdefault(x["prompt"], []).append(x["scores"])
         for mid, _, _, _, _ in DETECTORS:
             v = [r[mid] for r in rows]
             sd = st.stdev(v) if len(v) > 1 else 0.0
             agg[sub][mid] = {
                 "mean": round(st.mean(v), 3), "sd": round(sd, 3),
                 "sem": round(sd / math.sqrt(len(v)), 3) if v else 0.0,
-                "n": len(v),
+                "sd_within": round(pooled_within_sd(by_prompt, mid), 3),
+                "sem_within": round(
+                    pooled_within_sd(by_prompt, mid) / math.sqrt(len(v)), 3) if v else 0.0,
+                "n": len(v), "n_prompts": len(by_prompt),
             }
     return {
         "run": run_dir.name,
@@ -63,9 +77,34 @@ def score_run(run_dir: Path) -> dict:
     }
 
 
+def pooled_within_sd(by_prompt: dict[str, list[dict]], mid: str) -> float:
+    """SD of repeats within a prompt, pooled over prompts.
+
+    The corpus is frozen and both arms answer the same 12 prompts, so the
+    between-prompt spread is a property of the questions rather than of the
+    rules and cancels in the arm-to-arm difference. What is left, and the only
+    thing that is noise, is how much two repeats of one prompt differ.
+    """
+    num = den = 0.0
+    for reps in by_prompt.values():
+        v = [r[mid] for r in reps]
+        if len(v) < 2:
+            continue
+        num += (len(v) - 1) * st.variance(v)
+        den += len(v) - 1
+    return math.sqrt(num / den) if den else 0.0
+
+
 def band(a: dict, b: dict) -> float:
-    """Two pooled standard errors of the difference between the arms' means."""
-    return 2 * math.sqrt(a["sem"] ** 2 + b["sem"] ** 2)
+    """Two pooled standard errors of the difference between the arms' means.
+
+    Built on sem_within (see pooled_within_sd). Runs scored before the
+    correction cached only "sem"; fall back so an old result.json still
+    renders, and re-score to get the corrected band.
+    """
+    ka = "sem_within" if "sem_within" in a else "sem"
+    kb = "sem_within" if "sem_within" in b else "sem"
+    return 2 * math.sqrt(a[ka] ** 2 + b[kb] ** 2)
 
 
 def report(cur: dict, base: dict, rules: list[str], judge: dict | None) -> str:
@@ -101,8 +140,11 @@ def report(cur: dict, base: dict, rules: list[str], judge: dict | None) -> str:
                 L.append(f"| {mid} | {name} | {unit} | {c['mean']:.2f} | {t['mean']:.2f} "
                          f"| {arrow} {d:+.2f} | {mark} (±{bd:.2f}) |")
     L.append("\n\n*Band is two pooled standard errors of the difference between "
-             "the arms' means. At 12 prompts there is no power for significance "
-             "testing; this is effect size against measured variance.*\n")
+             "the arms' means, built from within-prompt variance only: both arms "
+             "answer the same 12 frozen prompts, so between-prompt spread cancels "
+             "in the difference and is not noise. At 12 prompts there is no power "
+             "for significance testing; this is effect size against measured "
+             "variance.*\n")
     if judge:
         L.append(judge_section(judge))
     return "\n".join(L)

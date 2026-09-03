@@ -15,13 +15,13 @@ because the stack it sits in cleared.
 | rule | owns | evidence |
 |---|---|---|
 | R02 | S1, S3 | tested alone, `20260903T031737Z-R02`: S1 31.5 -> 8.0, S3 4.8 -> 1.0 |
-| R02 collateral clauses | K1, K3, K4 | marginal on the shipped set, `20260903T092452Z-R02-collateral`: K1 0.80 -> 4.63 band 2.05, K3 64.9 -> 36.7 band 16.9, K4 0.00 -> 0.27 band 0.17 |
-| R04 | S4b | marginal on R02, `20260903T035059Z-R03-R06`: 2.16 -> 0.00, band 1.78 |
+| R02 collateral clauses | K1, K2, K3, K4 | marginal on the shipped set, `20260903T092452Z-R02-collateral`: K1 0.80 -> 4.63 band 1.79, K2 0.86 -> 1.29 band 0.24, K3 64.9 -> 36.7 band 12.10, K4 0.00 -> 0.27 band 0.11 |
+| R04 | S4b, shared | marginal on R02, `20260903T035059Z-R03-R06`: 2.16 -> 0.00, band 0.84. R02 alone had already taken S4b 4.21 -> 2.16 against a band of 1.20, which the old band hid; R04 finishes it rather than owning it |
 | R05 | S7 | ablation, `20260903T042140Z-ablate-R05`: removing it returns S7 to 16.67, the control rate exactly, clearing on both substrates |
-| R06 | S6 | marginal on R02, `20260903T035059Z-R03-R06`: 8.44 -> 0.97, band 1.65 |
+| R06 | S6 | marginal on R02, `20260903T035059Z-R03-R06`: 8.44 -> 0.97, band 1.04 |
 
-The collateral clauses cost S1, and the cost is smaller than the metric says.
-S1 rises 6.79 -> 24.15 and no longer clears against the control. Decomposed by
+The collateral clauses cost S1, S4a and S5, and the S1 cost is smaller than the
+metric says. S1 rises 6.79 -> 24.15 and no longer clears against the control. Decomposed by
 what the single-sentence paragraph is doing, the defect did not return: a
 fragment floating in prose holds at 13 -> 16 of 272 paragraphs, 5.7% -> 5.9%,
 against 22.8% in the control. The rise is the clause's own output. Opening
@@ -30,6 +30,16 @@ verdicts go 5 -> 14 and lines introducing a restored list or code block go
 cannot see what follows the paragraph. Read S1 with that decomposition until the
 detector is split; it is the third estimator fault found, after S2's per-sample
 ratio and S4b's row counting.
+
+S4a and S5 rise for real and are not artifacts. Headers go 3.44 -> 3.95 against
+a band of 0.43, entirely in documents, where conversational headers stay at
+0.00 and the control sits at 9.00. Inline bold goes 0.27 -> 2.07 against a band
+of 0.83, against a control of 3.97. The bold is R06's business, not R02's: an
+answer told to state its verdict first will reach for bold to mark it unless
+R06 stops it, and R06 permits bold as a label at the head of an entry, which is
+close enough to a verdict line for the model to take it. Both metrics still
+clear against the control by a wide margin, so this is a cost to watch and not
+a failure, but S5 is a ratified defect and it partly came back.
 
 S2, the epigrammatic close, is owned by no rule that was written for it. R03 was
 and did nothing. Across four runs S2 instead tracks R05: 5.54 and 7.64 without
@@ -42,8 +52,13 @@ result. Running the full noise floor is what would settle it.
 ## Retired IDs
 
 **R01 — match length to what the question earns.** Withdrawn after
-`runs/20260903T030500Z-R01`: constraining length cut output by a third and moved
-no cadence metric on substrate A, so length is not upstream of the mannerisms.
+`runs/20260903T030500Z-R01` on the grounds that constraining length cut output by
+a third and moved no cadence metric. **That reason was wrong, and the band
+correction exposed it.** R01 moves S1 31.54 -> 23.90 against a band of 6.44, and
+moves S4a, S4b, S5, K1 and C1 as well. R01 stays retired because R02 is far
+stronger on the same metric, 31.54 -> 8.0, and buys it without cutting a third of
+the answer away. The withdrawal stands; the stated reason does not, and
+TAXONOMY.md's counter-observation that length may be upstream is live again.
 **R03 — do not land the paragraph.** Withdrawn after
 `runs/20260903T040710Z-ablate-R03`: ablating it moved S2, its own target, by
 +0.10 on substrate A against a band of 3.14, and all eight suppressed metrics

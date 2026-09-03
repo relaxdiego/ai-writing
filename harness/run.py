@@ -141,6 +141,22 @@ class Sample:
     model_usage: dict = field(default_factory=dict)
 
 
+def redact_paths(text: str) -> str:
+    """Rewrite local absolute paths before they reach the manifest.
+
+    The manifest records the child's full command line so a run is
+    reproducible, and that line carries --append-system-prompt-file with an
+    absolute path. The repo is public; a checkout elsewhere would not match the
+    path anyway, so the useful part is which file, not whose home it sat in.
+    The config-dir inventory is summarized for the same reason.
+    """
+    out = text.replace(str(REPO), "<repo>")
+    home = str(Path.home())
+    if home not in ("/", ""):
+        out = out.replace(home, "~")
+    return out
+
+
 def run_sample(sample: Sample, prompt: Prompt, scratch: Path, style: str,
                model: str, budget: str, argv_sink: dict,
                sink_dir: Path | None = None) -> Sample:
@@ -343,7 +359,7 @@ def main() -> int:
         "model_requested": args.model,
         "cli_version": cli_version(),
         "git_sha": git_sha(),
-        "argv": argv_sink,
+        "argv": {k: redact_paths(v) for k, v in argv_sink.items()},
         "config_dir_inventory": config_dir_inventory(scratch),
         "concurrency": args.concurrency,
         "budget_per_sample_usd": args.budget,

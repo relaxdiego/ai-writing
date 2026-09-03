@@ -169,7 +169,7 @@ written about paragraphs and the model applied it to every enumerated line.
 The answer stated before it is explained. The control's first prose paragraph
 is 28.4 words and 1.8 sentences; under the shipped rules it is 64.9 words and
 3.1 sentences, and one-sentence openers fall from 16 of 36 samples to 5. The
-rise clears the band on both substrates, which K2 never does.
+rise clears the band on both substrates.
 
     It's not too long in the strictest sense but it's discussing at length what
     turns out to be wrong advice. The control is directly saying it's a bad
@@ -219,15 +219,15 @@ pseudo-tables back, which is the same guard S4a provides for the list clause.
     control 0.60    R01 0.19    R02 alone 0.24    +R04 0.00
 
 **Attribution is shared, and this corrects the record.** R02 alone removes most
-of them, 0.60 to 0.24, and that clears its band — barely, at the edge. R04
-finishes the job. S4b could not see R02's contribution because it counts rows,
-and row counts carry the variance of table size on top of table presence: on
-R02 alone S4b reads -2.05 against a band of +/-2.81 and clears nothing, while
-K4 reads -0.36 against +/-0.36. Counting tables rather than rows is the same
-estimator repair as pooling S2.
+of them, 0.60 to 0.24, and clears its band doing it. R04 finishes the job. On
+the same samples S4b reads -2.05 against a band of 1.20 and K4 reads -0.36
+against 0.21, so both see R02's contribution and K4 sees it with the better
+margin: counting tables rather than rows drops the variance of table size on top
+of table presence, the same estimator repair as pooling S2.
 
-So R04 is not solely at fault here, and removing R04 alone would probably not
-bring the tables back. The likely reading is R02's isolated-short-block clause a
+Under the band in force when R04 was attributed, S4b's band on R02 alone was
+2.81 and this was invisible, which is how R04 came to own S4b outright. It does
+not. Removing R04 alone would probably not bring the tables back. The likely reading is R02's isolated-short-block clause a
 third time, since a table row is an isolated short block as well, but no run
 isolates that and it stays a hypothesis.
 

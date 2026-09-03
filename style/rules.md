@@ -87,6 +87,44 @@ separates there at n=3, so S2 on B is unresolved. Substrate A is the gate.
 This also retires the noise floor as the way to settle S2, which is what the
 floor was last held to be blocking. It settled itself for nothing.
 
+## The word in a rule is not the word in the writing
+
+The copyeditor flagged "shape" twice unprompted in the first blind read, and R09
+happened to contain it: "That shape performs insight rather than delivering it."
+That made seeding a live hypothesis, and it was cheap to test.
+
+R09 was changed to say "flourish" instead, one word in a 699-word prompt, and
+corpus v2 was re-run: `runs/20260903T224835Z-v2-r09-flourish`, style sha
+`bb3535a1`, 36 samples, $2.81.
+
+**Seeding is refuted, twice over.** "flourish" appears zero times in the output,
+and it had already read zero across 180 earlier samples, so a single hit would
+have been signal. Meanwhile "shape" did not fall when the rule stopped saying it.
+It rose, 5 hits to 7. Removing a word from the rules did not remove it from the
+writing, so the rule was never putting it there. The hits are mostly the verb --
+"it shapes the fix", "already shapes what our backups can do" -- and not R09's
+noun at all.
+
+"cadence" is the counter-case that makes the point. It is not in the injected
+prompt and never has been, and it still climbs across ruled arms: 2 in the v1
+control, 6 under the split. Vocabulary moves with the rules without being in
+them, so a word appearing more often under instruction is not evidence that the
+instruction named it.
+
+**"shape" stays a taxonomy candidate on its own merits.** A reader caught it
+twice in twelve samples while the rate is 0.29 per 1,000 words against a control
+of 0.19, on counts of four to seven. That gap between what a person notices and
+what a rate reports is the DESIGN 4.2b failure mode, not a small effect.
+
+**The rule reads "shape" again.** The arm that passed the blind read is the
+"shape" arm, and nothing measurable separates the two, so the shipped set matches
+the text that was actually read. Flipping it back is one word and costs nothing.
+
+**A useful by-product: the harness is insensitive to a one-word prompt edit.**
+Scored against the arm it was cloned from, zero of twenty metrics cleared their
+bands. That is the closest thing to a null run this project has and it is worth
+remembering the next time a small edit appears to move something.
+
 ## Retired IDs
 
 **R01 — match length to what the question earns.** Withdrawn after

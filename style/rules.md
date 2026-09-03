@@ -42,7 +42,7 @@ R02's text almost unchanged: one sentence was restated so that R08 does not
 depend on standing next to R07, and the rest is verbatim. Whether the division
 preserves the effect is an open question and the reason for the next run.
 
-The collateral clauses cost S1, S4a and S5, and the S1 cost is smaller than the
+The collateral clauses cost S1 and S4a, and the S1 cost is smaller than the
 metric says. S1 rises 4.76 -> 23.68 and no longer clears against the control. Decomposed by
 what the single-sentence paragraph is doing, the defect did not return: a
 fragment floating in prose holds at 13 -> 16 of 272 paragraphs, 5.7% -> 5.9%,
@@ -57,18 +57,24 @@ S4a rises for real and is not an artifact. Headers go 3.44 -> 3.95 against a
 band of 0.43, entirely in documents, where conversational headers stay at 0.00
 and the control sits at 9.00.
 
-**S5's rise is an artifact, and this corrects the record.** The reading was that
-inline bold went 0.27 -> 2.07 against a band of 0.83 and that a ratified defect
-had partly come back. It had not. S5 strips a bold that occupies a whole line
-but counts a bold that opens a list item, which is preceded by its bullet, and
-R06 names that use as permitted. Excluding it, the ruled arms carry **no inline
-bold at all**: 2.88 -> 0.00 on v1 and 2.16 -> 0.00 on v2, against controls of
-1.52 and 1.16 under the same exclusion. All 37 hits in the v2 ruled arm are
-labels opening list entries. What the metric was reporting is R08 restoring
-lists, counted as a defect. It is the same fault as S4b, a suppressed metric and
-a collateral metric counting the same markup, and it is the fourth estimator
-fault found. The detector is unchanged and the ruling belongs to the copyeditor;
-`TAXONOMY.md` entry 5 carries the evidence.
+**S5's rise was an artifact, the detector is fixed, and the record is
+corrected.** The reading was that inline bold went 0.27 -> 2.07 against a band
+of 0.83, and that a ratified defect had partly come back. It had not. S5
+stripped a bold occupying a whole line but counted a bold opening a list item,
+which sits after its bullet, and R06 names that use as permitted. The
+copyeditor ruled on 2026-09-04 that a bold list label is not a defect, the
+detector now excludes it, and every run has been re-scored.
+
+Corrected, the ruled arms carry **no inline bold at all**. Substrate A, per
+1,000 words: the v1 control reads 1.28 where it read 3.97, and every ruled arm
+from `20260903T035059Z-R03-R06` onward reads 0.00. The v2 control reads 0.64
+where it read 5.55, the R04 arm 0.00, the R10 arm 0.03. What the metric was
+reporting is R08 restoring lists and the labels returning with them. It is the
+same fault as S4b, a suppressed metric and a collateral metric counting the same
+markup, and it is the fourth estimator fault found. `TAXONOMY.md` entry 5
+carries the evidence.
+
+The collateral clauses therefore cost S1 and S4a, and not S5.
 
 **S2 belongs to R02, and R05 never owned it.** The hypothesis that it did was an
 artifact of how S2 was counted. S2 averaged a per-sample percentage, so a reply

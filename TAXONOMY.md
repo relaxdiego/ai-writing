@@ -13,7 +13,7 @@ Substrates A and B barely differ:
 |---|---|---|
 | em-dash | 11.96 | 10.75 |
 | markdown headers | 9.00 | 10.30 |
-| inline bold emphasis | 3.97 | 6.81 |
+| inline bold emphasis | 1.28 | 2.00 |
 | sentence fragments | 4.59 | 3.31 |
 | reflexive tables | 4.21 | 4.20 |
 | sentence-length sd | 14.4 | 13.9 |
@@ -140,6 +140,22 @@ The delivery mechanism for #2. "That is nothing for Postgres write throughput."
 "That's coupling you'll regret at deletion time." "It's the seven-year figure
 that forces the tiering."
 
+**"Its" is a possessive and S3 counted it until 2026-09-04.** The pattern
+allowed a bare `s` after each opener, which is right for a missing apostrophe in
+"Thats" and wrong for "Its". Sixteen of 576 hits across every sample were
+sentences like "Its configuration surface is large enough that..."
+`[a-treatment-d03-r2]`, which is not the pivot this entry describes. The
+detector now requires the apostrophe for `It`, and every run has been re-scored.
+
+The correction is small and moved one verdict. The shipped split arm goes 3.13
+to 2.92 against a control of 4.86 and a band of 1.92, so S3 now clears there
+where it did not. R09's attribution is unchanged: it rests on the marginal
+ablation, which still reads +1.20 against a band of 1.73 and clears nothing.
+
+The heading's 4.1% A and 3.5% B predate the detector, which reads 4.86 and 3.79
+on the same baseline. That gap is older than this fix and is recorded, not
+resolved.
+
 ### 4. Reflexive structural markup — headers 9.00 A / 10.30 B; tables 4.21 / 4.20
 
 H2 sections on a 700-word chat reply, in 67% (A) and 70% (B) of samples. One
@@ -152,45 +168,48 @@ both registers and reads 4.21 -> 0.00 as R04 working. K4 in the collateral set
 counts the tables R04 permits, and it went to zero too. Read the two together;
 S4b alone will call a total loss a success.
 
-### 5. Inline bold for vocal stress — 3.97 A / 6.81 B
+### 5. Inline bold for vocal stress — 1.28 A / 2.00 B
 
 Bold inside prose to mark emphasis rather than structure: "that's **5.1 billion
-rows**", "must be **atomic**". Present in 61% of A and 82% of B samples.
+rows**", "must be **atomic**". Present in 44% of A and 52% of B samples.
 Typography standing in for intonation.
 
-**S5 counts a bold label at the head of a list item, and R06 permits exactly
-that use.** The detector strips a bold that occupies a whole line, so a label
-standing over a paragraph is excluded, but a label opening a list entry is
-preceded by its bullet and is counted as stress. R06 says bold is "a structural
-signal, used for a defined term or a label at the head of an entry", so the
-detector and the ratified rule disagree about the same markup.
+**A bold label at the head of a list item is not this defect, and S5 was
+counting it until 2026-09-04.** The detector stripped a bold occupying a whole
+line, so a label standing over a paragraph was excluded, but a label opening a
+list entry sits after its bullet and was counted as vocal stress. R06 already
+named that use as permitted: bold is "a structural signal, used for a defined
+term or a label at the head of an entry". **The copyeditor ruled that a bold
+list label is not a defect**, and the detector now excludes it.
 
-Excluding a bold that opens a list item changes the reading, and on the ruled
-arms it changes it completely. Substrate A, per 1,000 words:
+The figures above and every S5 row in every report are the corrected ones. What
+changed, substrate A, per 1,000 words:
 
-| arm | S5 as shipped | S5 excluding list labels |
+| arm | S5 as counted before | S5 corrected |
 |---|---|---|
-| v1 control | 4.55 | 1.52 |
-| v1 ruled, R02,R04,R05,R06 | 2.88 | **0.00** |
-| v2 control | 6.72 | 1.16 |
-| v2 ruled, the split | 2.16 | **0.00** |
+| v1 control | 3.97 | 1.28 |
+| v1 ruled, the split | 1.78 | **0.00** |
+| v2 control | 5.55 | 0.64 |
+| v2 ruled, R04 arm | 1.74 | **0.00** |
+| v2 ruled, R10 arm | 0.82 | 0.03 |
 
-All 37 hits in the v2 ruled arm are the permitted form -- `- **Backups.**`,
-`- **libvips:**`, `- **Reads go over the network.**` -- and not one is bold set
-inside a sentence. The ruled arms carry no inline bold at all, and the number
-that `style/rules.md` reports as the defect partly coming back is measuring
-R08's restored lists.
+Every ruled arm from `20260903T035059Z-R03-R06` onward reads exactly 0.00. All
+37 hits in the v2 R04 arm were the permitted form -- `- **Backups.**`,
+`- **libvips:**`, `- **Reads go over the network.**` -- and not one was bold set
+inside a sentence. The defect is gone from the ruled arms and has been for six
+runs.
 
-This is the same shape as S4b: a suppressed metric and a collateral metric
-counting the same markup, so the rules restoring structure reads on the
-scorecard as a defect returning. It is the fourth estimator fault found, after
-S2's per-sample ratio, S4b's row counting and S1's two estimators.
+**The correction changes a published claim.** `style/rules.md` reported S5
+rising 0.27 -> 2.07 with R02's collateral clauses and called a ratified defect
+partly returned. The rise was R08 restoring lists, and the labels came back with
+them.
 
-**Not fixed, and the ruling is the copyeditor's.** The detector is unchanged and
-every figure above it still says 2.07. Whether a bold label opening a list entry
-is a defect is a question about prose, not about regex, and R06 has already
-answered it one way while `detectors.py` answers it the other. Changing the
-detector invalidates every cached `result.json`, which is free to rebuild.
+This is the fourth estimator fault, after S2's per-sample ratio, S4b's row
+counting and S1's two estimators, and it is the same shape as S4b: a suppressed
+metric and a collateral metric counting the same markup, so structure returning
+reads on the scorecard as a defect returning. Two of the four are now that
+pairing. Check for it before believing any suppressed metric that moves the
+wrong way.
 
 ### 6. Em-dash as default connective — 11.96 A / 10.75 B, **100% of samples**
 

@@ -386,5 +386,25 @@
       "a-treatment-d05-r2",
       "a-treatment-d05-r3"
     ]
+  },
+  {
+    "script": "session-terminal",
+    "run": "20260903T202317Z-v2-control",
+    "labelled": true,
+    "what": "shown whole in the terminal beside the R10 arm, arm named",
+    "keys": [
+      "c02-r1",
+      "d05-r1"
+    ]
+  },
+  {
+    "script": "session-terminal",
+    "run": "20260903T231128Z-R10-scan-not-length",
+    "labelled": true,
+    "what": "shown whole in the terminal, arm named, to judge the list-to-table trade",
+    "keys": [
+      "c02-r1",
+      "d05-r1"
+    ]
   }
 ]

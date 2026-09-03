@@ -17,7 +17,7 @@
 | S3 | That/This pivot opener | % of sentences | 4.86 | 2.65 | ↓ -2.21 | **yes** (±1.77) |
 | S4a | headers | per 1k words | 9.00 | 3.95 | ↓ -5.05 | **yes** (±0.87) |
 | S4b | table rows | per 1k words | 4.21 | 2.09 | ↓ -2.11 | **yes** (±1.12) |
-| S5 | inline bold emphasis | per 1k words | 3.97 | 2.07 | ↓ -1.90 | **yes** (±1.36) |
+| S5 | inline bold emphasis | per 1k words | 1.28 | 0.00 | ↓ -1.28 | **yes** (±0.57) |
 | S6 | em-dash | per 1k words | 11.96 | 0.55 | ↓ -11.42 | **yes** (±1.25) |
 | S7 | terminal service offer | % of samples | 16.67 | 0.00 | ↓ -16.67 | **yes** (±11.11) |
 | S8 | arrow as connective | per 1k words | 1.69 | 0.03 | ↓ -1.66 | **yes** (±0.51) |

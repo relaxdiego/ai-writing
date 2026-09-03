@@ -156,9 +156,10 @@ percentage, so a three-paragraph reply weighed as much as a thirty-paragraph
 document. S4b counted rows in a way that turned a total loss into a success. S1
 has two estimators still in circulation, one averaging a capped per-sample
 percentage and one pooled and uncapped, reading 29.84 and 35.55 on the same
-control. S5 counts a bold label opening a list item, which R06 permits, so a
-metric reported as a defect returning was measuring R08 restoring lists. A
-figure without its estimator named is not a figure.
+control. S5 counted a bold label opening a list item, which R06 permits, so a
+metric reported as a defect returning was measuring R08 restoring lists; the
+copyeditor ruled on it, the detector was fixed and every run re-scored. A figure
+without its estimator named is not a figure.
 
 Two of those four are the same fault: a suppressed metric and a collateral
 metric counting the same markup. When the rules restore structure the suppressed

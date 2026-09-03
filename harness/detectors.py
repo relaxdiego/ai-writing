@@ -177,7 +177,10 @@ def s2_counts(d: Doc) -> tuple[int, int]:
 DETECTORS_POOLED = {"S2": (s2_counts, 100.0)}
 
 
-PIVOT = re.compile(r"^(?:That|This|It|Those|These)(?:'s|s|\s+(?:is|are|was|means|matters|alone))\b")
+PIVOT = re.compile(
+    # "Its" is a possessive, not the pivot: taxonomy entry 3 names "It's".
+    r"^(?:(?:That|This|Those|These)(?:'s|s|\s+(?:is|are|was|means|matters|alone))"
+    r"|It(?:'s|\s+(?:is|are|was|means|matters|alone)))\b")
 
 
 def s3_pivot_opener(d: Doc) -> float:
@@ -202,14 +205,25 @@ def s4b_table_row_rate(d: Doc) -> float:
 
 
 INLINE_BOLD = re.compile(r"(?<!^)(?<!\n)\*\*[^*\n]{3,80}\*\*")
+# A bold label opening a list entry: R06 permits it, so S5 must not count it.
+LIST_LABEL = re.compile(r"^(\s*(?:[-*+]|\d+\.)\s+)\*\*[^*\n]{2,80}\*\*(?::|\.|,)?", re.M)
 
 
 def s5_inline_bold(d: Doc) -> float:
     """Taxonomy 5 - typography standing in for intonation. Bold inside prose
-    rather than as a header. Baseline 3.97/1k (A), 6.81 (B).
+    rather than as a header or a label. Baseline 3.97/1k (A), 6.81 (B).
 
-    Evidence: "that's **5.1 billion rows**" [a-control-c04-r2]"""
+    Evidence: "that's **5.1 billion rows**" [a-control-c04-r2]
+
+    Two forms are excluded, and both are the use R06 permits: bold occupying a
+    whole line, which is a label standing over a paragraph, and bold opening a
+    list item, which is a label at the head of an entry. The second was counted
+    until 2026-09-04 because the bullet sits before it, so the metric reported
+    the rules restoring lists as a ratified defect coming back. Excluding it,
+    the ruled arms carry no inline bold at all. The copyeditor ruled that a bold
+    list label is not a defect; see TAXONOMY.md entry 5."""
     body = BOLD_HEADER.sub("", FENCE.sub("", d.raw))
+    body = LIST_LABEL.sub(r"\1", body)
     return d.per_k(len(INLINE_BOLD.findall(body)))
 
 

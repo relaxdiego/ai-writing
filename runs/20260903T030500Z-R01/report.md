@@ -17,7 +17,7 @@
 | S3 | That/This pivot opener | % of sentences | 4.86 | 3.81 | ↓ -1.04 | no (±2.29) |
 | S4a | headers | per 1k words | 9.00 | 6.91 | ↓ -2.09 | **yes** (±1.31) |
 | S4b | table rows | per 1k words | 4.21 | 2.27 | ↓ -1.94 | **yes** (±1.33) |
-| S5 | inline bold emphasis | per 1k words | 3.97 | 2.19 | ↓ -1.78 | **yes** (±1.66) |
+| S5 | inline bold emphasis | per 1k words | 1.28 | 0.13 | ↓ -1.15 | **yes** (±0.58) |
 | S6 | em-dash | per 1k words | 11.96 | 10.50 | ↓ -1.46 | no (±1.60) |
 | S7 | terminal service offer | % of samples | 16.67 | 13.89 | ↓ -2.78 | no (±13.61) |
 | S8 | arrow as connective | per 1k words | 1.69 | 0.72 | ↓ -0.97 | **yes** (±0.66) |
@@ -43,10 +43,10 @@
 | | **suppressed** | | | | | |
 | S1 | one-sentence paragraphs | % of paragraphs | 29.85 | 27.79 | ↓ -2.06 | no (±4.81) |
 | S2 | long sentence then punch | % of paragraphs | 6.58 | 6.96 | ↑ +0.38 | no (±3.39) |
-| S3 | That/This pivot opener | % of sentences | 3.79 | 3.11 | ↓ -0.68 | no (±1.44) |
+| S3 | That/This pivot opener | % of sentences | 3.79 | 3.02 | ↓ -0.77 | no (±1.43) |
 | S4a | headers | per 1k words | 10.30 | 9.07 | ↓ -1.23 | **yes** (±0.99) |
 | S4b | table rows | per 1k words | 4.20 | 2.14 | ↓ -2.06 | **yes** (±0.98) |
-| S5 | inline bold emphasis | per 1k words | 6.81 | 3.67 | ↓ -3.14 | **yes** (±1.46) |
+| S5 | inline bold emphasis | per 1k words | 2.00 | 0.25 | ↓ -1.75 | **yes** (±0.66) |
 | S6 | em-dash | per 1k words | 10.75 | 9.08 | ↓ -1.67 | **yes** (±1.29) |
 | S7 | terminal service offer | % of samples | 23.33 | 6.67 | ↓ -16.67 | **yes** (±10.54) |
 | S8 | arrow as connective | per 1k words | 0.91 | 0.22 | ↓ -0.70 | **yes** (±0.40) |

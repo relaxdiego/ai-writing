@@ -14,10 +14,10 @@
 | | **suppressed** | | | | | |
 | S1 | one-sentence paragraphs | % of paragraphs | 34.10 | 18.82 | ↓ -15.28 | **yes** (±6.41) |
 | S2 | long sentence then punch | % of paragraphs | 7.26 | 6.91 | ↓ -0.35 | no (±3.83) |
-| S3 | That/This pivot opener | % of sentences | 4.36 | 3.69 | ↓ -0.67 | no (±1.98) |
+| S3 | That/This pivot opener | % of sentences | 4.36 | 3.65 | ↓ -0.71 | no (±1.98) |
 | S4a | headers | per 1k words | 7.39 | 4.35 | ↓ -3.04 | **yes** (±0.73) |
 | S4b | table rows | per 1k words | 4.60 | 5.64 | ↑ +1.04 | no (±1.88) |
-| S5 | inline bold emphasis | per 1k words | 5.55 | 0.82 | ↓ -4.74 | **yes** (±1.45) |
+| S5 | inline bold emphasis | per 1k words | 0.64 | 0.03 | ↓ -0.61 | **yes** (±0.26) |
 | S6 | em-dash | per 1k words | 12.01 | 0.04 | ↓ -11.97 | **yes** (±1.04) |
 | S7 | terminal service offer | % of samples | 22.22 | 0.00 | ↓ -22.22 | **yes** (±13.61) |
 | S8 | arrow as connective | per 1k words | 0.85 | 0.21 | ↓ -0.65 | **yes** (±0.36) |

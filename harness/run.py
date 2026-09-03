@@ -104,11 +104,19 @@ def make_scratch_config() -> Path:
 
 
 def config_dir_inventory(scratch: Path) -> list[str]:
-    """Record what the clean room actually contained, for the manifest."""
-    return sorted(
-        str(p.relative_to(scratch)) + ("/" if p.is_dir() else "")
-        for p in scratch.rglob("*")
-    )
+    """Record what the clean room actually contained, for the manifest.
+
+    Summarized rather than enumerated: the point is proving nothing leaked in,
+    and a full listing would publish local paths and every session UUID.
+    """
+    out = []
+    for entry in sorted(scratch.iterdir()):
+        if entry.is_dir():
+            n = sum(1 for _ in entry.rglob("*") if _.is_file())
+            out.append(f"{entry.name}/ ({n} files)")
+        else:
+            out.append(entry.name)
+    return out
 
 
 # ---------------------------------------------------------------- sample ----

@@ -138,11 +138,22 @@ OFFER = re.compile(
     r"|happy to|i can (?:give|write|do|run|pull|draft))")
 
 
-def h1_terminal_offer(d: Doc) -> float:
-    """Held out. Share of samples closing with a service offer (0 or 100 per
-    sample; the aggregate is the percentage). Baseline 17% (A), 23% (B)."""
+def s7_terminal_offer(d: Doc) -> float:
+    """Taxonomy 7. Share of samples closing with a service offer. Baseline 17%
+    (A), 23% (B). Held out until R01 moved it 23%->7% without naming it, which
+    showed the guard was not independent of the rules."""
     tail = "\n".join(d.raw.rstrip().splitlines()[-3:])
     return 100.0 if OFFER.search(tail) else 0.0
+
+
+HEDGE = re.compile(r"(?i)\b(?:might|may|could|possibly|perhaps|likely|arguably|somewhat)\b")
+
+
+def h1_hedge_density(d: Doc) -> float:
+    """Held out. Replaces terminal offer. Baseline 1.51/1k (A), 2.00 (B).
+    Unrelated to cadence and to closing moves, so a cadence rule should not
+    touch it."""
+    return d.per_k(len(HEDGE.findall(d.raw)))
 
 
 INTENSIFIER = re.compile(r"(?i)\b(?:genuinely|actually|truly|really)\b")
@@ -189,7 +200,8 @@ DETECTORS = [
     ("S4b", "table rows",               "per 1k words",    "suppressed", s4b_table_row_rate),
     ("S5", "inline bold emphasis",      "per 1k words",    "suppressed", s5_inline_bold),
     ("S6", "em-dash",                   "per 1k words",    "suppressed", s6_em_dash),
-    ("H1", "terminal service offer",    "% of samples",    "held-out",   h1_terminal_offer),
+    ("S7", "terminal service offer",    "% of samples",    "suppressed", s7_terminal_offer),
+    ("H1", "hedge density",             "per 1k words",    "held-out",   h1_hedge_density),
     ("H2", "intensifier density",       "per 1k words",    "held-out",   h2_intensifier),
     ("H3", "tricolon",                  "per 1k words",    "held-out",   h3_tricolon),
     ("C1", "output length",             "words",           "context",    c1_words),

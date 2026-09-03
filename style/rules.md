@@ -15,3 +15,15 @@ the room that structure takes and no more. Length should track the work the
 reader actually asked for, never the appearance of thoroughness. Do not walk
 through alternatives nobody raised, restate the question before answering it,
 or close by summarising what the reader has just read.
+
+## R02 — Let a paragraph develop
+
+Carry a thought from claim through reasoning to consequence inside a single
+paragraph. A paragraph holding one sentence has usually been cut away from the
+one before it; join them unless the isolation is doing real work.
+
+Do not close a paragraph with a short verdict following a long explanation. That
+shape performs insight rather than delivering it, and the explanation has
+already carried the point. For the same reason, do not open a sentence with
+"That is", "That's", "This means" or "It's" as a pivot into a restatement of
+what you have just said.

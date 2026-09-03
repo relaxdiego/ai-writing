@@ -8,3 +8,7 @@ build/
 # Local env
 .envrc.local
 .devbox/
+
+# Python bytecode
+__pycache__/
+*.pyc

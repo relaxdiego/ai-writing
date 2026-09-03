@@ -17,10 +17,17 @@ paragraph by what follows it, and sets each one in place:
 
   opening    the answer's first prose block. R02 puts the verdict here.
   lead-in    directly followed by a list, table or code block.
-  floating   prose on both sides, introducing nothing. The named defect.
+  the rest   everything the first two questions did not catch.
 
-The ruling asked for is per kind, not per hit, so each section carries one. The
-per-hit marks are the evidence for it. Both come back in the pasted table.
+The copyeditor ruled the first two out of S1 and could not rule on the third,
+because it was labelled "the floating fragment" and described as "prose above,
+prose below" when that is true of 2 of its 12. It is the residue of a
+forward-looking sort. Six of the twelve are a paragraph commenting on the block
+*above* it, which is the reverse of a lead-in.
+
+So the header of every hit now states where it sits, in both directions, and the
+control's own hits are markable: the defect is at full strength there, 66 hits
+against 5, and it has to be named from the run that still has it.
 
 Paragraphs over S1's 25-word cap are kept and badged rather than dropped: where
 the cap falls is a boundary the copyeditor can see only if the near misses are
@@ -41,7 +48,7 @@ from make_verdict_reader import blocks, render  # noqa: E402
 from make_paragraph_reader import load_glosses  # noqa: E402
 
 # A standalone horizontal rule is not a paragraph. Doc counts it as one, which
-# put three of the shipped run's nine floating hits down to `---`. That is a
+# puts four of the shipped run's sixteen leftover hits down to `---`. That is a
 # real fault in the detector, left alone here: changing an estimator invalidates
 # every cached result.json, which is a decision and not this script's to take.
 HRULE = re.compile(r"^\s*(?:-{3,}|\*{3,}|_{3,})\s*$")
@@ -69,9 +76,9 @@ def hits_in(raw: str) -> tuple[list[dict], int]:
             what = "lead-in"
         else:
             what = "floating"
-        # The block before is dimmed context; the block after carries the claim.
-        # A lead-in cannot be judged without the list it leads into, and an
-        # opening cannot be judged without what swallows it.
+        # Both neighbours are kept. A lead-in cannot be judged without the
+        # list it leads into; and the block *above* turned out to matter just as
+        # much, since half the residue is commentary on it.
         prev = bs[i - 1] if i else None
         out.append({
             "what": what, "words": len(body.split()),
@@ -152,8 +159,8 @@ def build(run: Path, prev: Path, ctrl: Path, out: Path) -> None:
         "cap": CAP,
         "prompts": prompts,
         "hits": rows,
-        # The control's own floating fragments: the defect as it was named, kept
-        # on the same page so the ruling is made against it and not from memory.
+        # The control's own residue: the defect at full strength, markable,
+        # because it cannot be named from a run the rules have cleared of it.
         "control_floating": [{**r, "id": "ctrl:" + r["key"] + ":" + str(r["index"])}
                              for r in ctrl_rows if r["what"] == "floating"],
     }
@@ -278,6 +285,8 @@ h2 .n{font-family:var(--mono);font-size:12px;color:var(--ink-faint);font-weight:
 .tag{font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;text-transform:uppercase;
   color:var(--ink-faint);border:1px solid var(--hair);padding:2px 6px}
 .tag.over{color:var(--float);border-color:var(--float)}
+.tag.sits{font-family:var(--mono);color:var(--ink-soft);background:var(--sunk);
+  border-color:transparent;text-transform:none;letter-spacing:.02em}
 
 .frame{margin:14px 0 0;display:grid;grid-template-columns:74px 1fr;
   border-left:3px solid var(--c);background:var(--w)}
@@ -364,9 +373,11 @@ td{font-family:var(--prose);font-size:14.5px}
   <p class="stand">S1 is the staccato: a paragraph holding one short sentence, which asserts and
   then stops. It is the most common defect in the control and the headline metric of this
   project. Under the new clauses <b>it rose from 6.79 to 24.15</b>, which reads as the rules
-  making the prose worse. <b>It is not one number. It is three things.</b> S1 sees a paragraph
-  and never what sits on either side of it, so it counts a stated verdict, a line introducing a
-  list, and the floating fragment you named as the same event. Here they are apart.</p>
+  making the prose worse. It is not one number. S1 sees a paragraph and never what sits on
+  either side of it, so a stated verdict, a line introducing a list, and the staccato itself all
+  register as the same event. <b>The first two are now ruled out of S1.</b> What is left is a
+  residue rather than a kind, and it has to be named where it still exists &mdash; in the
+  control, on the last tab.</p>
 
   <div class="split" id="split"></div>
   <p class="caption" id="caption"></p>
@@ -376,8 +387,8 @@ td{font-family:var(--prose);font-size:14.5px}
   <div class="seg" role="group" aria-label="Which kind">
     <button data-sec="open" aria-pressed="true">the opening verdict</button>
     <button data-sec="lead" aria-pressed="false">the list lead-in</button>
-    <button data-sec="float" aria-pressed="false">the floating fragment</button>
-    <button data-sec="ctrl" aria-pressed="false">the control</button>
+    <button data-sec="float" aria-pressed="false">everything else</button>
+    <button data-sec="ctrl" aria-pressed="false">name it in the control</button>
   </div>
   <div class="seg" role="group" aria-label="Which register">
     <button data-r="all" aria-pressed="true">both</button>
@@ -396,9 +407,9 @@ td{font-family:var(--prose);font-size:14.5px}
   need one sentence for it. The block under each is what follows, because a verdict swallowed
   by its own reasoning was not stated alone.</p>
   <div class="ruling">
-    <h3>The ruling</h3>
+    <h3>The ruling &mdash; answered</h3>
     <p>Is a verdict standing alone at the head of an answer the same defect as the staccato,
-    and should S1 go on counting it?</p>
+    and should S1 go on counting it? <b>No.</b> Fourteen hits, all marked not the defect.</p>
     <div id="rule-open"></div>
   </div>
   <div id="list-open"></div>
@@ -410,32 +421,45 @@ td{font-family:var(--prose);font-size:14.5px}
   needs a line to introduce it, and that line is one sentence. The block it introduces is shown
   under it. Most end in a colon; a few do not, and those are the interesting ones.</p>
   <div class="ruling">
-    <h3>The ruling</h3>
+    <h3>The ruling &mdash; answered</h3>
     <p>Is a line introducing a list, a table or a code block the same defect as the staccato,
-    and should S1 go on counting it?</p>
+    and should S1 go on counting it? <b>No.</b> Forty-seven hits, all marked not the defect.</p>
     <div id="rule-lead"></div>
   </div>
   <div id="list-lead"></div>
 </section>
 
 <section id="sec-float" hidden>
-  <h2>The floating fragment <span class="n" id="n-float"></span></h2>
-  <p class="sublede">Prose above, prose below, introducing nothing. This is the kind you named,
-  and the one the rules were written against. It is shown with the paragraph on each side, so
-  a fragment that is really doing work in its place can be seen doing it.</p>
+  <h2>Everything else <span class="n" id="n-float"></span></h2>
+  <p class="sublede">Not first, and not introducing a block. That is all these have in common:
+  this section is what the other two questions did not catch, not a kind of its own. Five follow
+  a code block, two follow a list, four end the answer, and two have prose on both sides. Six are
+  a paragraph commenting on the block above them &mdash; a lead-in in reverse, which nothing here
+  looks for. The header of each says where it sits.</p>
   <div class="ruling">
     <h3>The ruling</h3>
-    <p>Is this the defect as you named it, and is S1 counting it correctly?</p>
+    <p>These are the leftovers, so the question is not yet answerable here. It is answerable in
+    the control, which still holds 66 of them against these 5. Mark what you can, then use the
+    control tab.</p>
     <div id="rule-float"></div>
   </div>
   <div id="list-float"></div>
 </section>
 
 <section id="sec-ctrl" hidden>
-  <h2>The same thing in the control <span class="n" id="n-ctrl"></span></h2>
-  <p class="sublede">The floating fragments in the frozen control, with no rules applied. This
-  is the defect at full strength, kept on the page so the three rulings above are made against
-  it rather than from memory. There is nothing to mark here.</p>
+  <h2>Name it in the control <span class="n" id="n-ctrl"></span></h2>
+  <p class="sublede">The same leftovers in the frozen control, with no rules applied. The
+  staccato is at full strength here and nearly gone from the shipped run, so this is the only
+  place it can be described from. Mark the ones that are the defect, leave the ones that are
+  not, and write what the marked ones have in common. Your sentence becomes what S1 looks for.</p>
+  <div class="ruling" id="ctrl-ruling">
+    <h3>The naming</h3>
+    <p>What do the ones you marked have in common? Say it however you would say it to another
+    copyeditor &mdash; the detector gets written from your sentence, not the other way round.</p>
+    <div class="vd" data-id="name:staccato">
+      <input type="text" id="naming" placeholder="the defect, in your words">
+    </div>
+  </div>
   <div id="list-ctrl"></div>
 </section>
 
@@ -455,8 +479,10 @@ const save = () => { try { localStorage.setItem(K, JSON.stringify(store)); } cat
 let section = "open", reg = "all";
 const KINDS = [["opening", "open"], ["lead-in", "lead"], ["floating", "float"]];
 const LABEL = {opening: "opening verdict", "lead-in": "list lead-in",
-               floating: "floating fragment"};
-const SHORT = {opening: "verdict", "lead-in": "lead-in", floating: "floating"};
+               floating: "everything else"};
+const SHORT = {opening: "verdict", "lead-in": "lead-in", floating: "the rest"};
+const AFTER = {list: "a list", table: "a table", code: "a code block",
+               header: "a header", prose: "a paragraph", quote: "a quotation"};
 
 $("k-run").textContent = DATA.run;
 $("k-model").textContent = DATA.meta.model;
@@ -486,9 +512,10 @@ $("foot").innerHTML =
   const f = C.now.counted.floating, fc = C.control.counted.floating;
   $("caption").innerHTML =
     "Counts are hits across 36 substrate-A samples; S1 is the mean of the per-sample share, " +
-    "which is why it does not divide out of the rows above. <b>The floating fragment did not " +
-    "come back</b>: " + f + " of " + C.now.n_prose + " prose paragraphs, against " + fc +
-    " of " + C.control.n_prose + " in the control. The rise is the two rows above it.";
+    "which is why it does not divide out of the rows above. <b>The staccato did not come " +
+    "back</b>: " + f + " of " + C.now.n_prose + " prose paragraphs, against " + fc + " of " +
+    C.control.n_prose + " in the control. The rise is the two rows above it, both ruled out. " +
+    "Excluding them, S1 reads 16.45% control, 1.32% before the clauses, 1.68% now.";
 })();
 
 /* rendering ------------------------------------------------------------ */
@@ -504,6 +531,10 @@ function item(h, markable) {
   const p = DATA.prompts[h.pid] || {name: h.pid, register: h.register};
   const over = h.counted ? "" :
     '<span class="tag over">' + h.words + " words · outside S1&rsquo;s cap</span>";
+  const sits = '<span class="tag sits">' +
+    (h.prev_kind ? "after " + (AFTER[h.prev_kind] || h.prev_kind) : "opens the answer") +
+    " &rarr; " + (h.next_kind ? "before " + (AFTER[h.next_kind] || h.next_kind)
+                              : "ends the answer") + "</span>";
   const before = h.prev_html ? '<div class="ctx before">' + h.prev_html + "</div>" : "";
   const after = h.next_html
     ? '<div class="ctx after' + (h.what === "lead-in" ? " solo" : "") +
@@ -512,7 +543,7 @@ function item(h, markable) {
   return '<article class="item" data-w="' + h.what + '" data-r="' + h.register + '">' +
     '<div class="hd"><span class="pid">' + esc(h.pid) + "&thinsp;·&thinsp;r" + h.rep +
     '</span><span class="pname">' + esc(p.name) + '</span><span class="tag">' +
-    esc(h.register) + "</span>" + over + "</div>" +
+    esc(h.register) + "</span>" + sits + over + "</div>" +
     '<div class="frame"><div class="gut"><div class="st">' + SHORT[h.what] +
     '</div><div class="n">' + h.words + '</div><div class="u">words</div></div>' +
     '<div class="stack">' + before + '<div class="hit">' + h.html + "</div>" + after +
@@ -536,15 +567,20 @@ function draw() {
   const cr = DATA.control_floating.filter(h => reg === "all" || h.register === reg);
   $("n-ctrl").textContent = cr.length + " fragments";
   $("list-ctrl").innerHTML = cr.length
-    ? cr.map(h => item(h, false)).join("")
+    ? cr.map(h => item(h, true)).join("")
     : '<p class="empty">Nothing in this register.</p>';
+  const nm = $("naming");
+  if (nm && document.activeElement !== nm) nm.value = (store["name:staccato"] || {}).n || "";
   tally();
 }
 
 function tally() {
   const ruled = KINDS.filter(([k]) => (store["rule:" + k] || {}).v).length;
-  const marks = Object.keys(store).filter(k => k.startsWith("hit:") && store[k].v).length;
-  $("tally").textContent = ruled + " of 3 ruled" + (marks ? " · " + marks + " marked" : "");
+  const mk = k => Object.keys(store).filter(x => x.startsWith(k) && store[x].v).length;
+  const marks = mk("hit:"), cm = mk("hit:ctrl:");
+  $("tally").textContent = ruled + " of 3 ruled" +
+    (marks - cm ? " · " + (marks - cm) + " marked" : "") +
+    (cm ? " · " + cm + " in control" : "");
 }
 
 document.addEventListener("click", e => {
@@ -597,6 +633,19 @@ $("copy").addEventListener("click", async () => {
     L.push("| " + LABEL[k] + " | " + DATA.counts.now.counted[k] + " | " +
       (v.v ? (v.v === "defect" ? "yes" : "no") : "—") + " | " + (v.n || "") + " |");
   });
+  const named = (store["name:staccato"] || {}).n;
+  if (named) L.push("", "## The defect, named", "", "> " + named);
+  const cmk = DATA.control_floating.filter(h => (store["hit:" + h.id] || {}).v);
+  if (cmk.length) {
+    L.push("", "## The control, marked", "",
+      "| prompt | sits | words | verdict | note |", "|---|---|---:|---|---|");
+    cmk.forEach(h => {
+      const v = store["hit:" + h.id];
+      L.push("| " + h.pid + "·r" + h.rep + " | " +
+        (h.prev_kind || "opens") + " → " + (h.next_kind || "ends") + " | " + h.words +
+        " | " + (v.v === "defect" ? "the defect" : "not the defect") + " | " + (v.n || "") + " |");
+    });
+  }
   const marked = DATA.hits.filter(h => (store["hit:" + h.id] || {}).v);
   if (marked.length) {
     L.push("", "## The hits marked", "",

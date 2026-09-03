@@ -41,6 +41,52 @@ or more consecutive short sentences appear in only 8% of samples, and mean
 sentence-length standard deviation (14.4) looks healthy. The chop is *between*
 sentences, not inside them. Any sentence-rhythm metric misses it entirely.
 
+**Ruled: S1 over-counts, and by a factor of ten.** S1 sees a paragraph and never
+what sits on either side of it, so it books three unrelated things as one event.
+R02's collateral clauses made two of them common, and S1 rose 6.79 -> 24.15,
+which reads as the rules wrecking the prose. Sorted by what follows each
+paragraph and put to the copyeditor in place (`harness/make_s1_reader.py`,
+galley at https://claude.ai/code/artifact/0092b8bf-5e57-4db3-8fad-0b0698426185):
+
+| kind | control | before the clauses | with the clauses | ruling |
+|---|---:|---:|---:|---|
+| an opening verdict stated alone | 10 | 4 | 14 | **S1 should not count it** |
+| a line introducing a list, table or code block | 48 | 11 | 47 | **S1 should not count it** |
+| everything else | 66 | 6 | 5 | not ruled — see below |
+
+Both new kinds are R02's clauses doing what they were written to do. The
+copyeditor marked **69 of the 74 hits in the shipped run, every one "not the
+defect"**, the eleven leftovers included. Under the ruling S1 reads 16.45 control
+/ 1.32 before / 1.68 now: the whole rise was the two kinds it was told to stop
+counting, and the staccato had already gone and then stayed gone.
+
+**The third kind is not yet named, and the name matters.** It was put to the
+copyeditor as "prose above, prose below, introducing nothing", which is true of
+2 of the 12 in the shipped run. Five follow a code block, two follow a list, four
+end the answer. It is the residue of a forward-looking sort, not a category, and
+it was rejected as such: *"I don't know if 'floating fragment' is even the right
+term."* Six of the twelve are in fact a paragraph commenting on the block above
+it — the reverse of a lead-in, which no classifier here looks for:
+
+    - The raw event count in the source table for a short window against a
+      long one, which separates "the job read less" from "there was less to read."
+
+    The last of those is the cheapest and the most decisive: if the source
+    genuinely holds half as many events in those windows, the job is behaving
+    correctly and the problem is upstream of this repository entirely.
+                                                    [a-treatment-c05-r3]
+
+*"I don't understand why it's separate from the list item it's referring to."*
+
+S1 is not repaired until the residue is named from the control, where it is still
+at full strength at 66 hits. Repairing it against a definition by exclusion would
+put the same fault back in a smaller metric.
+
+Two further points: a standalone `---` is not a paragraph and `Doc` counts it as
+one, which is worth four hits in the shipped run; and S1's 25-word cap drops 18
+of the control's 84 one-sentence paragraphs, so where the cap falls needs ruling
+alongside what it counts.
+
 ### 2. Long analytic sentence closed by a short verdict — 10.4% A / 7.6% B of paragraphs
 
 A paragraph-final sentence of nine words or fewer directly after one of twenty
@@ -260,6 +306,41 @@ guards against token-dodging, and neither could see the rules destroying
 something worth keeping. K4 adds the sharper version: a suppressed metric and a
 collateral metric can measure the same markup, and reading only the suppressed
 one turns a total loss into a success.
+
+## Observations not yet detectors
+
+Things the copyeditor marked in passing while judging something else. Each is
+one note on one sample. DESIGN.md 4.2b keeps them here until a second instance
+turns up; none has a rule or a detector, and none should get one on this
+evidence.
+
+**A negation used where a plain statement would do.** The line introducing the
+known-limitations list in `[a-treatment-d01-r3]`:
+
+    These are known and current, not edge cases you are unlikely to reach:
+
+*"a double negative: 'not edge cases you are unlikely to reach'"* — `not` over
+`unlikely` makes the reader resolve two negations to arrive at "you will hit
+these". The other two repeats of the same prompt reach the same place without
+it: *"These are known and unfixed, and worth reading before you rely on tug for
+anything you cannot re-push by hand"* `[d01-r1]`. Worth watching because R02's
+clauses ask for a verdict stated plainly, and a doubled negation is the way a
+plain verdict stops being plain.
+
+**A qualifier that repeats the word it qualifies.** The line introducing the
+accepted-costs list in `[a-treatment-d03-r2]`:
+
+    The costs we are accepting, and accepting knowingly:
+
+*"', and accepting knowingly' is unnecessary"* — the clause adds nothing the
+sentence did not already carry, and buys the emphasis by repeating the verb.
+`[d03-r3]` does the same job in the same document without it: *"The costs we are
+accepting are real and worth stating plainly"*. Both instances are R02 lead-ins,
+which is where this ought to be watched.
+
+See also the `[a-treatment-c04-r1]` note under the collateral set: a verdict that
+promises two things and redeems them in different words, several paragraphs
+later.
 
 ## Tells this model does not have
 

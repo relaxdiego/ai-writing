@@ -96,6 +96,49 @@ instructing against them costs nothing.
   1.20 A / 1.87 B.
 - **Tricolon** — "x, y, and z" enumeration: 0.54 A / 0.57 B.
 
+## Collateral set
+
+Not defects. The inverse: structure the rules must not destroy. Added after the
+paragraph-length verdict, and measured on every run from here.
+
+**The verdict that produced this set.** C2 rose from 33.9 to 76.8 words on
+substrate A and a second reader called the result wall paragraphs, so the 40
+longest paragraphs were set as prose and read
+(`harness/make_paragraph_reader.py`). Of the 17 judged, 15 read fine at 123 to
+194 words. **Length was rejected as the defect.** The two rejected passages were
+rejected for something else, and both said the same thing.
+
+### K1. List items — 11.61 A conversational / 9.61 A document, per 1k words
+
+Enumerable content kept as a list. Falls to 0.00 and 1.91 under the shipped
+rules: on conversational prompts, every list in the corpus is gone.
+
+    I think it would read better if wrote the alternative explanations as a
+    list rather than part of one big paragraph.     [a-treatment-c02-r1#2]
+
+The passage is 292 words running six competing explanations for a CI hang
+together as sentences. It is a list with its bullets dissolved, which is also
+why it read as a wall.
+
+### K2. Code blocks — 4.48 A document, per 1k words
+
+Worked examples kept as code. Falls to 1.94 on documents.
+
+    There's too much prose here without examples. I'm supposed to be reading a
+    guide, not a novel.                            [a-treatment-d05-r3#5]
+
+**Attributed to R02, not R04.** R04 is the rule that speaks about structure, but
+it names only headings and tables, and the collapse happens without it: R02
+alone takes K1 from 10.78 to 1.28 and K2 from 2.08 to 0.94. R02 tells the model
+that an isolated short block has usually been cut away from the one before it
+and should be joined. A list item is an isolated short block. The rule was
+written about paragraphs and the model applied it to every enumerated line.
+
+This is DESIGN.md 4.2b arriving a second time. The suppressed set counts what
+the rules forbid, the held-out set guards against token-dodging, and neither
+could see the rules destroying something worth keeping. A detector set needs a
+direction for defects to fall *and* a direction for structure to hold.
+
 ## Tells this model does not have
 
 Recorded so that no rule is ever spent on them. All are canonical LLM

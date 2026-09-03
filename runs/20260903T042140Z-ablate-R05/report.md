@@ -24,6 +24,9 @@
 | H1 | hedge density | per 1k words | 1.50 | 1.12 | ↓ -0.39 | no (±0.86) |
 | H2 | intensifier density | per 1k words | 1.20 | 1.40 | ↑ +0.20 | no (±0.87) |
 | H3 | tricolon | per 1k words | 0.54 | 1.13 | ↑ +0.59 | no (±0.76) |
+| | **collateral** | | | | | |
+| K1 | list items | per 1k words | 10.78 | 1.67 | ↓ -9.10 | **yes** (±3.36) |
+| K2 | code blocks | per 1k words | 2.08 | 0.98 | ↓ -1.11 | no (±1.43) |
 | | **context** | | | | | |
 | C1 | output length | words | 641.44 | 506.03 | ↓ -135.42 | no (±154.08) |
 | C2 | mean paragraph length | words | 36.87 | 74.83 | ↑ +37.96 | **yes** (±9.19) |
@@ -46,6 +49,9 @@
 | H1 | hedge density | per 1k words | 2.04 | 1.63 | ↓ -0.42 | no (±0.95) |
 | H2 | intensifier density | per 1k words | 1.87 | 1.80 | ↓ -0.07 | no (±0.84) |
 | H3 | tricolon | per 1k words | 0.57 | 0.64 | ↑ +0.07 | no (±0.43) |
+| | **collateral** | | | | | |
+| K1 | list items | per 1k words | 12.78 | 0.64 | ↓ -12.14 | **yes** (±2.26) |
+| K2 | code blocks | per 1k words | 2.23 | 1.12 | ↓ -1.11 | no (±1.25) |
 | | **context** | | | | | |
 | C1 | output length | words | 617.87 | 515.42 | ↓ -102.45 | no (±104.50) |
 | C2 | mean paragraph length | words | 35.47 | 76.58 | ↑ +41.11 | **yes** (±9.05) |

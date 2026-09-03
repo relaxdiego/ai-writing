@@ -85,7 +85,7 @@ def report(cur: dict, base: dict, rules: list[str], judge: dict | None) -> str:
         L.append(f"\n## Substrate {sub.upper()}  (n={nb} control → n={na} treatment)\n")
         L.append("| id | metric | unit | control | this run | delta | cleared band? |")
         L.append("|---|---|---|---:|---:|---:|---|")
-        for kind in ("suppressed", "held-out", "context"):
+        for kind in ("suppressed", "held-out", "collateral", "context"):
             first = True
             for mid, name, unit, k, _ in DETECTORS:
                 if k != kind:

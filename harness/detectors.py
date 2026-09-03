@@ -172,6 +172,36 @@ def h3_tricolon(d: Doc) -> float:
     return d.per_k(len(TRICOLON.findall(d.raw)))
 
 
+# --------------------------------------------------------------- collateral --
+# Not defects. The inverse: structure the rules must not destroy. R04 names
+# headings and tables only, but the model generalized it to every structural
+# device, and nothing in the suppressed set could see that happen. Both entries
+# were justified by a copyeditor reading the galley of the longest paragraphs
+# and rejecting the length hypothesis in favour of these.
+
+LIST_ITEM_M = re.compile(r"^\s*(?:[-*+]\s|\d+[.)]\s)", re.M)
+
+
+def k1_list_items(d: Doc) -> float:
+    """Enumerable content kept as a list. Control 11.61/1k conversational,
+    9.61 document; shipped rules 0.00 and 1.91.
+
+    Evidence, on a 292-word paragraph running six competing explanations
+    together as sentences: "I think it would read better if wrote the
+    alternative explanations as a list rather than part of one big paragraph."
+    [a-treatment-c02-r1#2]"""
+    return d.per_k(len(LIST_ITEM_M.findall(FENCE.sub("", d.raw))))
+
+
+def k2_code_blocks(d: Doc) -> float:
+    """Worked examples kept as code. Control 4.48/1k on documents, shipped 1.94.
+
+    Evidence, on a migration guide enumerating three dict habits in continuous
+    prose: "There's too much prose here without examples. I'm supposed to be
+    reading a guide, not a novel." [a-treatment-d05-r3#5]"""
+    return d.per_k(len(FENCE.findall(d.raw)))
+
+
 # ------------------------------------------------------------------ context --
 # Not defects. Reported so a metric change can be read against how much the
 # volume and shape of the output moved.
@@ -204,6 +234,8 @@ DETECTORS = [
     ("H1", "hedge density",             "per 1k words",    "held-out",   h1_hedge_density),
     ("H2", "intensifier density",       "per 1k words",    "held-out",   h2_intensifier),
     ("H3", "tricolon",                  "per 1k words",    "held-out",   h3_tricolon),
+    ("K1", "list items",                "per 1k words",    "collateral", k1_list_items),
+    ("K2", "code blocks",               "per 1k words",    "collateral", k2_code_blocks),
     ("C1", "output length",             "words",           "context",    c1_words),
     ("C2", "mean paragraph length",     "words",           "context",    c2_mean_para_words),
     ("C3", "mean sentence length",      "words",           "context",    c3_mean_sentence_words),

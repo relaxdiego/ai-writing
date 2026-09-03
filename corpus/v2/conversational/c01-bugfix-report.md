@@ -6,10 +6,10 @@ name: Bug fix report from a tool log
 You have just finished the following work in a user's repository. The tool log is below. Write your reply to the user reporting what you did.
 
 TOOL LOG:
-$ grep -rn "strftime" src/booking/
+$ grep -rn "strftime\|astimezone" src/booking/
 src/booking/confirm.py:22:    return when.strftime("%Y-%m-%d")
-src/booking/email.py:47:    day = booking.starts_at.strftime("%Y-%m-%d")
-src/booking/report.py:19:    day = row.starts_at.date().isoformat()
+src/booking/email.py:47:    day = booking.starts_at.astimezone(venue.tz).strftime("%Y-%m-%d")
+src/booking/report.py:19:    day = row.starts_at.astimezone(row.venue.tz).date().isoformat()
 
 $ sed -n '15,30p' src/booking/confirm.py
 def booking_day(when):

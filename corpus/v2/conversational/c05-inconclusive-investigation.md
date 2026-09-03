@@ -32,9 +32,10 @@ src/auth/keys.py:31:def rotate_key():
 $ sed -n '28,40p' src/auth/keys.py
 def rotate_key():
     # Runs weekly. Old key is kept so existing sessions keep working.
+    previous = store.get("current")
     new = generate_key()
     store.set("current", new)
-    store.set("previous", store.get("current"))
+    store.set("previous", previous)
 
 $ ls -la deploy/cron.d/
 -rw-r--r-- 1 root root  64 Jan 12  2026 rotate-session-keys

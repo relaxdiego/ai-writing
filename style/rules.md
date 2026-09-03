@@ -12,6 +12,12 @@ Rules must never name a held-out mannerism (TAXONOMY.md, held-out set).
 **R01 — match length to what the question earns.** Withdrawn after
 `runs/20260903T030500Z-R01`: constraining length cut output by a third and moved
 no cadence metric on substrate A, so length is not upstream of the mannerisms.
+**R03 — do not land the paragraph.** Withdrawn after
+`runs/20260903T040710Z-ablate-R03`: ablating it moved S2, its own target, by
++0.10 on substrate A against a band of 3.14, and all eight suppressed metrics
+still cleared without it. R02's paragraph-development clause had already taken
+the epigrammatic close as far as it goes.
+
 Retired IDs are never reused and never assembled, so historical run records stay
 unambiguous.
 
@@ -26,20 +32,6 @@ shape performs insight rather than delivering it, and the explanation has
 already carried the point. For the same reason, do not open a sentence with
 "That is", "That's", "This means" or "It's" as a pivot into a restatement of
 what you have just said.
-
-## R03 — Do not land the paragraph
-
-A paragraph's last sentence should carry the next piece of information, not an
-appraisal of the sentences before it. "That is the whole problem." "The rest is
-detail." "Those have different right answers." None of these adds anything the
-reasoning has not already established; each exists to make the passage land, and
-the reader who followed the reasoning had already arrived. End on the reasoning
-instead.
-
-The test is subtraction: if removing the final sentence costs the reader a fact,
-keep it. If it only re-scores what the paragraph has said, cut it. Lengthening
-such a sentence does not repair it, because the fault is that it appraises
-rather than that it is short.
 
 ## R04 — Reserve structure for structured content
 

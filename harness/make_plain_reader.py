@@ -52,6 +52,36 @@ def side(key: str) -> int:
     return hashlib.sha256(key.encode()).digest()[0] & 1
 
 
+PICKED = {"A": "A", "B": "B", "none": "none", "\u2014": "none"}
+
+
+def read_ruling(path: Path, names: dict[str, str]) -> dict:
+    """Turn a pasted verdict table back into the galley's own store.
+
+    Rows are matched on the question's name, which is unique across the corpus,
+    so the paste survives a rebuild at a different repeat. The arm column is
+    ignored on the way back in: the page derives it from the hash, and a paste
+    that disagreed with the hash would be the more interesting fault to see.
+    Anything unmatched is reported rather than dropped silently.
+    """
+    if not path.is_file():
+        return {}
+    seed: dict[str, dict] = {}
+    unmatched = 0
+    for line in path.read_text(encoding="utf-8").splitlines():
+        cells = [c.strip() for c in line.strip().strip("|").split("|")]
+        if len(cells) != 5 or cells[2] not in PICKED:
+            continue
+        pid = names.get(cells[0])
+        if pid is None:
+            unmatched += 1
+            continue
+        seed[pid] = {"v": PICKED[cells[2]], "n": cells[4]}
+    if unmatched:
+        print(f"  warning: {unmatched} pasted rows matched no question", file=sys.stderr)
+    return seed
+
+
 def build(run: Path, ctrl: Path, out: Path, repeat: int) -> None:
     ruled, man = answers(run, repeat)
     plain, _ = answers(ctrl, repeat)
@@ -80,10 +110,14 @@ def build(run: Path, ctrl: Path, out: Path, repeat: int) -> None:
                      {"label": "B", "html": cols[1]["html"]}],
         })
 
+    seed = read_ruling(REPO / "verdicts" / f"blind-read-r{repeat}-{run.name}.md",
+                       {p["name"]: p["pid"] for p in pairs})
+
     data = {"run": run.name, "control_run": ctrl.name, "repeat": repeat,
-            "corpus": man["corpus_version"], "pairs": pairs}
+            "corpus": man["corpus_version"], "pairs": pairs, "seed": seed}
     out.write_text(TEMPLATE.replace("__DATA__", json.dumps(data)), encoding="utf-8")
-    print(f"{out}  ({out.stat().st_size // 1024} KB, {len(pairs)} pairs, repeat {repeat})")
+    print(f"{out}  ({out.stat().st_size // 1024} KB, {len(pairs)} pairs, repeat {repeat}, "
+          f"{len(seed)} verdicts restored)")
 
 
 TEMPLATE = r"""<title>The Blind Read</title>
@@ -269,8 +303,11 @@ const DATA = JSON.parse(document.getElementById("data").textContent);
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const K = "blindread:" + DATA.run + ":r" + DATA.repeat;
-let store = {};
-try { const r = localStorage.getItem(K); if (r) store = JSON.parse(r); } catch (e) {}
+// The recorded verdict ships with the page; the browser only holds what is
+// newer than it. Clearing the browser now costs nothing.
+let store = Object.assign({}, DATA.seed);
+try { const r = localStorage.getItem(K); if (r) Object.assign(store, JSON.parse(r)); }
+catch (e) {}
 const save = () => { try { localStorage.setItem(K, JSON.stringify(store)); } catch (e) {} };
 
 let filter = "all", layout = "two";

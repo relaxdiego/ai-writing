@@ -30,6 +30,7 @@ REPO = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO / "harness"))
 from make_verdict_reader import blocks, render  # noqa: E402
 from make_paragraph_reader import load_glosses  # noqa: E402
+import exposure  # noqa: E402
 
 
 def answers(run_dir: Path, repeat: int) -> dict[str, dict]:
@@ -82,6 +83,25 @@ def read_ruling(path: Path, names: dict[str, str]) -> dict:
     return seed
 
 
+def check_blind(d: Path, got: dict, pairs: list[dict]) -> None:
+    """Refuse to call a read blind over text the copyeditor has already met.
+
+    The first blind read was built over samples whose openings a labelled galley
+    had already shown, and it took the copyeditor to notice. Nothing in the
+    harness did. This is that check.
+    """
+    keys = [got[p["pid"]]["key"] for p in pairs if p["pid"] in got]
+    lines = exposure.report(d.name, keys)
+    if not lines:
+        return
+    burned = exposure.burned(d.name) & set(keys)
+    print(f"\n  !! {d.name}: this text has been read before", file=sys.stderr)
+    print(lines, file=sys.stderr)
+    if burned:
+        print(f"  !! {len(burned)} of {len(keys)} samples were shown WITH THE ARM "
+              f"NAMED. A read built on these is not blind.\n", file=sys.stderr)
+
+
 def build(run: Path, ctrl: Path, out: Path, repeat: int) -> None:
     ruled, man = answers(run, repeat)
     plain, _ = answers(ctrl, repeat)
@@ -110,12 +130,19 @@ def build(run: Path, ctrl: Path, out: Path, repeat: int) -> None:
                      {"label": "B", "html": cols[1]["html"]}],
         })
 
+    check_blind(run, ruled, pairs)
+    check_blind(ctrl, plain, pairs)
+
     seed = read_ruling(REPO / "verdicts" / f"blind-read-r{repeat}-{run.name}.md",
                        {p["name"]: p["pid"] for p in pairs})
 
     data = {"run": run.name, "control_run": ctrl.name, "repeat": repeat,
             "corpus": man["corpus_version"], "pairs": pairs, "seed": seed}
     out.write_text(TEMPLATE.replace("__DATA__", json.dumps(data)), encoding="utf-8")
+    for d, got in ((run, ruled), (ctrl, plain)):
+        exposure.record("make_plain_reader.py", d.name,
+                        [got[p["pid"]]["key"] for p in pairs if p["pid"] in got], True,
+                        "whole answers, blind, arm revealed per pair after the verdict")
     print(f"{out}  ({out.stat().st_size // 1024} KB, {len(pairs)} pairs, repeat {repeat}, "
           f"{len(seed)} verdicts restored)")
 

@@ -51,6 +51,16 @@ corpus stays byte-stable for years with no external repo drifting underneath it.
 **The corpus is immutable.** New prompts create `corpus/v2/`; `v1` is never
 edited. A mutated corpus silently invalidates every historical comparison.
 
+`corpus/v2/` exists as of 2026-09-03. Twelve prompts, the same seven
+conversational and five document tasks as v1, written because every v1 sample had
+been shown to the copyeditor and a blind read needs text they have never met
+(4.4b). It changes one other thing deliberately: v1 was uniformly specialist —
+connection pools, row locking, Redis pipelines — which the copyeditor named as a
+real obstacle to judging. v2 keeps the writing tasks and the register mix exactly
+and moves the subjects to dates, photographs, spreadsheets and uploaded files.
+The two corpora are not comparable as absolute numbers and were never meant to
+be; v2's control is its own baseline.
+
 ## 4. Measurement
 
 Three layers, because no one of them is trustworthy alone.
@@ -113,6 +123,35 @@ is a live failure mode rather than a theoretical one.
 **4.4 Human spot-check.** Every report carries excerpts: the samples that changed
 most since the previous run, plus two fixed samples present in every report so
 drift the detectors miss stays visible.
+
+**4.4b The whole-answer blind read, and the reader's exposure budget.** The
+detectors and the judge both work on fragments or on aggregates. Neither can
+answer whether the prose got better, because a person cannot feel a prose change
+from pieces the size of a detector. So the gate is a blind read: one question,
+both arms' answers whole, first word to last, no numbers on the page, column
+assignment from a hash of the sample key, arm revealed per pair only after the
+verdict. "No difference" is a first-class answer and is the one the measurements
+cannot give.
+
+**The first attempt at this failed, and the failure is instructive.** The
+copyeditor picked the ruled arm 11 times in 12, then said unprompted that they
+had read the prose before. They had. `make_verdict_reader.py` had shown the
+opening paragraph of every substrate-A sample, in both arms, under explicit
+labels. About half of every answer's words had already appeared in one galley or
+another. The read was spent and nothing in the harness knew.
+
+**A reader's naivety about a sample is a consumable resource, and it is spent by
+looking.** It cannot be restored, it is not visible in any run directory, and a
+galley that names an arm spends it completely. `harness/exposure.py` is the
+ledger: every galley records the sample keys it showed and whether it named the
+arm, and `make_plain_reader.py` refuses to call a read blind over text the ledger
+says was already shown. The ledger is committed, because it is evidence about the
+reader rather than about the model and cannot be reconstructed from the runs.
+
+The operational consequence: **a blind read needs text no labelled galley has
+touched, and lab galleys must therefore not be pointed at a run reserved for
+reading.** Generate more repeats than a galley will show and hold the remainder
+back.
 
 **4.5 Acceptance.** A change counts only when it moves a metric outside the
 measured noise band. Effect sizes against measured variance — at n=12 prompts

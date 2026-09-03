@@ -27,6 +27,14 @@ from dataclasses import dataclass, field, asdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+
+def say(msg: str) -> None:
+    """Print progress without letting a closed stdout kill the run."""
+    try:
+        print(msg, flush=True)
+    except (BrokenPipeError, ValueError, OSError):
+        pass
+
 REPO = Path(__file__).resolve().parent.parent
 CLEANROOM = REPO / "harness" / "cleanroom.sh"
 REAL_CREDS = Path.home() / ".claude" / ".credentials.json"
@@ -126,7 +134,8 @@ class Sample:
 
 
 def run_sample(sample: Sample, prompt: Prompt, scratch: Path, style: str,
-               model: str, budget: str, argv_sink: dict) -> Sample:
+               model: str, budget: str, argv_sink: dict,
+               sink_dir: Path | None = None) -> Sample:
     env = dict(os.environ)
     env["CLAUDE_CONFIG_DIR"] = str(scratch)
     env["CLAUDE_CODE_DISABLE_AUTO_MEMORY"] = "1"
@@ -150,7 +159,9 @@ def run_sample(sample: Sample, prompt: Prompt, scratch: Path, style: str,
                 argv_sink.setdefault(f"{sample.substrate}/{sample.arm}", line[5:].strip())
 
         if proc.returncode != 0 and not proc.stdout.strip():
-            sample.failure = f"exit {proc.returncode}: {proc.stderr.strip()[:300]}"
+            err = "\n".join(l for l in proc.stderr.splitlines()
+                             if not l.startswith("ARGV ")).strip()
+            sample.failure = f"exit {proc.returncode}: {err[:300]}"
             time.sleep(delay); delay *= 2
             continue
 
@@ -176,7 +187,7 @@ def run_sample(sample: Sample, prompt: Prompt, scratch: Path, style: str,
         if sample.stop_reason not in OK_STOP_REASONS:
             sample.failure = f"stop_reason={sample.stop_reason}"
             sample.text = text
-            return sample          # truncation is a finding, not a transient
+            break                  # truncation is a finding, not a transient
         if not text:
             sample.failure = "empty output"
             time.sleep(delay); delay *= 2
@@ -185,8 +196,10 @@ def run_sample(sample: Sample, prompt: Prompt, scratch: Path, style: str,
         sample.text = text
         sample.ok = True
         sample.failure = None
-        return sample
+        break
 
+    if sink_dir is not None and sample.text:
+        (sink_dir / f"{sample.key}.md").write_text(sample.text, encoding="utf-8")
     return sample
 
 
@@ -230,8 +243,11 @@ def main() -> int:
     if args.arm == "treatment" and not args.style:
         sys.exit("--arm treatment requires --style")
     style = args.style or "-"
-    if style != "-" and not Path(style).is_file():
-        sys.exit(f"style file not found: {style}")
+    if style != "-":
+        sp = Path(style).resolve()
+        if not sp.is_file():
+            sys.exit(f"style file not found: {style}")
+        style = str(sp)   # child runs with cwd=scratch; a relative path breaks
 
     prompts = load_corpus(args.corpus)
     if args.only:
@@ -255,15 +271,18 @@ def main() -> int:
                 queue.append((Sample(key, sub, args.arm, p.id, p.register, r), p))
 
     started = datetime.now(timezone.utc)
-    print(f"corpus {args.corpus}: {len(prompts)} prompts | arm={args.arm} | "
-          f"substrates={','.join(substrates)} | {len(queue)} samples", flush=True)
+    say(f"corpus {args.corpus}: {len(prompts)} prompts | arm={args.arm} | "
+    f"substrates={','.join(substrates)} | {len(queue)} samples")
 
     argv_sink: dict[str, str] = {}
     done: list[Sample] = []
 
+    sink = out / "samples"
+
     def execute(item):
         s, p = item
-        return run_sample(s, p, scratch, style, args.model, args.budget, argv_sink)
+        return run_sample(s, p, scratch, style, args.model, args.budget,
+                          argv_sink, sink)
 
     # One serial sample per substrate warms that prefix's prompt cache. Measured:
     # a cache-warm repeat cost $0.0075 against $0.1249 cold, so paying 2 cold
@@ -277,20 +296,21 @@ def main() -> int:
     for i in sorted(warm):
         s = execute(queue[i])
         done.append(s)
-        print(f"  warm {s.key}: {'ok' if s.ok else 'FAIL ' + str(s.failure)} "
-              f"${s.cost_usd:.4f}", flush=True)
+        say(f"  warm {s.key}: {'ok' if s.ok else 'FAIL ' + str(s.failure)} "
+            f"${s.cost_usd:.4f}")
+        if not s.ok:
+            sys.exit(f"\naborting: warm sample failed, so the rest would too.\n"
+                     f"  {s.failure}")
 
     rest = [item for i, item in enumerate(queue) if i not in warm]
     with futures.ThreadPoolExecutor(max_workers=args.concurrency) as pool:
         for n, s in enumerate(pool.map(execute, rest), 1):
             done.append(s)
-            print(f"  [{n}/{len(rest)}] {s.key}: "
-                  f"{'ok' if s.ok else 'FAIL ' + str(s.failure)} "
-                  f"${s.cost_usd:.4f} {len(s.text.split())}w", flush=True)
+            say(f"  [{n}/{len(rest)}] {s.key}: "
+                f"{'ok' if s.ok else 'FAIL ' + str(s.failure)} "
+                f"${s.cost_usd:.4f} {len(s.text.split())}w")
 
-    for s in done:
-        if s.text:
-            (out / "samples" / f"{s.key}.md").write_text(s.text, encoding="utf-8")
+
 
     failures = [s for s in done if not s.ok]
     total_cost = sum(s.cost_usd for s in done)
@@ -327,12 +347,12 @@ def main() -> int:
     }
     (out / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
 
-    print(f"\n{len(done) - len(failures)}/{len(done)} ok | "
+    say(f"\n{len(done) - len(failures)}/{len(done)} ok | "
           f"${total_cost:.4f} | {(finished - started).total_seconds():.0f}s | {out}")
     if failures:
-        print(f"\n{len(failures)} FAILED (recorded, excluded from metrics):")
+        say(f"\n{len(failures)} FAILED (recorded, excluded from metrics):")
         for s in failures:
-            print(f"  {s.key}: {s.failure}")
+            say(f"  {s.key}: {s.failure}")
     return 0
 
 

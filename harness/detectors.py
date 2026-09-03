@@ -1,0 +1,203 @@
+#!/usr/bin/env python3
+"""Detectors implementing TAXONOMY.md.
+
+Every detector here corresponds to a numbered taxonomy entry and was justified
+against a quoted passage from a real baseline sample (DESIGN.md 4.2b). None was
+invented a priori.
+
+Cadence detectors (S1-S3) rank above markup detectors (S4-S6): the defects that
+make the prose tiring are prosodic, and markup rates must never stand in for
+them.
+
+Rates are per 1,000 words except where the unit says otherwise.
+"""
+
+from __future__ import annotations
+
+import re
+from dataclasses import dataclass
+
+FENCE = re.compile(r"```.*?```", re.S)
+INLINE_MD = re.compile(r"\*\*|\*|`|_")
+HEADER = re.compile(r"^#{1,6}\s+\S", re.M)
+BOLD_HEADER = re.compile(r"^\*\*[^*\n]{2,70}\*\*:?\s*$", re.M)
+TABLE_ROW = re.compile(r"^\|.*\|\s*$", re.M)
+LIST_ITEM = re.compile(r"^\s*(?:[-*+]\s|\d+[.)]\s)")
+
+
+@dataclass
+class Doc:
+    """One sample, normalized once so every detector sees the same text."""
+    raw: str
+
+    def __post_init__(self) -> None:
+        self.words = len(self.raw.split()) or 1
+        body = FENCE.sub("", self.raw)
+
+        # Prose paragraphs: blank-line blocks that are not headers, list items,
+        # table rows or blockquotes. Cadence is a property of prose, and list
+        # items would otherwise register as one-sentence paragraphs en masse.
+        self.paragraphs: list[str] = []
+        for block in re.split(r"\n\s*\n", body):
+            b = block.strip()
+            if not b or b.startswith(("#", "|", ">")) or LIST_ITEM.match(b):
+                continue
+            self.paragraphs.append(INLINE_MD.sub("", b))
+
+        self.para_sents = [self._split(p) for p in self.paragraphs]
+        self.sentences = [s for group in self.para_sents for s in group]
+
+    @staticmethod
+    def _split(p: str) -> list[str]:
+        p = re.sub(r"\b([A-Z]|etc|e\.g|i\.e|vs|approx)\.\s", r"\1<DOT> ", p)
+        parts = re.split(r"(?<=[.!?])\s+", p)
+        return [s.replace("<DOT>", ".").strip() for s in parts if s.strip()]
+
+    def per_k(self, n: int) -> float:
+        return round(n * 1000 / self.words, 3)
+
+
+# --------------------------------------------------------------- suppressed --
+
+def s1_one_sentence_paragraphs(d: Doc) -> float:
+    """Taxonomy 1 - the staccato. Share of prose paragraphs that are a single
+    short sentence. Baseline 30.0% (A). Invisible to sentence-level metrics:
+    the chop is between sentences, not inside them."""
+    if not d.paragraphs:
+        return 0.0
+    n = sum(1 for g in d.para_sents
+            if len(g) == 1 and len(g[0].split()) <= 25)
+    return round(100 * n / len(d.paragraphs), 2)
+
+
+def s2_long_then_punch(d: Doc) -> float:
+    """Taxonomy 2 - the mannered cadence. Share of prose paragraphs ending in a
+    sentence of <=9 words directly after one of >=20. Baseline 10.4% (A).
+
+    Evidence: "...or with wall time (an expiry - token TTL, idle reaper, lease).
+    That correlation alone splits the field in half."  [a-control-c02-r1]"""
+    if not d.paragraphs:
+        return 0.0
+    n = 0
+    for g in d.para_sents:
+        if len(g) < 2:
+            continue
+        lens = [len(s.split()) for s in g]
+        if lens[-1] <= 9 and max(lens[:-1]) >= 20:
+            n += 1
+    return round(100 * n / len(d.paragraphs), 2)
+
+
+PIVOT = re.compile(r"^(?:That|This|It|Those|These)(?:'s|s|\s+(?:is|are|was|means|matters|alone))\b")
+
+
+def s3_pivot_opener(d: Doc) -> float:
+    """Taxonomy 3 - delivery mechanism for the epigram. Share of sentences
+    opening with a That/This/It pivot. Baseline 4.1% (A).
+
+    Evidence: "That's coupling you'll regret at deletion time." [a-control-c04-r2]"""
+    if not d.sentences:
+        return 0.0
+    n = sum(1 for s in d.sentences if PIVOT.match(s))
+    return round(100 * n / len(d.sentences), 2)
+
+
+def s4a_header_rate(d: Doc) -> float:
+    """Taxonomy 4 - reflexive sectioning. Baseline 9.00/1k (A), 67% of samples."""
+    return d.per_k(len(HEADER.findall(d.raw)) + len(BOLD_HEADER.findall(d.raw)))
+
+
+def s4b_table_row_rate(d: Doc) -> float:
+    """Taxonomy 4 - reflexive tabulation. Baseline 4.21/1k (A)."""
+    return d.per_k(len(TABLE_ROW.findall(d.raw)))
+
+
+INLINE_BOLD = re.compile(r"(?<!^)(?<!\n)\*\*[^*\n]{3,80}\*\*")
+
+
+def s5_inline_bold(d: Doc) -> float:
+    """Taxonomy 5 - typography standing in for intonation. Bold inside prose
+    rather than as a header. Baseline 3.97/1k (A), 6.81 (B).
+
+    Evidence: "that's **5.1 billion rows**" [a-control-c04-r2]"""
+    body = BOLD_HEADER.sub("", FENCE.sub("", d.raw))
+    return d.per_k(len(INLINE_BOLD.findall(body)))
+
+
+def s6_em_dash(d: Doc) -> float:
+    """Taxonomy 6 - default connective. Baseline 11.96/1k (A), 100% of samples."""
+    return d.per_k(d.raw.count("—"))
+
+
+# ----------------------------------------------------------------- held out --
+# Never named in style/rules.md. If the suppressed metrics fall while these sit
+# still, the rules are dodging named tokens rather than changing how it writes.
+
+OFFER = re.compile(
+    r"(?i)(want me to|shall i|if you (?:tell|give|share|point) me|say the word"
+    r"|happy to|i can (?:give|write|do|run|pull|draft))")
+
+
+def h1_terminal_offer(d: Doc) -> float:
+    """Held out. Share of samples closing with a service offer (0 or 100 per
+    sample; the aggregate is the percentage). Baseline 17% (A), 23% (B)."""
+    tail = "\n".join(d.raw.rstrip().splitlines()[-3:])
+    return 100.0 if OFFER.search(tail) else 0.0
+
+
+INTENSIFIER = re.compile(r"(?i)\b(?:genuinely|actually|truly|really)\b")
+
+
+def h2_intensifier(d: Doc) -> float:
+    """Held out. Baseline 1.20/1k (A), 1.87 (B)."""
+    return d.per_k(len(INTENSIFIER.findall(d.raw)))
+
+
+TRICOLON = re.compile(r"\b\w+, \w+,? and \w+\b")
+
+
+def h3_tricolon(d: Doc) -> float:
+    """Held out. Baseline 0.54/1k (A), 0.57 (B)."""
+    return d.per_k(len(TRICOLON.findall(d.raw)))
+
+
+# ------------------------------------------------------------------ context --
+# Not defects. Reported so a metric change can be read against how much the
+# volume and shape of the output moved.
+
+def c1_words(d: Doc) -> float:
+    return float(d.words)
+
+
+def c2_mean_para_words(d: Doc) -> float:
+    if not d.paragraphs:
+        return 0.0
+    return round(sum(len(p.split()) for p in d.paragraphs) / len(d.paragraphs), 2)
+
+
+def c3_mean_sentence_words(d: Doc) -> float:
+    if not d.sentences:
+        return 0.0
+    return round(sum(len(s.split()) for s in d.sentences) / len(d.sentences), 2)
+
+
+DETECTORS = [
+    ("S1", "one-sentence paragraphs",   "% of paragraphs", "suppressed", s1_one_sentence_paragraphs),
+    ("S2", "long sentence then punch",  "% of paragraphs", "suppressed", s2_long_then_punch),
+    ("S3", "That/This pivot opener",    "% of sentences",  "suppressed", s3_pivot_opener),
+    ("S4a", "headers",                  "per 1k words",    "suppressed", s4a_header_rate),
+    ("S4b", "table rows",               "per 1k words",    "suppressed", s4b_table_row_rate),
+    ("S5", "inline bold emphasis",      "per 1k words",    "suppressed", s5_inline_bold),
+    ("S6", "em-dash",                   "per 1k words",    "suppressed", s6_em_dash),
+    ("H1", "terminal service offer",    "% of samples",    "held-out",   h1_terminal_offer),
+    ("H2", "intensifier density",       "per 1k words",    "held-out",   h2_intensifier),
+    ("H3", "tricolon",                  "per 1k words",    "held-out",   h3_tricolon),
+    ("C1", "output length",             "words",           "context",    c1_words),
+    ("C2", "mean paragraph length",     "words",           "context",    c2_mean_para_words),
+    ("C3", "mean sentence length",      "words",           "context",    c3_mean_sentence_words),
+]
+
+
+def score_text(text: str) -> dict[str, float]:
+    d = Doc(text)
+    return {mid: fn(d) for mid, _, _, _, fn in DETECTORS}

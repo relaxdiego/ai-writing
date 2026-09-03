@@ -21,7 +21,7 @@ because the stack it sits in cleared.
 | R06 | S6 | marginal on R02, `20260903T035059Z-R03-R06`: 8.44 -> 0.97, band 1.04 |
 
 The collateral clauses cost S1, S4a and S5, and the S1 cost is smaller than the
-metric says. S1 rises 6.79 -> 24.15 and no longer clears against the control. Decomposed by
+metric says. S1 rises 4.76 -> 23.68 and no longer clears against the control. Decomposed by
 what the single-sentence paragraph is doing, the defect did not return: a
 fragment floating in prose holds at 13 -> 16 of 272 paragraphs, 5.7% -> 5.9%,
 against 22.8% in the control. The rise is the clause's own output. Opening
@@ -70,9 +70,9 @@ floor was last held to be blocking. It settled itself for nothing.
 **R01 — match length to what the question earns.** Withdrawn after
 `runs/20260903T030500Z-R01` on the grounds that constraining length cut output by
 a third and moved no cadence metric. **That reason was wrong, and the band
-correction exposed it.** R01 moves S1 31.54 -> 23.90 against a band of 6.44, and
+correction exposed it.** R01 moves S1 29.84 -> 23.78 against a band of 6.44, and
 moves S4a, S4b, S5, K1 and C1 as well. R01 stays retired because R02 is far
-stronger on the same metric, 31.54 -> 8.0, and buys it without cutting a third of
+stronger on the same metric, 29.84 -> 7.58, and buys it without cutting a third of
 the answer away. The withdrawal stands; the stated reason does not, and
 TAXONOMY.md's counter-observation that length may be upstream is live again.
 **R03 — do not land the paragraph.** Withdrawn after

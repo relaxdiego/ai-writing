@@ -43,7 +43,7 @@ sentences, not inside them. Any sentence-rhythm metric misses it entirely.
 
 **Ruled: S1 over-counts, and by a factor of ten.** S1 sees a paragraph and never
 what sits on either side of it, so it books three unrelated things as one event.
-R02's collateral clauses made two of them common, and S1 rose 6.79 -> 24.15,
+R02's collateral clauses made two of them common, and S1 rose 4.76 -> 23.68,
 which reads as the rules wrecking the prose. Sorted by what follows each
 paragraph and put to the copyeditor in place (`harness/make_s1_reader.py`,
 galley at https://claude.ai/code/artifact/0092b8bf-5e57-4db3-8fad-0b0698426185):

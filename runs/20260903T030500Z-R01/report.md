@@ -27,6 +27,7 @@
 | | **collateral** | | | | | |
 | K1 | list items | per 1k words | 10.78 | 7.61 | ↓ -3.16 | no (±4.08) |
 | K2 | code blocks | per 1k words | 2.08 | 2.05 | ↓ -0.03 | no (±1.90) |
+| K3 | opening paragraph | words | 28.44 | 27.39 | ↓ -1.05 | no (±7.57) |
 | | **context** | | | | | |
 | C1 | output length | words | 641.44 | 414.75 | ↓ -226.69 | **yes** (±153.31) |
 | C2 | mean paragraph length | words | 36.87 | 38.25 | ↑ +1.38 | no (±7.18) |
@@ -52,6 +53,7 @@
 | | **collateral** | | | | | |
 | K1 | list items | per 1k words | 12.78 | 8.85 | ↓ -3.94 | **yes** (±3.03) |
 | K2 | code blocks | per 1k words | 2.23 | 2.77 | ↑ +0.55 | no (±1.87) |
+| K3 | opening paragraph | words | 27.92 | 22.25 | ↓ -5.67 | no (±6.08) |
 | | **context** | | | | | |
 | C1 | output length | words | 617.87 | 374.95 | ↓ -242.92 | **yes** (±94.48) |
 | C2 | mean paragraph length | words | 35.47 | 36.79 | ↑ +1.32 | no (±4.85) |

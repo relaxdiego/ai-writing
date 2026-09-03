@@ -202,6 +202,25 @@ def k2_code_blocks(d: Doc) -> float:
     return d.per_k(len(FENCE.findall(d.raw)))
 
 
+def k3_opening_paragraph(d: Doc) -> float:
+    """The answer stated before it is explained. Control 28.4 words on
+    substrate A, shipped rules 64.9; one-sentence openers fall 16/36 to 5/36.
+
+    The opening paragraph is where the control puts its verdict, alone, and
+    then explains it. R02 reads a standalone verdict as a paragraph cut away
+    from the one after it and joins them, which is the same move that took the
+    list items in K1 and the code blocks in K2. Rising here means the reader
+    has to find the answer inside the reasoning instead of being handed it.
+
+    Evidence, on a 150-word paragraph developing a design the answer rejects:
+    "It's not too long in the strictest sense but it's discussing at length
+    what turns out to be wrong advice. The control is directly saying it's a
+    bad idea." [a-treatment-c04-r2#3]"""
+    if not d.paragraphs:
+        return 0.0
+    return float(len(d.paragraphs[0].split()))
+
+
 # ------------------------------------------------------------------ context --
 # Not defects. Reported so a metric change can be read against how much the
 # volume and shape of the output moved.
@@ -236,6 +255,7 @@ DETECTORS = [
     ("H3", "tricolon",                  "per 1k words",    "held-out",   h3_tricolon),
     ("K1", "list items",                "per 1k words",    "collateral", k1_list_items),
     ("K2", "code blocks",               "per 1k words",    "collateral", k2_code_blocks),
+    ("K3", "opening paragraph",        "words",           "collateral", k3_opening_paragraph),
     ("C1", "output length",             "words",           "context",    c1_words),
     ("C2", "mean paragraph length",     "words",           "context",    c2_mean_para_words),
     ("C3", "mean sentence length",      "words",           "context",    c3_mean_sentence_words),

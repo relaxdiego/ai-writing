@@ -104,9 +104,30 @@ paragraph-length verdict, and measured on every run from here.
 **The verdict that produced this set.** C2 rose from 33.9 to 76.8 words on
 substrate A and a second reader called the result wall paragraphs, so the 40
 longest paragraphs were set as prose and read
-(`harness/make_paragraph_reader.py`). Of the 17 judged, 15 read fine at 123 to
-194 words. **Length was rejected as the defect.** The two rejected passages were
-rejected for something else, and both said the same thing.
+(`harness/make_paragraph_reader.py`). The copyeditor judged 25 of the 40 and
+left 15 unread: **15 read fine, 10 were rejected.**
+
+**Length was rejected as the defect, and the second pass settles it.** The
+rejected paragraphs average 154.9 words and the accepted ones 155.5. Eleven of
+the fifteen accepted are longer than the median rejection, and the second
+through eighth longest paragraphs in the run were all accepted. Word count does
+not predict the verdict at all. Nor does any detector in the set: on the
+treatment side S4b, S5 and K1 are 0.00 for accepted and rejected alike, and the
+accepted paragraphs have the *higher* C2 (120 words against 94).
+
+**What the ten rejections are about instead.** Four are the structure this set
+already names, K1 and K2. The other six are one thing, in the copyeditor's own
+words: "the control is directly saying it's a bad idea", "this meanders
+compared to the control which was to the point", "it's beating around the bush
+... the reader could miss it", "does not put in front the cost of each
+approach", "does not transition to alternatives", "jumping too far ahead
+... instead of explaining the sequence and the cause first". The complaint is
+where the answer sits, not how long the paragraph is. That is K3.
+
+Rejections concentrate by prompt, not by length: d05 3 of 3, c04 3 of 4, c07 2
+of 3, against c02 1 of 7 and c05 0 of 4. They are the prompts whose answer is a
+recommendation, a danger, or a worked guide — the prompts where the control
+opened by saying so. Documents were rejected 4 of 6, conversational 6 of 19.
 
 ### K1. List items — 11.61 A conversational / 9.61 A document, per 1k words
 
@@ -134,9 +155,51 @@ that an isolated short block has usually been cut away from the one before it
 and should be joined. A list item is an isolated short block. The rule was
 written about paragraphs and the model applied it to every enumerated line.
 
-This is DESIGN.md 4.2b arriving a second time. The suppressed set counts what
-the rules forbid, the held-out set guards against token-dodging, and neither
-could see the rules destroying something worth keeping. A detector set needs a
+### K3. Opening paragraph — 28.4 A, words
+
+The answer stated before it is explained. The control's first prose paragraph
+is 28.4 words and 1.8 sentences; under the shipped rules it is 64.9 words and
+3.1 sentences, and one-sentence openers fall from 16 of 36 samples to 5. The
+rise clears the band on both substrates, which K2 never does.
+
+    It's not too long in the strictest sense but it's discussing at length what
+    turns out to be wrong advice. The control is directly saying it's a bad
+    idea.                                          [a-treatment-c04-r2#3]
+
+The control on that prompt opens "Go with a **separate Postgres instance, not a
+separate technology**" and then explains for a page. The treatment opens by
+explaining. Both arrive at the same engineering position; only one hands it to
+the reader first.
+
+Backfilled across all five runs, the metric follows R02 exactly and needs no
+other rule:
+
+    control 28.4    R01 27.4    R02 alone 58.8    shipped 64.9
+
+Two shipped rules contribute. R02 joins a standalone opening verdict into the
+paragraph after it, on the same reading that took the list items and the code
+blocks: an isolated short block looks cut away. R06 removes the bold the
+control used to mark the verdict inside its opening line. R02's paragraph-close
+clause pushes the same way, since a verdict has to land somewhere.
+
+**Not an argument for the epigram.** S2 stays a defect. The control does not
+close its paragraphs on a verdict here; it opens the answer on one and then
+develops. Those are different moves and only the second is being protected.
+
+**Open, and deliberately not made a fourth entry.** One rejection is a
+postmortem: "jumping too far ahead to 'Nothing in our monitoring reacted...'
+instead of explaining the sequence and the cause first" [a-treatment-d04-r2#2].
+The control renders that sequence as a timeline table, which R04 removes and
+S4b scores 4.21 -> 0.00 as a success. A postmortem timeline is the case R04's
+own text describes as a legitimate table. This is the d01 problem again: a
+suppressed metric at zero is not always a win. But the copyeditor's note names
+the ordering and not the table, so it does not yet justify an entry. Ask before
+inventing one.
+
+This is DESIGN.md 4.2b arriving a second time, and K3 makes it a third. The
+suppressed set counts what the rules forbid, the held-out set guards against
+token-dodging, and neither could see the rules destroying something worth
+keeping. A detector set needs a
 direction for defects to fall *and* a direction for structure to hold.
 
 ## Tells this model does not have

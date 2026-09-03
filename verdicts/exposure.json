@@ -128,6 +128,46 @@
     ]
   },
   {
+    "script": "make_plain_reader.py",
+    "run": "20260903T202317Z-v2-control",
+    "labelled": true,
+    "what": "whole answers, blind, arm revealed per pair after the verdict",
+    "keys": [
+      "a-control-c01-r1",
+      "a-control-c02-r1",
+      "a-control-c03-r1",
+      "a-control-c04-r1",
+      "a-control-c05-r1",
+      "a-control-c06-r1",
+      "a-control-c07-r1",
+      "a-control-d01-r1",
+      "a-control-d02-r1",
+      "a-control-d03-r1",
+      "a-control-d04-r1",
+      "a-control-d05-r1"
+    ]
+  },
+  {
+    "script": "make_plain_reader.py",
+    "run": "20260903T202854Z-v2-treatment",
+    "labelled": true,
+    "what": "whole answers, blind, arm revealed per pair after the verdict",
+    "keys": [
+      "a-treatment-c01-r1",
+      "a-treatment-c02-r1",
+      "a-treatment-c03-r1",
+      "a-treatment-c04-r1",
+      "a-treatment-c05-r1",
+      "a-treatment-c06-r1",
+      "a-treatment-c07-r1",
+      "a-treatment-d01-r1",
+      "a-treatment-d02-r1",
+      "a-treatment-d03-r1",
+      "a-treatment-d04-r1",
+      "a-treatment-d05-r1"
+    ]
+  },
+  {
     "script": "make_s1_reader.py",
     "run": "20260903T003018Z",
     "labelled": false,

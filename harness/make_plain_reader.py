@@ -32,6 +32,8 @@ from make_verdict_reader import blocks, render  # noqa: E402
 from make_paragraph_reader import load_glosses  # noqa: E402
 import exposure  # noqa: E402
 
+SCRIPT = "make_plain_reader.py"
+
 
 def answers(run_dir: Path, repeat: int) -> dict[str, dict]:
     """Every substrate-A answer at the given repeat, rendered whole."""
@@ -91,10 +93,10 @@ def check_blind(d: Path, got: dict, pairs: list[dict]) -> None:
     harness did. This is that check.
     """
     keys = [got[p["pid"]]["key"] for p in pairs if p["pid"] in got]
-    lines = exposure.report(d.name, keys)
+    lines = exposure.report(d.name, keys, script=SCRIPT)
     if not lines:
         return
-    burned = exposure.burned(d.name) & set(keys)
+    burned = exposure.burned(d.name, script=SCRIPT, keys=set(keys)) & set(keys)
     print(f"\n  !! {d.name}: this text has been read before", file=sys.stderr)
     print(lines, file=sys.stderr)
     if burned:
@@ -140,7 +142,7 @@ def build(run: Path, ctrl: Path, out: Path, repeat: int) -> None:
             "corpus": man["corpus_version"], "pairs": pairs, "seed": seed}
     out.write_text(TEMPLATE.replace("__DATA__", json.dumps(data)), encoding="utf-8")
     for d, got in ((run, ruled), (ctrl, plain)):
-        exposure.record("make_plain_reader.py", d.name,
+        exposure.record(SCRIPT, d.name,
                         [got[p["pid"]]["key"] for p in pairs if p["pid"] in got], True,
                         "whole answers, blind, arm revealed per pair after the verdict")
     print(f"{out}  ({out.stat().st_size // 1024} KB, {len(pairs)} pairs, repeat {repeat}, "
@@ -294,7 +296,7 @@ h1{font-family:var(--read);font-weight:600;font-size:clamp(32px,5vw,46px);
 <header class="mast">
   <h1>The blind read</h1>
   <p class="stand">Twelve questions. Each one answered twice by the same model: once with no
-  instructions, once under the four style rules. <b>Both answers are here whole, from the first
+  instructions, once under the style rules. <b>Both answers are here whole, from the first
   word to the last.</b></p>
   <p class="stand">There are no numbers on this page. Nothing is counted, nothing is scored, and
   no detector is named. <b>You are not told which answer is which</b> until you have said which

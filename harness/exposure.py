@@ -32,16 +32,39 @@ def _load() -> list[dict]:
 
 def record(script: str, run: str, keys: list[str], labelled: bool,
            what: str = "") -> None:
-    """Note that a galley showed these samples. Idempotent per (script, run)."""
+    """Note that a galley showed these samples.
+
+    Idempotent per (script, run), and the keys accumulate rather than replace.
+    A galley built once per repeat writes the same (script, run) row each time,
+    and replacing it would erase the evidence that the earlier repeat was shown
+    -- which is the one thing this ledger exists to remember. Union, so holding
+    repeats 2 and 3 back stays checkable after repeat 1 has been read.
+    """
+    prior = [r for r in _load() if r["script"] == script and r["run"] == run]
     rows = [r for r in _load() if not (r["script"] == script and r["run"] == run)]
+    keys = set(keys)
+    for r in prior:
+        keys |= set(r["keys"])
+        labelled = labelled or r["labelled"]
     rows.append({"script": script, "run": run, "labelled": labelled,
-                 "what": what, "keys": sorted(set(keys))})
+                 "what": what, "keys": sorted(keys)})
     rows.sort(key=lambda r: (r["script"], r["run"]))
     LEDGER.parent.mkdir(exist_ok=True)
     LEDGER.write_text(json.dumps(rows, indent=2) + "\n", encoding="utf-8")
 
 
-def burned(run: str, labelled_only: bool = True) -> set[str]:
+def _rebuild_of(r: dict, script: str, keys: set[str]) -> bool:
+    """True when this row is the same galley's own earlier build of this page.
+
+    Rebuilding a galley over exactly the text it already recorded is not a
+    second spend, and warning about it teaches the reader to ignore the alarm.
+    A different repeat carries different keys and so is not caught by this.
+    """
+    return bool(script) and r["script"] == script and set(r["keys"]) == keys
+
+
+def burned(run: str, labelled_only: bool = True, script: str = "",
+           keys: set[str] | None = None) -> set[str]:
     """Sample keys already shown from this run, and so unfit for a blind read."""
     out: set[str] = set()
     for r in _load():
@@ -49,16 +72,20 @@ def burned(run: str, labelled_only: bool = True) -> set[str]:
             continue
         if labelled_only and not r["labelled"]:
             continue
+        if keys is not None and _rebuild_of(r, script, keys):
+            continue
         out.update(r["keys"])
     return out
 
 
-def report(run: str, keys: list[str]) -> str:
+def report(run: str, keys: list[str], script: str = "") -> str:
     """A line per galley that has spent any of these keys, or "" if none have."""
     want = set(keys)
     lines = []
     for r in sorted(_load(), key=lambda r: r["script"]):
         if r["run"] != run:
+            continue
+        if _rebuild_of(r, script, want):
             continue
         hit = want & set(r["keys"])
         if hit:

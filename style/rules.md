@@ -7,6 +7,10 @@ SHA-256 is recorded in every run manifest.
 
 Rules must never name a held-out mannerism (TAXONOMY.md, held-out set).
 
+The assembler emits rules in file order, not in numeric order, and file order is
+the order the model reads them in. Where a rule sits is therefore part of the
+treatment. IDs are addresses only; they record when a rule was written.
+
 ## What each rule is attributed to
 
 Substrate A, the gate. A rule stays only where a run isolates its effect, never
@@ -14,11 +18,20 @@ because the stack it sits in cleared.
 
 | rule | owns | evidence |
 |---|---|---|
-| R02 | S1, S2, S3 | tested alone, `20260903T031737Z-R02`: S1 31.5 -> 8.0, S3 4.8 -> 1.0, and S2 6.62 -> 3.21 against a band of 2.89 once S2 is pooled |
-| R02 collateral clauses | K1, K2, K3, K4 | marginal on the shipped set, `20260903T092452Z-R02-collateral`: K1 0.80 -> 4.63 band 1.79, K2 0.86 -> 1.29 band 0.24, K3 64.9 -> 36.7 band 12.10, K4 0.00 -> 0.27 band 0.11 |
+| R07 | S1 corrected, K3 | **inherited, not re-measured.** From R02 undivided: S1 corrected 19.91 -> 4.48 in `20260903T193603Z-ablate-R02`, and K3 64.9 -> 36.7 band 12.10 in `20260903T092452Z-R02-collateral` |
+| R08 | K1, K2, K4 | **inherited, not re-measured.** From R02's collateral clauses, `20260903T092452Z-R02-collateral`: K1 0.80 -> 4.63 band 1.79, K2 0.86 -> 1.29 band 0.24, K4 0.00 -> 0.27 band 0.11 |
+| R09 | S2, S3 — **claimed, not earned** | `20260903T193603Z-ablate-R02` removed R02 undivided and moved S2 by +0.09 against a band of 3.55 and S3 by -1.20 against a band of 1.73. Neither clears. The rule is kept pending its own ablation, not on evidence |
 | R04 | S4b, shared | marginal on R02, `20260903T035059Z-R03-R06`: 2.16 -> 0.00, band 0.84. R02 alone had already taken S4b 4.21 -> 2.16 against a band of 1.20, which the old band hid; R04 finishes it rather than owning it |
 | R05 | S7 | ablation, `20260903T042140Z-ablate-R05`: removing it returns S7 to 16.67, the control rate exactly, clearing on both substrates |
 | R06 | S6 | marginal on R02, `20260903T035059Z-R03-R06`: 8.44 -> 0.97, band 1.04 |
+
+**R07, R08 and R09 are R02 divided, and no run has yet measured them apart.**
+Every figure in this file below this line, and every figure in `TAXONOMY.md`,
+was measured on R02 undivided and still says `R02`. Those readings are correct
+for the runs that produced them and are not rewritten. The three rules carry
+R02's text almost unchanged: one sentence was restated so that R08 does not
+depend on standing next to R07, and the rest is verbatim. Whether the division
+preserves the effect is an open question and the reason for the next run.
 
 The collateral clauses cost S1, S4a and S5, and the S1 cost is smaller than the
 metric says. S1 rises 4.76 -> 23.68 and no longer clears against the control. Decomposed by
@@ -75,6 +88,15 @@ moves S4a, S4b, S5, K1 and C1 as well. R01 stays retired because R02 is far
 stronger on the same metric, 29.84 -> 7.58, and buys it without cutting a third of
 the answer away. The withdrawal stands; the stated reason does not, and
 TAXONOMY.md's counter-observation that length may be upstream is live again.
+**R02 — let a paragraph develop. Divided, not withdrawn.** R02 was 294 words,
+48% of the whole rule set, and 68% of it was carve-outs hung on a 37-word core.
+`runs/20260903T193603Z-ablate-R02` removed it for the first time and found the
+core carrying corrected S1 and the carve-outs carrying the structure metrics,
+while S2 and S3 moved inside their bands. The parts were doing different jobs
+and could not be addressed separately, so R02 became R07, R08 and R09. **The ID
+is retired because the text is no longer one instruction, not because the
+instruction failed.** Every historical `--rules R02` label means the undivided
+rule and stays unambiguous.
 **R03 — do not land the paragraph.** Withdrawn after
 `runs/20260903T040710Z-ablate-R03`: ablating it moved S2, its own target, by
 +0.10 on substrate A against a band of 3.14, and all eight suppressed metrics
@@ -84,7 +106,7 @@ the epigrammatic close as far as it goes.
 Retired IDs are never reused and never assembled, so historical run records stay
 unambiguous.
 
-## R02 — Let a paragraph develop
+## R07 — Let a paragraph develop
 
 Carry a thought from claim through reasoning to consequence inside a single
 paragraph. A paragraph holding one sentence has usually been cut away from the
@@ -97,17 +119,21 @@ isolation doing real work. Where the reader has to act on a danger or choose
 between costs, the danger and the cost go in front of the explanation, not after
 it.
 
-This concerns paragraphs of prose. A list is not a paragraph that somebody
-chopped up. Where the content is a set of parallel items, such as competing
-explanations, ordered steps, or options to choose between, set it as a list and
-leave it as a list. A worked example is the same case: a code block is the
-example itself, and absorbing it into the sentences around it removes the thing
-the reader came for.
+## R08 — A list, a worked example and a table are not paragraphs
+
+The instruction to develop a paragraph applies to prose only. A list is not a
+paragraph that somebody chopped up. Where the content is a set of parallel
+items, such as competing explanations, ordered steps, or options to choose
+between, set it as a list and leave it as a list. A worked example is the same
+case: a code block is the example itself, and absorbing it into the sentences
+around it removes the thing the reader came for.
 
 A table is not a paragraph either. Where several things are compared across the
 same dimensions, and a reader will want to find one cell, set it as a table and
 leave it as one. A timeline, a flag reference, and a before-and-after matrix are
 all this case.
+
+## R09 — Do not perform a point you have already made
 
 Do not close a paragraph with a short verdict following a long explanation. That
 shape performs insight rather than delivering it, and the explanation has

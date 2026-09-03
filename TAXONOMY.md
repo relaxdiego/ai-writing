@@ -158,6 +158,40 @@ Bold inside prose to mark emphasis rather than structure: "that's **5.1 billion
 rows**", "must be **atomic**". Present in 61% of A and 82% of B samples.
 Typography standing in for intonation.
 
+**S5 counts a bold label at the head of a list item, and R06 permits exactly
+that use.** The detector strips a bold that occupies a whole line, so a label
+standing over a paragraph is excluded, but a label opening a list entry is
+preceded by its bullet and is counted as stress. R06 says bold is "a structural
+signal, used for a defined term or a label at the head of an entry", so the
+detector and the ratified rule disagree about the same markup.
+
+Excluding a bold that opens a list item changes the reading, and on the ruled
+arms it changes it completely. Substrate A, per 1,000 words:
+
+| arm | S5 as shipped | S5 excluding list labels |
+|---|---|---|
+| v1 control | 4.55 | 1.52 |
+| v1 ruled, R02,R04,R05,R06 | 2.88 | **0.00** |
+| v2 control | 6.72 | 1.16 |
+| v2 ruled, the split | 2.16 | **0.00** |
+
+All 37 hits in the v2 ruled arm are the permitted form -- `- **Backups.**`,
+`- **libvips:**`, `- **Reads go over the network.**` -- and not one is bold set
+inside a sentence. The ruled arms carry no inline bold at all, and the number
+that `style/rules.md` reports as the defect partly coming back is measuring
+R08's restored lists.
+
+This is the same shape as S4b: a suppressed metric and a collateral metric
+counting the same markup, so the rules restoring structure reads on the
+scorecard as a defect returning. It is the fourth estimator fault found, after
+S2's per-sample ratio, S4b's row counting and S1's two estimators.
+
+**Not fixed, and the ruling is the copyeditor's.** The detector is unchanged and
+every figure above it still says 2.07. Whether a bold label opening a list entry
+is a defect is a question about prose, not about regex, and R06 has already
+answered it one way while `detectors.py` answers it the other. Changing the
+detector invalidates every cached `result.json`, which is free to rebuild.
+
 ### 6. Em-dash as default connective — 11.96 A / 10.75 B, **100% of samples**
 
 Roughly one per 83 words, used where a comma, colon, or full stop would serve.

@@ -289,26 +289,26 @@ h1{font-family:var(--read);font-weight:600;font-size:clamp(32px,5vw,46px);
 .foot{margin:72px 0 0;padding-top:20px;border-top:1px solid var(--rule);
   font-size:13px;color:var(--ink-faint);max-width:70ch;line-height:1.6}
 .foot code{color:var(--ink-soft)}
+.foot .stamp{display:block;margin-top:9px;font-family:var(--mono);font-size:10.5px;
+  letter-spacing:.05em;color:var(--ink-faint);opacity:.75}
 @media(max-width:900px){.cols{grid-template-columns:1fr}}
 </style>
 
 <div class="wrap">
 <header class="mast">
   <h1>The blind read</h1>
-  <p class="stand">Read both answers to each question, then say which one reads better. If
-  neither of them does, say that instead.</p>
-  <p class="stand">There are twelve questions here, each answered twice by the same model: once
-  with no instructions at all, once under the style rules. Both answers appear whole, from the
-  first word to the last, because what the rules change is the way a whole answer reads and
-  nobody can feel that from fragments the size of a detector.</p>
-  <p class="stand">Nothing on this page is counted, scored, or named as a defect, and you are
-  not told which answer came from which arm until you have marked the pair. You already know
-  what the rules ask for, and a label at the head of a column would set you looking for the
-  rules instead of reading the prose.</p>
-  <p class="stand">Neither answer being better is a result rather than a failure to decide, and
-  it is the one result the measurements on this project cannot produce. A detector counts only
-  what somebody already thought to look for, and it reports a difference whether or not the
-  difference is one worth having.</p>
+  <p class="stand">Below are twelve questions. Each one was put to the same AI assistant twice,
+  so you get two answers to compare, laid out side by side as A and B. Read both the whole way
+  through, then press the button for the one that reads better. There is a box underneath if
+  you want to say what tipped it, in whatever words come to you.</p>
+  <p class="stand">"No difference" is a real answer and it is worth as much as the other two.
+  Some of these pairs genuinely land in the same place, and a coin flip dressed up as a
+  preference tells us nothing. If you finish both answers and feel no pull either way, press it
+  and move on.</p>
+  <p class="stand">One of the two answers in each pair was written under a set of writing rules;
+  the other was written with no guidance at all. You will find out which after you have decided,
+  not before, because a reader who knows the answer goes looking for the rules instead of
+  reading the writing.</p>
 </header>
 
 <div class="rail">
@@ -348,13 +348,12 @@ let filter = "all", layout = "two";
 const VERDICT = {A: "A reads better", B: "B reads better", none: "No difference"};
 
 $("foot").innerHTML =
-  "Twelve questions from corpus " + esc(DATA.corpus) + ", answered at repeat " + DATA.repeat +
-  ". One arm ran with no instructions and the other under <code>style/rules.md</code>, and " +
-  "which arm takes which column is fixed for each question by a hash of the sample key, so " +
-  "the side an answer lands on carries no pattern you could learn. Your verdicts stay in " +
-  "this browser and in the table the copy button builds, so nobody else sees them until you " +
-  "send that table on, and the page holding them is built by " +
-  "<code>harness/make_plain_reader.py</code>.";
+  "Your answers stay in this browser and go nowhere else. Nobody can see them, not even the " +
+  "person who sent you the link, until you press Copy verdict and pass the table on yourself. " +
+  "Which side an answer sits on was fixed one question at a time before any of this reached " +
+  "you, and there is no pattern in it to spot." +
+  '<span class="stamp">corpus ' + esc(DATA.corpus) + " \u00b7 repeat " + DATA.repeat +
+  " \u00b7 harness/make_plain_reader.py</span>";
 
 function gloss(p) {
   if (!p.gloss) return "";
@@ -447,7 +446,7 @@ document.addEventListener("input", e => {
 $("copy").addEventListener("click", async () => {
   const L = ["# The blind read — repeat " + DATA.repeat, "",
     "No instructions `" + DATA.control_run + "`, under the rules `" + DATA.run + "`.", "",
-    "| question | register | picked | which arm | what made the difference |",
+    "| question | kind | picked | which version | what made the difference |",
     "|---|---|---|---|---|"];
   let ruled = 0, plain = 0, none = 0;
   DATA.pairs.forEach(p => {

@@ -221,6 +221,51 @@ def k3_opening_paragraph(d: Doc) -> float:
     return float(len(d.paragraphs[0].split()))
 
 
+# A table block, and the grid test R04 already states in words: several things
+# compared across the same dimensions, where a reader will want to find one
+# cell. The median-cell bound is what separates that from R04's own
+# counter-example, "a column of labels beside a column of prose". Calibrated
+# against every table in the control, substrate A: 18 of them, median body cell
+# 1.0 to 7.0 words, 2 to 5 columns. The bound exists so that a rule which
+# brings tables back cannot be credited for bringing pseudo-tables back.
+
+TABLE_BLOCK = re.compile(r"(?:^\|.*\|[ \t]*\n)+", re.M)
+TABLE_RULE = re.compile(r"^\|[\s:\-|]+\|$")
+
+
+def _grid_tables(d: Doc) -> int:
+    n = 0
+    for m in TABLE_BLOCK.finditer(FENCE.sub("", d.raw)):
+        rows = [r for r in m.group(0).strip().split("\n")
+                if not TABLE_RULE.match(r.strip())]
+        cells = [[c.strip() for c in r.strip().strip("|").split("|")] for r in rows]
+        if len(cells) < 3 or max(len(c) for c in cells) < 2:
+            continue
+        body = [len(c.split()) for row in cells[1:] for c in row]
+        if body and sorted(body)[len(body) // 2] <= 8:
+            n += 1
+    return n
+
+
+def k4_grid_tables(d: Doc) -> float:
+    """Tabular content kept as a table. Control 2.94 per 1k words on documents
+    and 0.53 on conversational replies; the shipped rules take both to 0.00.
+    Substrate A holds 18 control tables and no treatment table at all.
+
+    The suppressed twin S4b counts every table row and reads its fall to 0.00 as
+    R04 working. The ratified defect behind S4b is markup on a chat reply, and
+    its quoted evidence is a debugging answer carrying six H2 sections and a
+    seven-row table. Document tables were never the target, and R04's own text
+    licenses them.
+
+    Evidence, on a postmortem that narrates its timeline in prose because the
+    control's Time/Event table is gone: "This is jumping too far ahead to
+    'Nothing in our monitoring reacted...' instead of explaining the sequence
+    and the cause first." [a-treatment-d04-r2#2] The copyeditor confirmed on
+    being asked that the missing table is the complaint."""
+    return d.per_k(_grid_tables(d))
+
+
 # ------------------------------------------------------------------ context --
 # Not defects. Reported so a metric change can be read against how much the
 # volume and shape of the output moved.
@@ -256,6 +301,7 @@ DETECTORS = [
     ("K1", "list items",                "per 1k words",    "collateral", k1_list_items),
     ("K2", "code blocks",               "per 1k words",    "collateral", k2_code_blocks),
     ("K3", "opening paragraph",        "words",           "collateral", k3_opening_paragraph),
+    ("K4", "grid tables",              "per 1k words",    "collateral", k4_grid_tables),
     ("C1", "output length",             "words",           "context",    c1_words),
     ("C2", "mean paragraph length",     "words",           "context",    c2_mean_para_words),
     ("C3", "mean sentence length",      "words",           "context",    c3_mean_sentence_words),

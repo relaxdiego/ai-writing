@@ -28,6 +28,7 @@
 | K1 | list items | per 1k words | 10.78 | 10.78 | · +0.00 | no (±4.21) |
 | K2 | code blocks | per 1k words | 2.08 | 2.08 | · +0.00 | no (±1.69) |
 | K3 | opening paragraph | words | 28.44 | 28.44 | · +0.00 | no (±7.28) |
+| K4 | grid tables | per 1k words | 0.60 | 0.60 | · +0.00 | no (±0.42) |
 | | **context** | | | | | |
 | C1 | output length | words | 641.44 | 641.44 | · +0.00 | no (±179.50) |
 | C2 | mean paragraph length | words | 36.87 | 36.87 | · +0.00 | no (±7.75) |
@@ -54,6 +55,7 @@
 | K1 | list items | per 1k words | 12.78 | 12.78 | · +0.00 | no (±3.02) |
 | K2 | code blocks | per 1k words | 2.23 | 2.23 | · +0.00 | no (±1.48) |
 | K3 | opening paragraph | words | 27.92 | 27.92 | · +0.00 | no (±6.38) |
+| K4 | grid tables | per 1k words | 0.48 | 0.48 | · +0.00 | no (±0.31) |
 | | **context** | | | | | |
 | C1 | output length | words | 617.87 | 617.87 | · +0.00 | no (±111.34) |
 | C2 | mean paragraph length | words | 35.47 | 35.47 | · +0.00 | no (±4.87) |

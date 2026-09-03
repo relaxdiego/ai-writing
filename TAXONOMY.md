@@ -70,6 +70,13 @@ that forces the tiering."
 H2 sections on a 700-word chat reply, in 67% (A) and 70% (B) of samples. One
 sample answers a debugging question with six H2 sections and a seven-row table.
 
+**The table half of this entry is about chat replies only.** The quoted evidence
+is a conversational sample, and the control puts 14 of its 18 substrate-A tables
+in documents, where R04's own text licenses them. S4b counts every table row in
+both registers and reads 4.21 -> 0.00 as R04 working. K4 in the collateral set
+counts the tables R04 permits, and it went to zero too. Read the two together;
+S4b alone will call a total loss a success.
+
 ### 5. Inline bold for vocal stress — 3.97 A / 6.81 B
 
 Bold inside prose to mark emphasis rather than structure: "that's **5.1 billion
@@ -122,7 +129,9 @@ compared to the control which was to the point", "it's beating around the bush
 ... the reader could miss it", "does not put in front the cost of each
 approach", "does not transition to alternatives", "jumping too far ahead
 ... instead of explaining the sequence and the cause first". The complaint is
-where the answer sits, not how long the paragraph is. That is K3.
+where the answer sits, not how long the paragraph is. Five of those are K3. The
+sixth is the postmortem, and the copyeditor confirmed on being asked that the
+missing table is the complaint; that is K4.
 
 Rejections concentrate by prompt, not by length: d05 3 of 3, c04 3 of 4, c07 2
 of 3, against c02 1 of 7 and c05 0 of 4. They are the prompts whose answer is a
@@ -186,21 +195,48 @@ clause pushes the same way, since a verdict has to land somewhere.
 close its paragraphs on a verdict here; it opens the answer on one and then
 develops. Those are different moves and only the second is being protected.
 
-**Open, and deliberately not made a fourth entry.** One rejection is a
-postmortem: "jumping too far ahead to 'Nothing in our monitoring reacted...'
-instead of explaining the sequence and the cause first" [a-treatment-d04-r2#2].
-The control renders that sequence as a timeline table, which R04 removes and
-S4b scores 4.21 -> 0.00 as a success. A postmortem timeline is the case R04's
-own text describes as a legitimate table. This is the d01 problem again: a
-suppressed metric at zero is not always a win. But the copyeditor's note names
-the ordering and not the table, so it does not yet justify an entry. Ask before
-inventing one.
+### K4. Grid tables — 0.97 A document / 0.34 A conversational, per 1k words
 
-This is DESIGN.md 4.2b arriving a second time, and K3 makes it a third. The
-suppressed set counts what the rules forbid, the held-out set guards against
-token-dodging, and neither could see the rules destroying something worth
-keeping. A detector set needs a
-direction for defects to fall *and* a direction for structure to hold.
+Tabular content kept as a table. Substrate A holds 18 control tables and no
+treatment table at all, in either register.
+
+    This is jumping too far ahead to "Nothing in our monitoring reacted..."
+    instead of explaining the sequence and the cause first.
+                                                   [a-treatment-d04-r2#2]
+
+The control on that prompt gives the sequence as a Time/Event table with eight
+rows, then draws the consequence. The treatment has no table, so the sequence
+has to be narrated, and it is narrated out of order. Asked directly whether the
+missing table was the complaint, the copyeditor said it was.
+
+R04's own text is the definition K4 measures: several things compared across the
+same dimensions, where a reader will want to find one cell, as against "a column
+of labels beside a column of prose". Every control table meets it — 2 to 5
+columns, median body cell 1.0 to 7.0 words — so the bound is set at 8 words. It
+is there so that a rule which brings tables back cannot be credited for bringing
+pseudo-tables back, which is the same guard S4a provides for the list clause.
+
+    control 0.60    R01 0.19    R02 alone 0.24    +R04 0.00
+
+**Attribution is shared, and this corrects the record.** R02 alone removes most
+of them, 0.60 to 0.24, and that clears its band — barely, at the edge. R04
+finishes the job. S4b could not see R02's contribution because it counts rows,
+and row counts carry the variance of table size on top of table presence: on
+R02 alone S4b reads -2.05 against a band of +/-2.81 and clears nothing, while
+K4 reads -0.36 against +/-0.36. Counting tables rather than rows is the same
+estimator repair as pooling S2.
+
+So R04 is not solely at fault here, and removing R04 alone would probably not
+bring the tables back. The likely reading is R02's isolated-short-block clause a
+third time, since a table row is an isolated short block as well, but no run
+isolates that and it stays a hypothesis.
+
+This is DESIGN.md 4.2b arriving a second time, and K3 and K4 make it a third
+and a fourth. The suppressed set counts what the rules forbid, the held-out set
+guards against token-dodging, and neither could see the rules destroying
+something worth keeping. K4 adds the sharper version: a suppressed metric and a
+collateral metric can measure the same markup, and reading only the suppressed
+one turns a total loss into a success.
 
 ## Tells this model does not have
 

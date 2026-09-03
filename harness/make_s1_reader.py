@@ -66,7 +66,7 @@ VERDICT_OF = {"the defect": "defect", "not the defect": "clean",
               "yes": "defect", "no": "clean"}
 
 
-def read_ruling(path: Path, rows: list[dict]) -> dict:
+def read_ruling(path: Path, rows: list[dict], ctrl_rows: list[dict]) -> dict:
     """Turn a pasted ruling table back into the galley's own store.
 
     Rows are matched on prompt, repeat, kind and word count, consumed in
@@ -79,6 +79,11 @@ def read_ruling(path: Path, rows: list[dict]) -> dict:
     pool: dict[tuple, list[dict]] = {}
     for r in rows:
         pool.setdefault((r["pid"], r["rep"], r["what"], r["words"]), []).append(r)
+    # The control table names no kind, because every row in it is a leftover.
+    ctrl_pool: dict[tuple, list[dict]] = {}
+    for r in ctrl_rows:
+        if r["what"] == "floating":
+            ctrl_pool.setdefault((r["pid"], r["rep"], r["words"]), []).append(r)
 
     unmatched = 0
     for line in path.read_text(encoding="utf-8").splitlines():
@@ -86,6 +91,14 @@ def read_ruling(path: Path, rows: list[dict]) -> dict:
         if len(cells) == 4 and cells[0] in KIND_OF:          # the per-kind ruling
             v = VERDICT_OF.get(cells[2].lower())
             seed["rule:" + KIND_OF[cells[0]]] = {"v": v or "", "n": cells[3]}
+        elif len(cells) == 5 and "·" in cells[0] and "→" in cells[1]:  # a control hit
+            pid, rep = cells[0].split("·r")
+            hits = ctrl_pool.get((pid, int(rep), int(cells[2]))) or []
+            if not hits:
+                unmatched += 1
+                continue
+            h = hits.pop(0)
+            seed["hit:" + h["id"]] = {"v": VERDICT_OF.get(cells[3], ""), "n": cells[4]}
         elif len(cells) == 6 and "·" in cells[0]:            # one marked hit
             pid, rep = cells[0].split("·r")
             key = (pid, int(rep), KIND_OF.get(cells[2], cells[2]), int(cells[3]))
@@ -192,7 +205,7 @@ def build(run: Path, prev: Path, ctrl: Path, out: Path) -> None:
     for r in ctrl_rows:
         r["id"] = "ctrl:" + r["key"] + ":" + str(r["index"])
 
-    seed = read_ruling(REPO / "verdicts" / f"s1-{run.name}.md", rows)
+    seed = read_ruling(REPO / "verdicts" / f"s1-{run.name}.md", rows, ctrl_rows)
 
     data = {
         "run": run.name, "prev_run": prev.name, "control_run": ctrl.name,

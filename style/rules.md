@@ -47,6 +47,13 @@ Carry a thought from claim through reasoning to consequence inside a single
 paragraph. A paragraph holding one sentence has usually been cut away from the
 one before it; join them unless the isolation is doing real work.
 
+This concerns paragraphs of prose. A list is not a paragraph that somebody
+chopped up. Where the content is a set of parallel items, such as competing
+explanations, ordered steps, or options to choose between, set it as a list and
+leave it as a list. A worked example is the same case: a code block is the
+example itself, and absorbing it into the sentences around it removes the thing
+the reader came for.
+
 Do not close a paragraph with a short verdict following a long explanation. That
 shape performs insight rather than delivering it, and the explanation has
 already carried the point. For the same reason, do not open a sentence with

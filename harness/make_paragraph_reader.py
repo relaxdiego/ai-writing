@@ -18,6 +18,7 @@ Usage: make_paragraph_reader.py <run-dir> <control-dir> <out.html> [--top N]
 import argparse
 import json
 import statistics as st
+from collections import Counter
 import sys
 from pathlib import Path
 
@@ -36,11 +37,22 @@ def harvest(run_dir: Path, substrate: str = "a") -> tuple[list[dict], dict]:
         doc = Doc((run_dir / "samples" / f"{s['key']}.md").read_text(encoding="utf-8"))
         for idx, (para, sents) in enumerate(zip(doc.paragraphs, doc.para_sents)):
             lens = [len(x.split()) for x in sents]
+            openers = [x.split()[0].rstrip(",;:").lower() if x.split() else ""
+                       for x in sents]
+            top = Counter(o for o in openers if o).most_common(1)
+            echo = top[0][0] if top and top[0][1] >= 3 else ""
             out.append({
                 "words": len(para.split()), "sents": len(sents),
                 "longest_sent": max(lens) if lens else 0,
                 "pid": s["prompt_id"], "register": s["register"],
                 "key": s["key"], "index": idx, "text": para.strip(),
+                # The shape is the reading aid: a paragraph that is secretly a
+                # list shows it in the openers, which needs no knowledge of the
+                # subject to see.
+                "shape": [{"w": w, "t": x.strip(), "echo": o == echo and bool(echo)}
+                          for w, x, o in zip(lens, sents, openers)],
+                "echo": echo,
+                "echo_n": sum(1 for o in openers if o and o == echo),
             })
     return out, manifest
 
@@ -125,6 +137,7 @@ TEMPLATE = r"""<title>The Wall Paragraph Galley</title>
   --focus:#8ba0ee;
 }
 *{box-sizing:border-box}
+[hidden]{display:none!important}
 body{background:var(--paper);color:var(--ink);font-family:var(--sans);
   line-height:1.55;-webkit-font-smoothing:antialiased}
 .wrap{max-width:940px;margin:0 auto;padding:0 24px 96px}
@@ -216,6 +229,17 @@ details.anchor .inner .who{font-family:var(--mono);font-size:10.5px;
   padding:6px 10px;border:1px solid var(--rule);background:var(--raised);
   color:var(--ink)}
 .verdict input::placeholder{color:var(--ink-faint)}
+.shape{max-width:70ch;margin:0;display:flex;flex-direction:column;gap:7px}
+.shape li{display:grid;grid-template-columns:26px 42px minmax(0,1fr);gap:12px;
+  align-items:baseline;list-style:none}
+.shape .i,.shape .w{font-family:var(--mono);font-size:11px;color:var(--ink-faint);
+  font-variant-numeric:tabular-nums;text-align:right}
+.shape .s{font-family:var(--serif);font-size:15.5px;line-height:1.5}
+.shape li.echo{background:var(--mark-wash);box-shadow:inset 2px 0 0 var(--mark);
+  padding:3px 6px 3px 0;margin-left:-8px;padding-left:8px}
+.shape li.echo .s::first-letter{color:var(--mark);font-weight:600}
+.echoflag{font-family:var(--mono);font-size:11px;color:var(--mark);
+  border:1px solid var(--mark);padding:1px 7px;letter-spacing:.03em}
 .empty{padding:48px 0;color:var(--ink-faint);font-family:var(--mono);font-size:13px}
 
 /* prompt reference ------------------------------------------------------ */
@@ -267,6 +291,10 @@ details.anchor .inner .who{font-family:var(--mono);font-size:10.5px;
     <button data-m="all" aria-pressed="true">Every slip</button>
     <button data-m="todo" aria-pressed="false">Unmarked</button>
   </div>
+  <div class="seg" id="viewfilter">
+    <button data-view="prose" aria-pressed="true">Read as prose</button>
+    <button data-view="shape" aria-pressed="false">Show the shape</button>
+  </div>
   <button class="copy" id="copy">Copy verdict</button>
   <div class="tally" id="tally"></div>
 </div>
@@ -288,7 +316,7 @@ const save = () => { try{ localStorage.setItem(K, JSON.stringify(store)); }catch
 const $ = id => document.getElementById(id);
 const esc = s => String(s).replace(/[&<>"]/g,
   c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const state = {reg:"all", mark:"all"};
+const state = {reg:"all", mark:"all", view:"prose"};
 const idOf = e => e.key + "#" + e.index;
 
 $("eyebrow").innerHTML = [
@@ -312,7 +340,10 @@ $("caption").textContent =
   + `set as prose and ranked by length. Each one folds out to the control's `
   + `longest paragraph on the same prompt, so the comparison is like for like. `
   + `Paragraphs are cut the way the detectors cut them, so what you read is `
-  + `exactly what C2 counts.`;
+  + `exactly what C2 counts. Switch to "Show the shape" to read a paragraph as `
+  + `one sentence per line with its length, and repeated sentence openings `
+  + `marked: a paragraph that is secretly a list gives itself away there, `
+  + `whether or not you follow the subject.`;
 
 function slip(e){
   const v = (store[idOf(e)] || {}).v || "";
@@ -331,8 +362,13 @@ function slip(e){
         <span class="name">${esc(e.prompt_name)}</span>
         <span>${e.sents} sentence${e.sents === 1 ? "" : "s"} &middot; longest ${e.longest_sent}w</span>
         <span>${esc(e.key)}</span>
+        ${e.echo ? `<span class="echoflag">${e.echo_n} sentences open with
+          &ldquo;${esc(e.echo)}&rdquo;</span>` : ""}
       </div>
-      <p class="para">${esc(e.text)}</p>
+      <p class="para" data-view="prose">${esc(e.text)}</p>
+      <ul class="shape" data-view="shape" hidden>${e.shape.map((s,i) =>
+        `<li class="${s.echo ? "echo" : ""}"><span class="i">${i+1}</span>
+         <span class="w">${s.w}w</span><span class="s">${esc(s.t)}</span></li>`).join("")}</ul>
       ${a ? `<details class="anchor"><summary>The control's longest paragraph on
         ${esc(e.pid)} runs ${a.words} words &mdash; read it</summary>
         <div class="inner"><span class="who">${esc(a.key)}</span>
@@ -352,6 +388,7 @@ function draw(){
     (state.mark === "all" || !(store[idOf(e)] || {}).v));
   $("galley").innerHTML = rows.length ? rows.map(slip).join("")
     : `<p class="empty">Nothing left under this filter.</p>`;
+  applyView();
   const vals = DATA.entries.map(e => (store[idOf(e)] || {}).v);
   const n = v => vals.filter(x => x === v).length;
   $("tally").innerHTML = `<span class="n-long">${n("long")} too long</span>
@@ -372,7 +409,12 @@ $("galley").addEventListener("input", ev => {
   (store[id] || (store[id] = {})).note = ev.target.value;
   save();
 });
-for(const [el, key, attr] of [["regfilter","reg","reg"],["markfilter","mark","m"]]){
+function applyView(){
+  for(const el of document.querySelectorAll("#galley [data-view]"))
+    el.hidden = el.dataset.view !== state.view;
+}
+for(const [el, key, attr] of [["regfilter","reg","reg"],["markfilter","mark","m"],
+                              ["viewfilter","view","view"]]){
   $(el).addEventListener("click", ev => {
     const b = ev.target.closest("button"); if(!b) return;
     state[key] = b.dataset[attr];

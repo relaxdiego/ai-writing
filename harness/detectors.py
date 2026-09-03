@@ -39,11 +39,15 @@ def unwrap(raw: str) -> str:
     count is the guard, so an answer that really is one code block is left be.
     """
     lines = raw.strip().splitlines()
-    if len(lines) >= 2 and lines[0].startswith("```") and lines[-1].strip() == "```":
-        inner = "\n".join(lines[1:-1])
-        if inner.count("```") >= 2:
-            return inner
-    return raw
+    if len(lines) < 4 or not lines[0].startswith("```") or len(lines[0].strip()) <= 3:
+        return raw                      # no opener, or an opener with no info string
+    fences = [i for i, l in enumerate(lines) if l.strip().startswith("```")]
+    if len(fences) < 4 or len(fences) % 2:
+        return raw                      # no nesting inside, or unbalanced
+    # The outer wrapper closes at the last fence; anything after it is the
+    # model's own commentary and stays. One sample ends with a paragraph there.
+    close = fences[-1]
+    return "\n".join(lines[1:close] + lines[close + 1:])
 
 
 def segment(raw: str) -> list[tuple[str, str]]:

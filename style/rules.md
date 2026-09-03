@@ -7,6 +7,26 @@ SHA-256 is recorded in every run manifest.
 
 Rules must never name a held-out mannerism (TAXONOMY.md, held-out set).
 
+## What each rule is attributed to
+
+Substrate A, the gate. A rule stays only where a run isolates its effect, never
+because the stack it sits in cleared.
+
+| rule | owns | evidence |
+|---|---|---|
+| R02 | S1, S3 | tested alone, `20260903T031737Z-R02`: S1 31.5 -> 8.0, S3 4.8 -> 1.0 |
+| R04 | S4b | marginal on R02, `20260903T035059Z-R03-R06`: 2.16 -> 0.00, band 1.78 |
+| R05 | S7 | ablation, `20260903T042140Z-ablate-R05`: removing it returns S7 to 16.67, the control rate exactly, clearing on both substrates |
+| R06 | S6 | marginal on R02, `20260903T035059Z-R03-R06`: 8.44 -> 0.97, band 1.65 |
+
+S2, the epigrammatic close, is owned by no rule that was written for it. R03 was
+and did nothing. Across four runs S2 instead tracks R05: 5.54 and 7.64 without
+it, 2.99 and 3.09 with it, and without R05 the metric does not clear against the
+control. The likely reading is that the epigram is a closing move, so an
+instruction to finish on the answer suppresses it as a side effect. The marginal
+band does not resolve this at n=3 per prompt and it is a hypothesis, not a
+result. Running the full noise floor is what would settle it.
+
 ## Retired IDs
 
 **R01 — match length to what the question earns.** Withdrawn after

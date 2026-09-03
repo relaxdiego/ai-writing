@@ -21,7 +21,7 @@ because the stack it sits in cleared.
 | R07 | S1 corrected, K3 | **inherited, not re-measured.** From R02 undivided: the floating-fragment residue of S1, pooled and uncapped, 19.91 -> 4.48 against 11.22 without R02, in `20260903T193603Z-ablate-R02`; and K3 64.9 -> 36.7 band 12.10 in `20260903T092452Z-R02-collateral` |
 | R08 | K1, K2, K4 | **inherited, not re-measured.** From R02's collateral clauses, `20260903T092452Z-R02-collateral`: K1 0.80 -> 4.63 band 1.79, K2 0.86 -> 1.29 band 0.24, K4 0.00 -> 0.27 band 0.11 |
 | R09 | S2, S3 — **claimed, not earned** | `20260903T193603Z-ablate-R02` removed R02 undivided and moved S2 by +0.09 against a band of 3.55 and S3 by -1.20 against a band of 1.73. Neither clears. The rule is kept pending its own ablation, not on evidence |
-| R04 | S4b, shared | marginal on R02, `20260903T035059Z-R03-R06`: 2.16 -> 0.00, band 0.84. R02 alone had already taken S4b 4.21 -> 2.16 against a band of 1.20, which the old band hid; R04 finishes it rather than owning it |
+| R10 | S4a, S4b, K4; and K1 as a cost | ablation by replacement, `20260903T231128Z-R10-scan-not-length` against the R04 arm: S4a 3.60 -> 4.35 band 0.43, S4b 1.36 -> 5.64 band 1.80, K4 0.18 -> 0.78 band 0.27, K1 5.94 -> 3.52 band 1.83. Six of twenty metrics cleared where chance yields one. The headings return where they were wanted and the tables overshoot the control |
 | R05 | S7 | ablation, `20260903T042140Z-ablate-R05`: removing it returns S7 to 16.67, the control rate exactly, clearing on both substrates |
 | R06 | S6 | marginal on R02, `20260903T035059Z-R03-R06`: 8.44 -> 0.97, band 1.04 |
 
@@ -53,15 +53,22 @@ cannot see what follows the paragraph. Read S1 with that decomposition until the
 detector is split; it is the third estimator fault found, after S2's per-sample
 ratio and S4b's row counting.
 
-S4a and S5 rise for real and are not artifacts. Headers go 3.44 -> 3.95 against
-a band of 0.43, entirely in documents, where conversational headers stay at
-0.00 and the control sits at 9.00. Inline bold goes 0.27 -> 2.07 against a band
-of 0.83, against a control of 3.97. The bold is R06's business, not R02's: an
-answer told to state its verdict first will reach for bold to mark it unless
-R06 stops it, and R06 permits bold as a label at the head of an entry, which is
-close enough to a verdict line for the model to take it. Both metrics still
-clear against the control by a wide margin, so this is a cost to watch and not
-a failure, but S5 is a ratified defect and it partly came back.
+S4a rises for real and is not an artifact. Headers go 3.44 -> 3.95 against a
+band of 0.43, entirely in documents, where conversational headers stay at 0.00
+and the control sits at 9.00.
+
+**S5's rise is an artifact, and this corrects the record.** The reading was that
+inline bold went 0.27 -> 2.07 against a band of 0.83 and that a ratified defect
+had partly come back. It had not. S5 strips a bold that occupies a whole line
+but counts a bold that opens a list item, which is preceded by its bullet, and
+R06 names that use as permitted. Excluding it, the ruled arms carry **no inline
+bold at all**: 2.88 -> 0.00 on v1 and 2.16 -> 0.00 on v2, against controls of
+1.52 and 1.16 under the same exclusion. All 37 hits in the v2 ruled arm are
+labels opening list entries. What the metric was reporting is R08 restoring
+lists, counted as a defect. It is the same fault as S4b, a suppressed metric and
+a collateral metric counting the same markup, and it is the fourth estimator
+fault found. The detector is unchanged and the ruling belongs to the copyeditor;
+`TAXONOMY.md` entry 5 carries the evidence.
 
 **S2 belongs to R02, and R05 never owned it.** The hypothesis that it did was an
 artifact of how S2 was counted. S2 averaged a per-sample percentage, so a reply
@@ -149,6 +156,79 @@ rule and stays unambiguous.
 +0.10 on substrate A against a band of 3.14, and all eight suppressed metrics
 still cleared without it. R02's paragraph-development clause had already taken
 the epigrammatic close as far as it goes.
+**R04 — reserve structure for structured content. Replaced, not withdrawn.**
+R04 decided what may carry a heading by asking how long the writing is: "A reply
+of a few hundred words is read once, from the top, and needs neither." The test
+is wrong, and reading the samples by prompt shows it failing in the same place
+every time. On the pull request description, the one document short enough to
+look like a reply, headings go from 6.3 in the v1 control to 0.0 in every arm
+R04 appears in -- fifteen of eighteen substrate-A samples across six arms carry
+no heading at all and the other three carry one, including the arm where R02 was
+ablated and R04 stood without it. Corpus v2 repeats it: 1, 1 and 0 headings
+against a control of 5, 5 and 5. Long documents are untouched over the same runs: the ADR holds 4.7 against a
+control of 8.3, the postmortem 7.0 against 9.3, the migration guide 8.3 against
+11.0. R04 does not flatten documents. It flattens the short one, and a pull
+request description is scanned however short it is. The blind read lost its one
+document verdict there, on exactly that ground.
+
+The same clause takes a table out of a short reply even where the content is
+already a grid. On the inconclusive investigation the control sets four hourly
+buckets and their counts as a table, 2.7 rows in v1 and 6 in v2, and every ruled
+arm reads 0.0; the reader named that paragraph as the place readability dropped.
+R08's table protection does not reach it, because R04 has already ruled the
+whole reply out of structure.
+
+**R10 replaces R04 and changes one thing: the discriminator is the use, not the
+length.** The conversational suppression R04 earned is deliberately kept --
+headings on the conversational prompts stay at 0.0 against a control of 5.0,
+4.3 and 3.0, and the reader accepted that twice while complaining about it. The
+ID is retired because the instruction now says something different, not because
+it failed.
+
+## What R10 measured
+
+`runs/20260903T231128Z-R10-scan-not-length`, corpus v2, substrate A, 36 samples,
+$2.99, style sha `daee39bf`. The only change from the arm that passed the blind
+read is R04 becoming R10, in the same file position, so nothing about reading
+order moved.
+
+**The two faults R10 was written for are both gone.** The pull request
+description goes from 0.7 headings to 4.7 against a control of 5.0, and the
+inconclusive investigation goes from 0.0 table rows to 6.7 against a control of
+4.0. Both were named by the reader, and neither survives.
+
+**The conversational suppression survives untouched.** Headings on all seven
+conversational prompts stay at 0.0, against a control that writes 4.3, 5.0, 3.7
+and 0.7 on four of them. Replacing the length test did not cost the effect the
+length test was hiding behind.
+
+**The table clause overshot, and it is paying for it in lists.** Against the R04
+arm, six of twenty metrics cleared their bands where chance yields one:
+
+    S4a  headers          3.60 -> 4.35   band 0.43
+    S4b  table rows       1.36 -> 5.64   band 1.80
+    K4   grid tables      0.18 -> 0.78   band 0.27
+    K1   list items       5.94 -> 3.52   band 1.83
+    H1   hedge density    1.45 -> 0.99   band 0.46
+    C1   output length     475 ->  548   band 42.81
+
+S4b now sits above the control's 4.60 and K4 above the control's 0.55, so the
+grid-table gap the scorecard has carried since the collateral set was written is
+not merely closed but overrun. K1 falls in the same run.
+
+**The lists did not vanish; they became tables, and the tables are real grids.**
+Set as a list on the control and as a table under R10: five image libraries
+against the call that loses orientation and the call that keeps it `[c02-r1]`;
+five API changes against whether the codemod fixes them and whether 2.x code
+still runs `[d05-r1]`. Both are several things compared across the same
+dimensions, which is what both R08 and R10 say a table is for. Counting the two
+together, structure per 1,000 words goes 7.30 under R04 to 9.16 under R10,
+against a control of 14.66, so about a quarter of the remaining gap closed.
+
+**Whether that trade is an improvement is a question about prose and belongs to
+the copyeditor, not to K1.** The metric can only say a list item became a table
+row. Tables also appear in three conversational prompts where the control writes
+none, which is the part of the overshoot least likely to survive a reading.
 
 Retired IDs are never reused and never assembled, so historical run records stay
 unambiguous.
@@ -188,18 +268,23 @@ already carried the point. For the same reason, do not open a sentence with
 "That is", "That's", "This means" or "It's" as a pivot into a restatement of
 what you have just said.
 
-## R04 — Reserve structure for structured content
+## R10 — Reserve structure for what a reader will scan
 
-Headings and tables are for a document a reader will scan and return to. A reply
-of a few hundred words is read once, from the top, and needs neither. Carry the
-organisation in the prose: a sentence saying what you are about to take up does
-the work the heading was standing in for, and it does it without breaking the
-page into administered sections.
+Headings and tables are for writing a reader will scan, search and return to.
+What settles that is the use, not the length. A pull request description or a
+release note is read by somebody looking for one part of it, so it stays
+sectioned however short it runs. A reply inside a conversation is read once,
+from the top, however long it runs, and carries its organisation in the prose: a
+sentence saying what you are about to take up does the work the heading was
+standing in for, and it does it without breaking the page into administered
+sections.
 
-Use a table only when the content is already a grid, meaning several things
-compared across the same dimensions, where a reader will want to find one cell.
-Two or three points belong in sentences. A table with a column of labels beside
-a column of prose is a list wearing a table's clothes.
+Use a table when the content is already a grid: several things compared across
+the same dimensions, or figures a reader will want to read off one at a time.
+Counts and timings taken out of a log or a benchmark are that case, and running
+them into a sentence leaves the reader rebuilding a grid you already had. Two or
+three points belong in sentences. A column of labels beside a column of prose is
+a list wearing a table's clothes.
 
 ## R05 — Stop when the answer stops
 

@@ -62,12 +62,39 @@ composite headline score**, because collapsing eight distinct tics into one
 number hides fixing two while worsening three.
 
 Detectors are derived empirically from a real baseline run, not from an a-priori
-list of known LLM tells, so they describe the tics this model actually has.
+list of known LLM tells, so they describe the tics this model actually has. The
+ratified taxonomy is `TAXONOMY.md`; every detector implements an entry in it.
+
+**Cadence detectors rank above markup detectors.** The two defects that make the
+prose tiring to read are prosodic (one-sentence paragraphs at 30% of all
+paragraphs; the long-sentence-then-short-verdict close at 10.4%), not
+typographic. Markup rates - em-dashes, bold, headers - are real but secondary,
+and must never be allowed to stand in for the cadence measures.
 
 **4.2 The Goodhart guard.** A detector that counts what the rules forbid is a
 tautology, not a measurement. Two defenses: a **held-out detector set that the
 rules are forbidden to name explicitly**, and the pairwise judge below, which
 cannot be gamed by token avoidance.
+
+The held-out set must stay large enough to function. Inline bold was proposed
+for it and moved to the suppressed set on review: holding a tic out means
+nothing instructs against it, so a defect worth fixing cannot also serve as the
+guard. The set therefore holds tics real enough to move but low-priority enough
+that leaving them uninstructed costs nothing (`TAXONOMY.md`, held-out set).
+
+**4.2b Detector selection is itself a bias.** The first pass at this taxonomy
+measured markup - em-dashes, bold, headers - because markup is trivial to regex,
+and reported healthy sentence-length variance while missing the staccato
+entirely. The staccato is at the paragraph level, invisible to every
+sentence-level metric. Had that suite shipped, the harness would have driven the
+rules toward suppressing em-dashes while the mannered cadence sailed through
+unmeasured, and the numbers would have reported a win.
+
+This is the Goodhart failure arriving from detector *selection* rather than rule
+gaming, and the held-out set does not guard against it: held-out detectors are
+still detectors someone thought to build. The standing rule: **every detector
+must be justified against a quoted passage from a real sample, never invented a
+priori**, and each entry in `TAXONOMY.md` carries its evidence.
 
 **4.3 Blinded pairwise judge.** Sonnet, running under a minimal system prompt in
 the same clean room, so that Anthropic's own style guidance is not silently one
@@ -78,6 +105,10 @@ human wrote it, not which avoids named mannerisms.
 
 Absolute 1-5 rubric scoring was considered and rejected as the least reliable of
 the LLM-judge forms.
+
+The judge carries more weight than originally planned. It is the only instrument
+that catches defects nobody thought to write a detector for, which 4.2b showed
+is a live failure mode rather than a theoretical one.
 
 **4.4 Human spot-check.** Every report carries excerpts: the samples that changed
 most since the previous run, plus two fixed samples present in every report so
@@ -228,7 +259,7 @@ nothing and a dependency-free harness still runs in two years.
 2. Baseline run, no style file, both substrates
 3. **Hard stop.** Raw outputs handed over for the mannerism taxonomy to be named
    from the evidence, not from a summary of it
-4. Detectors, including the held-out set
+4. Detectors implementing `TAXONOMY.md`, including the held-out set
 5. Noise floor
 6. Pairwise judge and report generation
 7. First `style.md`, first scored iteration
@@ -237,10 +268,19 @@ Packaging (output-style and `CLAUDE.md` adapters) is deferred until the evals sa
 the instructions are worth shipping. `build/style.prompt.md` is the manual
 escape hatch meanwhile.
 
-## 13. Known project risk
+## 13. Known project risk, and what the baseline settled
 
-The design rests on substrate A showing measurable movement, and it may not.
-Claude Code's default prompt already does much of this work. If A comes back flat
-across the board, that is a real finding, and the response would be to shift from
-appending toward replacing the system prompt. This is learned around step 7,
-after the build.
+The design rested on substrate A showing measurable movement, on the worry that
+Claude Code's default prompt already does much of this work.
+
+**The baseline settled this, and favourably.** A and B differ by almost nothing
+across every metric measured (`TAXONOMY.md`). Stripping the entire default system
+prompt barely moves the prose, so the mannerisms are model-intrinsic and there is
+room for the rules to act. Appending remains viable; no shift toward replacing
+the system prompt is needed.
+
+The same finding costs something. Substrate B is not the cleaner lab the design
+assumed - it is nearly the same lab as A. Its value is now cost and speed alone,
+not interpretive clarity, and a result that appears in B should be expected to
+appear in A rather than treated as a separate question. If B and A ever diverge
+sharply on a rule, that divergence is itself the finding.

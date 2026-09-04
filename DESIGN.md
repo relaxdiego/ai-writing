@@ -345,15 +345,21 @@ the repo. A second copy is a second thing to drift, and a `CLAUDE.md` at the rep
 root sits in the memory-discovery chain of every clean-room sample (section 5).
 The guide is installed as the user's own `~/.claude/CLAUDE.md`.
 
-**A release of the guide is a git tag here and a directory outside.** Cutting
-one for somebody else's machine means running the packager to a path outside the
-repo and tagging the commit whose `style/rules.md` produced it, so the wording
-can be rebuilt from the tag alone. `style-guide-v1.0` is the first, cut from
-style sha `daee39bf` at `d1e4d10`, to `~/releases/prose-style-guide-1.0/` as the
-guide plus a README covering installation. The release directory is not tracked
-and is not a second copy to maintain: it is disposable output, and the tag plus
-the packager is the real artifact. A release must never be committed here, for
-the reason in section 5.
+**A release of the guide is a git tag here and a push to a separate repository.**
+Cutting one means running the packager to a path outside this repo and tagging
+the commit whose `style/rules.md` produced it, so the wording can be rebuilt
+from the tag alone. `style-guide-v1.0` is the first, cut from style sha
+`daee39bf` at `d1e4d10`. Its tag message names the working directory the release
+was assembled in, which no longer exists; the tag is provenance for the wording,
+not a path.
+
+The guide is published at **`github.com/relaxdiego/ai-style-guide`**, public,
+one file plus a README, versioned by its own tags (`v1.0` is style sha
+`daee39bf`). That repository is the thing to hand somebody, and this one still
+keeps no copy of the guide, for the reason in section 5. Two repositories now
+have to be kept in step: a new release is the packager, then a commit and a tag
+there, then a tag here. Nothing checks the two agree, so the check is to diff
+the published file against a fresh package before tagging.
 
 The output-style adapter is still deferred.
 

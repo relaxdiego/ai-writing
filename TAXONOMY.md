@@ -495,12 +495,31 @@ released guide reads 0.30, which does not clear.
     Their next request — the one that displays the photo — is routed to a
     different machine, which has no such file.        [a-control-c04-r1]
 
-Whether that costs anything is a question for the copyeditor and not for the
-detector. R06 names the interruption as correct, so a rule that removes it is
-overshooting its own text; against that, nine of the control's paragraphs marked
-in the S1 read drew punctuation complaints, six of them carrying an em-dash or
-an arrow, so the reader may not miss it. Read K5 beside S6 the way K4 is read
-beside S4b.
+**Ruled on 2026-09-04: the removal is not an overshoot.** All twenty-seven of the
+v1 control's paired interruptions were put to the copyeditor whole, arm named,
+and came back thirteen a tic to fourteen earning their place, with the fourteen
+called shaky in the same message: *"I generally view em dashes as a means to
+compensate for a poorly organized paragraph ... a lazy workaround to avoid having
+to re-think how a sentence, or its containing paragraph is structured."* A
+construction ruled a tic half the time and held doubtfully the rest is not one
+the prose loses by discarding, so K5 at 0.00 is the wanted behaviour and R06's
+permitting sentence describes something the reader does not want. The full ruling
+with every specimen is `verdicts/k5-paired-em-dash.md`.
+
+**No wording could split them, which is the more useful finding.** Every
+mechanical test that might have become a rule comes out flat across the two
+groups: a finite verb inside the interruption, 3 of 13 against 2 of 14; a
+comma-separated list inside it, 5 of 13 against 8 of 14; words enclosed, median 7
+against 6. Specimens 3 and 22 have the same shape and were ruled opposite ways.
+The distinction is whether the sentence could have been reorganised instead,
+which is a property of the sentence's alternatives rather than of the sentence,
+and no detector can see it. Read K5 beside S6 the way K4 is read beside S4b, as
+the thing a rule aimed at S6 might have taken with it, not as a gap to close.
+
+**The heuristic over-counts by one in twenty-seven.** Specimen 1 is two separate
+joints, each inside its own parenthesis, and K5 read it as one matched pair while
+S6 missed the joints. Recorded rather than fixed: the fix is a paren-aware split
+and the ruling does not turn on it.
 
 ## Observations not yet detectors
 

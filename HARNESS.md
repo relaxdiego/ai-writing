@@ -16,18 +16,35 @@ inside the repo, for two reasons. A second copy is a second thing to drift, and 
 `CLAUDE.md` at the repo root sits in the memory-discovery chain of every
 clean-room sample.
 
-**Never let a memory file reach a sample.** `--setting-sources ""` in
-`cleanroom.sh` is the only thing stopping it; the redirected config dir does not,
-because user memory is read from the real home directory regardless. The style
-guide under test lives in user memory, so a sample that read it would put the
+**The packager is also what the harness injects.** `package_style.build` is the
+only place the wording is assembled, `assemble.py` calls it, and `run.py --guide`
+builds it in process, so the document measured is the document installed. It was
+not always so: the release once carried 244 words no run had seen, and those
+words together with the stripped headings and the rewritten preamble interacted
+to give back a quarter of the em-dash win while each was inert alone.
+
+**Never let a memory file reach a sample.** Two mechanisms stop it and each
+covers a different file. User memory follows `CLAUDE_CONFIG_DIR`, and the
+synthesized scratch dir holds only credentials, so the style guide installed at
+`~/.claude/CLAUDE.md` has no route in. `--setting-sources ""` in `cleanroom.sh`
+covers the other file: a `CLAUDE.md` at the repo root, which every sample's cwd
+sits under. Neither is redundant. A sample that read either would put the
 treatment into the control arm and every comparison would be worthless while
-still looking healthy. `run.py` refuses to start if the flag has gone.
-`harness/check_cleanroom.py` carries the measurements, and `--live` re-runs the
-canary for about $0.07 with a positive control.
+still looking healthy.
+
+`run.py` refuses to start if the flag has gone, but that check is a string search
+over `cleanroom.sh` and not a proof that the flag still does what it did.
+`harness/check_cleanroom.py --live` is the only thing that could prove it and it
+currently proves nothing: it plants its canary in the real `~/.claude/CLAUDE.md`,
+which the redirect has already made unreadable, so both its arms come back silent
+and its own positive control refuses the result. Read its docstring for the
+measured table before trusting anything here.
 
 Nothing here is a current result. Results live in `runs/<utc>-<label>/report.md`,
-the attribution lives in `style/rules.md`, and the ratified defects live in
-`TAXONOMY.md`.
+what each run settled is indexed in `runs/README.md`, the attribution lives in
+`style/rules.md`, the ratified defects and their rulings live in `TAXONOMY.md`,
+the copyeditor's rulings in full live in `verdicts/`, and what is still open
+lives in the GitHub issues.
 
 ## Money
 
@@ -53,6 +70,16 @@ the bill rather than the bill.
 
     python3 harness/score.py <abs-run-dir> --against <abs-baseline> --rules <ids>
     python3 harness/judge.py <abs-run-dir> --against <abs-control>
+    python3 harness/rescore_all.py --metric S6    # after a detector changes
+
+An acceptance run takes `--guide` instead of `--style`. It builds the guide from
+`style/rules.md` in process rather than reading `build/`, so a stale file cannot
+be injected and the arm measures what ships. Keep `--style` for ablation arms,
+where `assemble.py --ablate` writes the shipped document minus one rule.
+
+`rescore_all.py` re-scores every run and rebuilds every report against the
+baseline named in that report's own header, so no report quietly changes what it
+compares. Three detector faults have needed it so far.
 
 Every path passed to the CLI must be absolute.
 
@@ -205,7 +232,29 @@ subscription auth on this CLI. If an `ANTHROPIC_API_KEY` ever appears, switch to
 room as the samples.
 
 Manifests record a summarized inventory of the config directory deliberately, so
-keep it summarized. `run.py` redacts local absolute paths from the manifest argv.
+keep it summarized. It is also evidence rather than decoration: user memory is
+read from the config dir, so an inventory with no `CLAUDE.md` in it is the proof
+that no run was contaminated by the installed guide. `run.py` redacts local
+absolute paths from the manifest argv.
+
+## Working here
+
+`DESIGN.md`, this file and `TAXONOMY.md` carry the method. These are the parts
+about the person rather than the harness.
+
+- **The copyeditor is the ground truth on what counts as a defect.** Hand over
+  raw samples, whole. They have settled S5, R10's overshoot and K5's removal,
+  each in one message.
+- **When they say "show me", give it to them where they are.** Publish the galley
+  as an Artifact and hand over the link rather than filling the terminal.
+- **Give them a name to reject, not a name to accept.** A recommendation with its
+  cost stated beats a survey of options.
+- **Replies in ASD-STE100 Simplified Technical English.** Prose, not code.
+- **Do not push without being told.** Commit locally and wait for the word.
+- **Do not poll a running job at the user.** Answer the question they asked.
+- **A prediction goes on the record before the run, not after.** Two predictions
+  have been wrong so far and both were worth more than the runs that confirmed
+  something.
 
 ## Traps that have already cost time
 
@@ -222,3 +271,15 @@ keep it summarized. `run.py` redacts local absolute paths from the manifest argv
   caught only by reading the prompts after a run had already started.
 - Raw outputs are kept forever, plain text, never compressed, so a detector
   written later can be backfilled across all history.
+- **Score the project's own documents with the project's own detectors.** Three
+  detector faults came out of doing it, all free, and one corrected a published
+  claim.
+- **Count blocks per prompt, not per arm.** R04's fault was invisible in every
+  aggregate and obvious in one table of twelve rows.
+- **A suppressed metric and a collateral metric can count the same markup**, so a
+  rule restoring structure reads as a defect returning. S4b, S5 and S6 have all
+  done it. Check for the pairing before believing a metric that moves the wrong
+  way.
+- **The CLI is not pinned by anything but a `PATH` symlink.** Every run to date
+  is 2.1.259. Check `claude --version` against the frozen control's manifest
+  before spending.

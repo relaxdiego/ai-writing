@@ -185,34 +185,44 @@ Flags applied on top of the scratch dir, belt-and-braces:
 `--system-prompt-snapshot off` matters specifically because the appended prompt
 changes between runs, which is the exact case snapshotting would poison.
 
-**The scratch dir does not suffice, and `--setting-sources ""` is not
-redundant.** It is the only thing keeping a `CLAUDE.md` out of a sample.
-Measured 2026-09-04 with a canary memory file reading "Begin every reply with
-the exact word ZEPPELIN":
+**Two mechanisms block memory, and each covers a different file.** Re-measured
+2026-09-04 with a canary reading "Begin every reply with the exact word
+ZEPPELIN", planted in one location at a time, CLI pinned to 2.1.259:
 
-| setup | canary fires? |
-|---|---|
-| no clean-room flags, cwd in the repo | yes |
-| `CLAUDE_CONFIG_DIR` redirected, no `--setting-sources` | **yes** |
-| `--setting-sources ""`, config dir not redirected | no |
-| the full clean room | no |
+| setup | canary planted in | fires? |
+|---|---|---|
+| no redirect, no flags | real `~/.claude/CLAUDE.md` | yes |
+| `CLAUDE_CONFIG_DIR` redirected, no flags | real `~/.claude/CLAUDE.md` | no |
+| `CLAUDE_CONFIG_DIR` redirected, no flags | `$CLAUDE_CONFIG_DIR/CLAUDE.md` | yes |
+| `CLAUDE_CONFIG_DIR` redirected, no flags | `cwd/CLAUDE.md` | yes |
+| the full clean room | real `~/.claude/CLAUDE.md` | no |
 
-Redirecting the config dir does not move user memory: it is read from the real
-home directory either way. This became load-bearing the moment the shipped style
-guide was installed as the user's own `CLAUDE.md`, because a sample that read it
-would put the treatment into the control arm, and every comparison in the project
-would be worthless while still looking healthy. Project memory is the same
-hazard: the scratch dir is created under `.scratch/` inside the repo, so a
-`CLAUDE.md` at the repo root sits in the discovery chain of every sample's cwd.
+User memory follows `CLAUDE_CONFIG_DIR`. `make_scratch_config()` copies only
+`.credentials.json` into the scratch dir, so the shipped guide installed at
+`~/.claude/CLAUDE.md` has no route into a sample, and every manifest's
+`config_dir_inventory` records that no `CLAUDE.md` was there.
+`--setting-sources ""` is load-bearing for the other file: the scratch dir is
+created under `.scratch/` inside the repo, so a `CLAUDE.md` at the repo root
+sits in the discovery chain of every sample's cwd, and only the flag keeps it
+out. Neither mechanism covers both files, so neither is redundant.
 
-`harness/check_cleanroom.py` holds the evidence and the test. `run.py` calls its
-free static check before spending anything and exits 78 if the flag has gone;
-`--live` re-runs the canary for about $0.07, with a positive control so a silent
-failure cannot pass as a clean result. Every run recorded to date carries the
-flag in its manifest, so none is contaminated.
+**This section has now been wrong in both directions.** It first called the
+flags belt-and-braces redundancy around the scratch dir, which understated the
+flag. It was then corrected to say the redirect does nothing and the flag is the
+only protection, on a canary reading that does not reproduce, which understated
+the redirect. A future session that drops the redirect because the flag is "the
+only thing" would put the treatment into every arm and the comparisons would
+still look healthy.
 
-The other flags remain belt-and-braces: one bug in dir synthesis should not
-silently contaminate a month of results.
+`harness/check_cleanroom.py` holds the test, and the test currently proves
+nothing: it plants its canary in the real `~/.claude/CLAUDE.md`, which the
+redirect has already made unreadable, so both its arms come back silent and its
+own positive control refuses the result. `run.py` still calls the free static
+check before spending anything and exits 78 if the flag has gone, but that check
+is a string search over `cleanroom.sh` and not a proof that the flag still does
+what it did. Issue #14 carries the fix. No run to date is contaminated by either
+route: every manifest carries the flag in its argv and lists a scratch config dir
+with no `CLAUDE.md` in it.
 
 **Upgrade path:** an `ANTHROPIC_API_KEY` enables `--bare`, which skips hooks,
 LSP, plugin sync, auto-memory, keychain reads, and CLAUDE.md discovery at the
@@ -256,10 +266,17 @@ precisely rather than guessed.
 band. Re-measured when the pinned model ID changes, the CLI version changes
 materially, or the corpus version bumps.
 
-The harness compares the current manifest against the floor's manifest and
-**refuses to report a verdict when they diverge**. The realistic failure is not a
-bad estimate but a silently stale one: comparing today's run against a band
-measured on a model that no longer exists.
+The harness is meant to compare the current manifest against the floor's
+manifest and **refuse to report a verdict when they diverge**. The realistic
+failure is not a bad estimate but a silently stale one: comparing today's run
+against a band measured on a model that no longer exists.
+
+**No code does this.** `run.py` records `cli_version()` and nothing reads it
+back, so the pin in section 1 is documentation. It has already drifted: every
+run to date, both frozen controls included, is CLI 2.1.259, and 2.1.260 is
+installed. The guide-as-shipped run of 2026-09-04 was pinned back by putting a
+symlink named `claude` ahead of the real one on `PATH`. Issue #15 carries the
+fix.
 
 ## 8. Rules and ablation
 

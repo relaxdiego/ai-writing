@@ -5,23 +5,31 @@ The style guide these runs measure is installed as the user's own CLAUDE.md. If
 it ever reached a sample, the control arm would carry the treatment and every
 comparison in the project would be worthless while still looking healthy.
 
-Measured 2026-09-04 with a canary memory file reading "Begin every reply with
-the exact word ZEPPELIN":
+Re-measured 2026-09-04, CLI pinned to 2.1.259, canary planted in one location
+at a time:
 
-    setup                                              canary fires?
-    no clean-room flags, cwd in the repo               yes
-    CLAUDE_CONFIG_DIR redirected, no --setting-sources yes
-    --setting-sources "", config dir not redirected    no
-    the full clean room                                no
+    setup                                     canary in            fires?
+    no redirect, no flags                     real ~/.claude/      yes
+    CLAUDE_CONFIG_DIR redirected, no flags    real ~/.claude/      no
+    CLAUDE_CONFIG_DIR redirected, no flags    $CLAUDE_CONFIG_DIR/  yes
+    CLAUDE_CONFIG_DIR redirected, no flags    cwd/                 yes
+    the full clean room                       real ~/.claude/      no
 
-**`--setting-sources ""` is the only thing blocking memory discovery.** The
-redirected config dir does not do it: user memory is read from the real home
-directory regardless. DESIGN.md 5 once called the flags belt-and-braces
-redundancy around the scratch dir, and on this point that was wrong.
+Two mechanisms block memory and each covers a different file. User memory
+follows CLAUDE_CONFIG_DIR, and make_scratch_config() puts only credentials in
+the scratch dir, so the installed guide cannot reach a sample. The flag is
+load-bearing for the other file: a CLAUDE.md at the repo root, which the
+sample's cwd sits under. Neither is redundant.
+
+**check_live() below currently proves nothing and says so.** It plants its
+canary in the real ~/.claude/CLAUDE.md, which the redirect has already made
+unreadable, so both arms come back silent and the positive control refuses the
+result. It has to plant the canary where a sample could actually read it. See
+issue #14.
 
 Without --live this is a free static check that the flag is still in
-cleanroom.sh, and run.py calls it before spending anything. With --live it
-spends about $0.07 running the canary for real.
+cleanroom.sh, and run.py calls it before spending anything. It is a string
+search and not a proof that the flag still does what it did.
 """
 
 import argparse

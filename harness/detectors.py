@@ -227,9 +227,38 @@ def s5_inline_bold(d: Doc) -> float:
     return d.per_k(len(INLINE_BOLD.findall(body)))
 
 
+# R06 permits the em-dash "where a sentence is interrupted and then resumed"
+# and forbids it "as a general joint between two clauses". Taxonomy entry 6
+# names only the joint: "used where a comma, colon, or full stop would serve".
+# Matched dashes within one unit are the permitted interruption; the odd one
+# out is the joint. A unit is a sentence or a single line, so a list item
+# carrying "`--apply` — perform the renames" counts on its own.
+EM_UNIT = re.compile(r"(?<=[.!?])\s+|\n")
+
+
+def _em_dash_split(d: Doc) -> tuple[int, int]:
+    """(paired interruptions, unpaired joints), fences excluded."""
+    paired = joints = 0
+    for unit in EM_UNIT.split(FENCE_BLOCK.sub("", d.raw)):
+        n = unit.count("—")
+        paired += n - n % 2
+        joints += n % 2
+    return paired, joints
+
+
 def s6_em_dash(d: Doc) -> float:
-    """Taxonomy 6 - default connective. Baseline 11.96/1k (A), 100% of samples."""
-    return d.per_k(d.raw.count("—"))
+    """Taxonomy 6 - the em-dash as a joint where a comma, colon or full stop
+    would serve. Baseline 9.54/1k (A).
+
+    Counted every em-dash until 2026-09-04, including the paired interruption
+    R06 calls correct, which is 21% of the control's hits and was overstating
+    every arm. Same fault as S5 counting a bold list label and S3 counting
+    "Its": a detector contradicting the rule it serves.
+
+    Evidence: "because none of this is random — the flag is a fixed property of
+    the file" [a-guide-as-shipped-c02-r2]. The permitted use is K5.
+    """
+    return d.per_k(_em_dash_split(d)[1])
 
 
 ARROW = re.compile(r"->|=>|[\u2192\u21d2\u2190\u21d0]")
@@ -447,6 +476,17 @@ def c3_mean_sentence_words(d: Doc) -> float:
     return round(sum(len(s.split()) for s in d.sentences) / len(d.sentences), 2)
 
 
+
+def k5_em_dash_interruption(d: Doc) -> float:
+    """The em-dash use R06 permits, kept visible so over-suppression shows.
+
+    A rule aimed at the joint can take the interruption with it, and a metric
+    that counts both cannot tell the two apart. The control writes 44 of these
+    against 170 joints.
+    """
+    return d.per_k(_em_dash_split(d)[0])
+
+
 DETECTORS = [
     ("S1", "one-sentence paragraphs",   "% of paragraphs", "suppressed", s1_one_sentence_paragraphs),
     ("S2", "long sentence then punch",  "% of paragraphs", "suppressed", s2_long_then_punch),
@@ -465,6 +505,7 @@ DETECTORS = [
     ("K2", "code blocks",               "per 1k words",    "collateral", k2_code_blocks),
     ("K3", "opening paragraph",        "words",           "collateral", k3_opening_paragraph),
     ("K4", "grid tables",              "per 1k words",    "collateral", k4_grid_tables),
+    ("K5", "em-dash interruption",     "per 1k words",    "collateral", k5_em_dash_interruption),
     ("C1", "output length",             "words",           "context",    c1_words),
     ("C2", "mean paragraph length",     "words",           "context",    c2_mean_para_words),
     ("C3", "mean sentence length",      "words",           "context",    c3_mean_sentence_words),

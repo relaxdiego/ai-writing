@@ -18,7 +18,7 @@
 | S4a | headers | per 1k words | 4.35 | 4.48 | ↑ +0.12 | no (±0.55) |
 | S4b | table rows | per 1k words | 5.64 | 4.11 | ↓ -1.53 | no (±2.05) |
 | S5 | inline bold emphasis | per 1k words | 0.03 | 0.04 | ↑ +0.01 | no (±0.11) |
-| S6 | em-dash | per 1k words | 0.04 | 0.06 | ↑ +0.01 | no (±0.14) |
+| S6 | em-dash | per 1k words | 0.04 | 0.00 | ↓ -0.04 | no (±0.08) |
 | S7 | terminal service offer | % of samples | 0.00 | 0.00 | · +0.00 | no (±0.00) |
 | S8 | arrow as connective | per 1k words | 0.21 | 0.22 | ↑ +0.01 | no (±0.13) |
 | S9 | unattached label | per 1k words | 0.00 | 0.04 | ↑ +0.04 | no (±0.07) |
@@ -31,6 +31,7 @@
 | K2 | code blocks | per 1k words | 1.90 | 2.42 | ↑ +0.52 | no (±0.90) |
 | K3 | opening paragraph | words | 39.75 | 36.56 | ↓ -3.19 | no (±5.34) |
 | K4 | grid tables | per 1k words | 0.78 | 0.64 | ↓ -0.15 | no (±0.34) |
+| K5 | em-dash interruption | per 1k words | 0.00 | 0.00 | · +0.00 | no (±0.00) |
 | | **context** | | | | | |
 | C1 | output length | words | 547.78 | 573.75 | ↑ +25.97 | no (±40.84) |
 | C2 | mean paragraph length | words | 56.47 | 54.98 | ↓ -1.49 | no (±4.62) |

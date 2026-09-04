@@ -211,9 +211,31 @@ reads on the scorecard as a defect returning. Two of the four are now that
 pairing. Check for it before believing any suppressed metric that moves the
 wrong way.
 
-### 6. Em-dash as default connective — 11.96 A / 10.75 B, **100% of samples**
+### 6. Em-dash as a joint — 9.69 A / 9.13 B per 1k words, **100% of samples**
 
-Roughly one per 83 words, used where a comma, colon, or full stop would serve.
+Used where a comma, colon, or full stop would serve.
+
+    because none of this is random — the flag is a fixed property of the file
+                                          [a-guide-as-shipped-c02-r2]
+
+**The detector counted a use R06 calls correct until 2026-09-04.** R06 permits
+the em-dash "where a sentence is interrupted and then resumed" and forbids it
+"as a general joint between two clauses", and this entry names only the joint.
+`s6_em_dash` counted `raw.count("—")`, so it counted both, and the heading read
+11.96 A / 10.75 B on the same baseline this entry now reports as 9.69 / 9.13.
+Matched dashes inside one sentence or line are now read as the interruption and
+the odd one out as the joint. Every run was re-scored and **no verdict in any
+report changed**.
+
+    Every downstream consumer — your app, your CDN, a partner API, an ML
+    pipeline — then gets an image that is what it says it is.
+                                          [a-control-c02-r1, the permitted use]
+
+This is the third detector to count something a rule permits, after S5 and the
+bold list label and after the S4b and K4 pairing. All three were found by
+reading samples rather than aggregates. The permitted use is now measured
+separately as K5, because a rule aimed at the joint can take the interruption
+with it and a metric counting both cannot say so.
 
 ### 7. Arrow as connective — 1.69 A / 0.91 B per 1k words, 39% of samples
 
@@ -458,6 +480,27 @@ guards against token-dodging, and neither could see the rules destroying
 something worth keeping. K4 adds the sharper version: a suppressed metric and a
 collateral metric can measure the same markup, and reading only the suppressed
 one turns a total loss into a success.
+
+### K5. Em-dash interruption — 2.25 A / 1.58 B, per 1k words
+
+The use R06 calls correct: a sentence interrupted and then resumed. Split out of
+S6 on 2026-09-04, because a metric counting the joint and the interruption
+together cannot say whether a rule aimed at one took the other with it.
+
+It did. **The shipped rules suppress the use they permit.** K5 reads 0.00 on the
+R10 arm against a control of 1.89 on corpus v2, clearing a band of 0.73, so the
+interruption is gone from the treatment entirely rather than merely reduced. The
+released guide reads 0.30, which does not clear.
+
+    Their next request — the one that displays the photo — is routed to a
+    different machine, which has no such file.        [a-control-c04-r1]
+
+Whether that costs anything is a question for the copyeditor and not for the
+detector. R06 names the interruption as correct, so a rule that removes it is
+overshooting its own text; against that, nine of the control's paragraphs marked
+in the S1 read drew punctuation complaints, six of them carrying an em-dash or
+an arrow, so the reader may not miss it. Read K5 beside S6 the way K4 is read
+beside S4b.
 
 ## Observations not yet detectors
 

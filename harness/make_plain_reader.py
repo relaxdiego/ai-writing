@@ -104,9 +104,24 @@ def check_blind(d: Path, got: dict, pairs: list[dict]) -> None:
               f"NAMED. A read built on these is not blind.\n", file=sys.stderr)
 
 
-def build(run: Path, ctrl: Path, out: Path, repeat: int) -> None:
+def build(run: Path, ctrl: Path, out: Path, repeat: int,
+          overrides: dict[str, int] | None = None) -> None:
+    """overrides moves single prompts to another repeat.
+
+    The ledger can spend one prompt at a repeat without touching the rest, and
+    dropping that prompt costs a whole question out of twelve. A pair is judged
+    on its own, so taking one prompt from a different repeat costs nothing: what
+    matters is that both arms of a pair answer the same prompt and that neither
+    has been read.
+    """
+    overrides = overrides or {}
     ruled, man = answers(run, repeat)
     plain, _ = answers(ctrl, repeat)
+    for pid, rep in overrides.items():
+        alt_r, _ = answers(run, rep)
+        alt_p, _ = answers(ctrl, rep)
+        if pid in alt_r and pid in alt_p:
+            ruled[pid], plain[pid] = alt_r[pid], alt_p[pid]
 
     glosses = load_glosses(man["corpus_version"])
     pairs = []
@@ -480,5 +495,14 @@ if __name__ == "__main__":
     ap = argparse.ArgumentParser()
     ap.add_argument("run"); ap.add_argument("control"); ap.add_argument("out")
     ap.add_argument("--repeat", type=int, default=1)
+    ap.add_argument("--repeat-override", default="",
+                    help="comma-separated pid=repeat, for a prompt the ledger "
+                         "has spent at the main repeat (e.g. d01=2)")
     a = ap.parse_args()
-    build(Path(a.run).resolve(), Path(a.control).resolve(), Path(a.out), a.repeat)
+    ov = {}
+    for item in a.repeat_override.split(","):
+        if item.strip():
+            pid, rep = item.split("=")
+            ov[pid.strip()] = int(rep)
+    build(Path(a.run).resolve(), Path(a.control).resolve(), Path(a.out),
+          a.repeat, ov)

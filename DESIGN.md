@@ -375,8 +375,29 @@ one file plus a README, versioned by its own tags (`v1.0` is style sha
 `daee39bf`). That repository is the thing to hand somebody, and this one still
 keeps no copy of the guide, for the reason in section 5. Two repositories now
 have to be kept in step: a new release is the packager, then a commit and a tag
-there, then a tag here. Nothing checks the two agree, so the check is to diff
-the published file against a fresh package before tagging.
+there, then a tag here.
+
+**The check that used to guard this was pointed the wrong way.** Diffing the
+published file against a fresh package proves only that two copies of the release
+agree. It could never notice that the packager's output differed from anything
+ever measured, which it did: the release carried 244 words no run had seen, and
+those words together with the stripped headings and the rewritten preamble
+interacted to give back a quarter of the em-dash win. That is closed at the
+source now. `package_style.build` is the only place the wording is assembled and
+`run.py --guide` injects it, so the document measured is the document installed.
+
+**Cutting a release is therefore:** a `--guide` run on the acceptance corpus, a
+blind read of it against the frozen control, then the packager to a path outside
+the repo, a commit and tag there, and a tag here. The published file, a fresh
+package, `build/style.prompt.md` and the installed `~/.claude/CLAUDE.md` should
+all carry one sha; on 2026-09-04 all four read `f20b1ebd`.
+
+The `style-guide-v1.0` tag message names style sha `daee39bf`, which was the old
+assembler's output and is no longer a document this pipeline emits. The guide it
+names is unchanged and still rebuilds from the tag with one command, so the sha
+is left as written for the reason already applied to the stale directory path it
+also carries: the tag is provenance for the wording, and the wording has not
+moved.
 
 The output-style adapter is still deferred.
 

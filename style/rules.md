@@ -231,10 +231,24 @@ dimensions, which is what both R08 and R10 say a table is for. Counting the two
 together, structure per 1,000 words goes 7.30 under R04 to 9.16 under R10,
 against a control of 14.66, so about a quarter of the remaining gap closed.
 
-**Whether that trade is an improvement is a question about prose and belongs to
-the copyeditor, not to K1.** The metric can only say a list item became a table
-row. Tables also appear in three conversational prompts where the control writes
-none, which is the part of the overshoot least likely to survive a reading.
+**The copyeditor ruled on 2026-09-04 that R10 stands as written, tables and
+all.** The trade was put to them as the whole `c02-r1` and `d05-r1` pair, the v2
+control against the R10 arm, both arms named, and the ruling is to keep the
+tables. Every conversational table in the run meets the grid test the rule
+states: five image libraries against the call that loses orientation and the
+call that keeps it `[c02]`; three storage options against the bill today and the
+bill in three years `[c04]`; the four parts of a search page against what each
+varies by, the safe cache key and the lifetime `[c07]`; and on `c05` the table
+the reader had already asked for. K1's fall below the control is the accepted
+price of the clause rather than a gap to close, and S4b and K4 above the control
+are ratified overshoot. **A later rule must not chase either back down**, and a
+report that reads them as a defect returning is reading the scorecard wrong.
+
+**The overshoot is smaller than this section first recorded.** Counted with
+`_grid_tables`, R10 adds a table on two conversational prompts where the control
+writes none, `c04` and `c07`, not three. The control writes grid tables on `c02`
+and `c05` as well, in one sample of three and two of three; R10 writes them in
+all three of each.
 
 Retired IDs are never reused and never assembled, so historical run records stay
 unambiguous.

@@ -347,6 +347,14 @@ that an isolated short block has usually been cut away from the one before it
 and should be joined. A list item is an isolated short block. The rule was
 written about paragraphs and the model applied it to every enumerated line.
 
+**Part of K1's remaining distance from the control is now accepted, not owed.**
+Under R10 the metric reads 3.52 against a control of 10.06, and the fall from
+5.94 in the R04 arm is lists becoming grid tables in the same samples. The
+copyeditor ruled on 2026-09-04 that those tables stay, so K1 and K4 must be read
+as a pair: a list item that became a table row is not a list item lost. What
+remains genuinely missing is enumerable content that became prose, which K1
+alone cannot separate from the ratified trade.
+
 ### K3. Opening paragraph — 28.4 A, words
 
 The answer stated before it is explained. The control's first prose paragraph
@@ -422,6 +430,13 @@ blocks as real structure rather than prose in bullets. K3's risk was that the
 verdict would be stated and then buried anyway; K4's and K1's was that a rule
 telling the model to keep structure would be answered with pseudo-structure.
 Neither happened.
+
+**K4 is no longer a gap, and the overshoot is ratified.** Under R10 the metric
+reads 0.78 against the v2 control's 0.55, and its suppressed twin S4b reads 5.64
+against 4.60. The copyeditor ruled on 2026-09-04 that the tables producing those
+figures stay, having read the `c02-r1` and `d05-r1` pair whole. K4 above the
+control is therefore the intended state of the shipped set. Do not write a rule
+to bring it back down to the control, and do not report the rise as a defect.
 
 One note came back, and it is not about either. On a 38-word opening that reads
 "The separate append-only store is solving a problem you don't have yet and

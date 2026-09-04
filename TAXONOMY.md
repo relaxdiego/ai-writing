@@ -516,6 +516,21 @@ which is a property of the sentence's alternatives rather than of the sentence,
 and no detector can see it. Read K5 beside S6 the way K4 is read beside S4b, as
 the thing a rule aimed at S6 might have taken with it, not as a gap to close.
 
+**The permitting sentence stays, and it is not permitting anything.** Deleting it
+was run as `runs/20260904T051132Z-R06-no-permit`, sha `e139dce0`, with the
+prediction written first that S6 would hold near 0.04. It did not. S6 went 0.04
+to 1.72 against a band of 0.98, and the joint count went from 1 to 22 across 12
+samples. The sentence is load-bearing as a foil rather than as a licence: it
+gives the prohibition beside it a boundary, and without the boundary the
+prohibition stops biting. K5 stays at 0.00 while the sentence is present, so what
+it permits never appears. R06 keeps wording the reader disagrees with because
+removing it costs the win the reader wants.
+
+This is the wrapper result again in miniature. R06's text alone does not suppress
+the em-dash; R06's text inside a particular frame does. Weakening the frame from
+outside, as the packager did, gives 31 joints; weakening it from inside, by
+deleting the definition, gives 22. The rule body is identical in all three.
+
 **The heuristic over-counts by one in twenty-seven.** Specimen 1 is two separate
 joints, each inside its own parenthesis, and K5 read it as one matched pair while
 S6 missed the joints. Recorded rather than fixed: the fix is a paren-aware split

@@ -454,5 +454,15 @@
       "c02-r1",
       "d05-r1"
     ]
+  },
+  {
+    "script": "session-terminal",
+    "run": "20260904T032924Z-guide-as-shipped",
+    "labelled": true,
+    "what": "three em-dash fragments quoted in the terminal and in issue 12, arm named; sentence-length, not whole answers",
+    "keys": [
+      "a-treatment-c02-r2",
+      "a-treatment-d01-r3"
+    ]
   }
 ]

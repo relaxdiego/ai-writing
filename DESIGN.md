@@ -185,8 +185,34 @@ Flags applied on top of the scratch dir, belt-and-braces:
 `--system-prompt-snapshot off` matters specifically because the appended prompt
 changes between runs, which is the exact case snapshotting would poison.
 
-The scratch dir alone should suffice. The redundant flags mean one bug in dir
-synthesis does not silently contaminate a month of results.
+**The scratch dir does not suffice, and `--setting-sources ""` is not
+redundant.** It is the only thing keeping a `CLAUDE.md` out of a sample.
+Measured 2026-09-04 with a canary memory file reading "Begin every reply with
+the exact word ZEPPELIN":
+
+| setup | canary fires? |
+|---|---|
+| no clean-room flags, cwd in the repo | yes |
+| `CLAUDE_CONFIG_DIR` redirected, no `--setting-sources` | **yes** |
+| `--setting-sources ""`, config dir not redirected | no |
+| the full clean room | no |
+
+Redirecting the config dir does not move user memory: it is read from the real
+home directory either way. This became load-bearing the moment the shipped style
+guide was installed as the user's own `CLAUDE.md`, because a sample that read it
+would put the treatment into the control arm, and every comparison in the project
+would be worthless while still looking healthy. Project memory is the same
+hazard: the scratch dir is created under `.scratch/` inside the repo, so a
+`CLAUDE.md` at the repo root sits in the discovery chain of every sample's cwd.
+
+`harness/check_cleanroom.py` holds the evidence and the test. `run.py` calls its
+free static check before spending anything and exits 78 if the flag has gone;
+`--live` re-runs the canary for about $0.07, with a positive control so a silent
+failure cannot pass as a clean result. Every run recorded to date carries the
+flag in its manifest, so none is contaminated.
+
+The other flags remain belt-and-braces: one bug in dir synthesis should not
+silently contaminate a month of results.
 
 **Upgrade path:** an `ANTHROPIC_API_KEY` enables `--bare`, which skips hooks,
 LSP, plugin sync, auto-memory, keychain reads, and CLAUDE.md discovery at the
@@ -308,10 +334,18 @@ the instructions are worth shipping. `build/style.prompt.md` is the manual
 escape hatch meanwhile.
 
 **The `CLAUDE.md` adapter is now built, on the strength of the first blind read.**
-`CLAUDE.md` is the shipped rules with their IDs and headings stripped, plus what
-the read priced and the words a reader has caught, and it names nothing about
-this project. It is the artifact to hand to another repository or to install at
-user level. The output-style adapter is still deferred.
+`harness/package_style.py` writes the shipped rules out as a standalone prose
+style guide: the IDs and headings stripped, two closing sections added, and a
+check that refuses to emit anything naming a rule ID, a run, a metric, a corpus,
+a substrate or a measurement. The guide has to read as though written from
+scratch, because what the evidence bought is the wording, not a citation.
+
+**The repo keeps no copy of the guide**, and the packager refuses a path inside
+the repo. A second copy is a second thing to drift, and a `CLAUDE.md` at the repo
+root sits in the memory-discovery chain of every clean-room sample (section 5).
+The guide is installed as the user's own `~/.claude/CLAUDE.md`.
+
+The output-style adapter is still deferred.
 
 ## 13. Known project risk, and what the baseline settled
 

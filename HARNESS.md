@@ -4,17 +4,26 @@ How the harness is operated, and what its numbers can and cannot say. `DESIGN.md
 is the decision record and the authority; where the two disagree, `DESIGN.md` is
 right and this file is stale.
 
-`CLAUDE.md` is the packaged style guide. It carries the shipped rules with their
-IDs and headings stripped, so it reads as a style guide in a repository that
-knows nothing about this project, and it can be copied anywhere or installed at
-user level. **Keep it free of project vocabulary.** No rule IDs, no run names, no
-metric, no mention of an eval. The rule text itself is copied verbatim from
-`style/rules.md`, because the wording is the thing that was measured, and it has
-to be re-copied whenever a rule there changes.
+**This repo has no `CLAUDE.md` and must not get one.** The packaged style guide
+is the project's deliverable, and it is written outside the repo:
 
-It is installed for this user as `~/.claude/CLAUDE.md`, so it loads in every
-session in every directory. That copy and this one are the same file and have to
-move together.
+    python3 harness/package_style.py     # -> ~/.claude/CLAUDE.md
+
+The packager takes the rule text verbatim from `style/rules.md`, strips the IDs,
+adds two closing sections, and refuses to emit a guide that names a rule ID, a
+run, a metric, a corpus, a substrate or a measurement. It also refuses any path
+inside the repo, for two reasons. A second copy is a second thing to drift, and a
+`CLAUDE.md` at the repo root sits in the memory-discovery chain of every
+clean-room sample.
+
+**Never let a memory file reach a sample.** `--setting-sources ""` in
+`cleanroom.sh` is the only thing stopping it; the redirected config dir does not,
+because user memory is read from the real home directory regardless. The style
+guide under test lives in user memory, so a sample that read it would put the
+treatment into the control arm and every comparison would be worthless while
+still looking healthy. `run.py` refuses to start if the flag has gone.
+`harness/check_cleanroom.py` carries the measurements, and `--live` re-runs the
+canary for about $0.07 with a positive control.
 
 Nothing here is a current result. Results live in `runs/<utc>-<label>/report.md`,
 the attribution lives in `style/rules.md`, and the ratified defects live in

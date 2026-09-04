@@ -37,6 +37,9 @@ def say(msg: str) -> None:
 
 REPO = Path(__file__).resolve().parent.parent
 CLEANROOM = REPO / "harness" / "cleanroom.sh"
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import check_cleanroom  # noqa: E402  (harness-local, after REPO is defined)
 REAL_CREDS = Path.home() / ".claude" / ".credentials.json"
 
 DEFAULT_MODEL = "claude-opus-5[1m]"
@@ -281,6 +284,15 @@ def main() -> int:
             sys.exit(f"--only matched no prompts")
     substrates = [s.strip() for s in args.substrates.split(",") if s.strip()]
     runs = {"a": args.runs_a, "b": args.runs_b}
+
+    # Refuse to spend anything if a memory file could reach a sample. The style
+    # guide under test is installed as the user's own CLAUDE.md, and only
+    # --setting-sources "" keeps it out; see harness/check_cleanroom.py.
+    faults = check_cleanroom.check_static()
+    if faults:
+        for f in faults:
+            print(f"CLEAN ROOM FAULT: {f}", file=sys.stderr)
+        return 78
 
     out = Path(args.out)
     (out / "samples").mkdir(parents=True, exist_ok=True)

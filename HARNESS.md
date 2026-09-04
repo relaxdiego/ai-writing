@@ -2,8 +2,19 @@
 
 How the harness is operated, and what its numbers can and cannot say. `DESIGN.md`
 is the decision record and the authority; where the two disagree, `DESIGN.md` is
-right and this file is stale, while `CLAUDE.md` carries the writing rules
-themselves.
+right and this file is stale.
+
+`CLAUDE.md` is the packaged style guide. It carries the shipped rules with their
+IDs and headings stripped, so it reads as a style guide in a repository that
+knows nothing about this project, and it can be copied anywhere or installed at
+user level. **Keep it free of project vocabulary.** No rule IDs, no run names, no
+metric, no mention of an eval. The rule text itself is copied verbatim from
+`style/rules.md`, because the wording is the thing that was measured, and it has
+to be re-copied whenever a rule there changes.
+
+It is installed for this user as `~/.claude/CLAUDE.md`, so it loads in every
+session in every directory. That copy and this one are the same file and have to
+move together.
 
 Nothing here is a current result. Results live in `runs/<utc>-<label>/report.md`,
 the attribution lives in `style/rules.md`, and the ratified defects live in

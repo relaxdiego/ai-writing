@@ -307,6 +307,12 @@ Packaging (output-style and `CLAUDE.md` adapters) is deferred until the evals sa
 the instructions are worth shipping. `build/style.prompt.md` is the manual
 escape hatch meanwhile.
 
+**The `CLAUDE.md` adapter is now built, on the strength of the first blind read.**
+`CLAUDE.md` is the shipped rules with their IDs and headings stripped, plus what
+the read priced and the words a reader has caught, and it names nothing about
+this project. It is the artifact to hand to another repository or to install at
+user level. The output-style adapter is still deferred.
+
 ## 13. Known project risk, and what the baseline settled
 
 The design rested on substrate A showing measurable movement, on the worry that

@@ -257,6 +257,10 @@ def main() -> int:
     ap.add_argument("--arm", choices=["control", "treatment"], default="control")
     ap.add_argument("--style", default=None,
                     help="assembled style prompt file (treatment arm only)")
+    ap.add_argument("--guide", action="store_true",
+                    help="build and inject the guide as it ships, from "
+                         "style/rules.md, so the measured document and the "
+                         "released one cannot differ (treatment arm only)")
     ap.add_argument("--substrates", default="a,b")
     ap.add_argument("--runs-a", type=int, default=3)
     ap.add_argument("--runs-b", type=int, default=5)
@@ -267,8 +271,19 @@ def main() -> int:
     ap.add_argument("--label", default="", help="note recorded in the manifest")
     args = ap.parse_args()
 
-    if args.arm == "treatment" and not args.style:
-        sys.exit("--arm treatment requires --style")
+    if args.arm == "treatment" and not (args.style or args.guide):
+        sys.exit("--arm treatment requires --style or --guide")
+    if args.style and args.guide:
+        sys.exit("--style and --guide are exclusive")
+    if args.guide:
+        # Built here rather than read off disk, so a stale build/ cannot be
+        # injected. package_style writes the same bytes to the release path.
+        import package_style
+        text, _ = package_style.build(REPO / "style" / "rules.md")
+        built = REPO / "build" / "guide.prompt.md"
+        built.parent.mkdir(parents=True, exist_ok=True)
+        built.write_text(text, encoding="utf-8")
+        args.style = str(built)
     style = args.style or "-"
     if style != "-":
         sp = Path(style).resolve()

@@ -19,6 +19,7 @@ project's evidence. What the evidence bought is the wording, not a citation.
 import argparse
 import re
 import sys
+from collections.abc import Iterable
 from pathlib import Path
 
 REPO = Path(__file__).resolve().parent.parent
@@ -67,20 +68,40 @@ BANNED = re.compile(
     re.I)
 
 
-def build(rules_path: Path) -> str:
+def build(rules_path: Path, only: Iterable[str] = (),
+          ablate: Iterable[str] = ()) -> tuple[str, list[str]]:
+    """The guide, and the rule ids it contains.
+
+    This is the only place the shipped wording is assembled. harness/run.py
+    --guide injects exactly this text and package_style writes exactly this
+    text, so the document that is measured and the document that ships cannot
+    differ. --only and --ablate select rules for an ablation arm; the wrapper
+    around them is the same either way, because a wrapper that is cosmetic
+    three times over turned out not to be cosmetic once (runs of 2026-09-04).
+    """
+    only, ablate = set(only), set(ablate)
     text = rules_path.read_text(encoding="utf-8")
     chunks = ("## " + text.split("\n## ", 1)[1]).split("\n## ")
-    out = []
+    ids, out = [], []
     for chunk in chunks:
         chunk = chunk.lstrip("# ").rstrip()
-        if not re.match(r"^R\d+\b", chunk):
+        m = re.match(r"^(R\d+)\b", chunk)
+        if not m:
+            continue
+        ids.append(m.group(1))
+        if (only and m.group(1) not in only) or m.group(1) in ablate:
             continue
         title, body = chunk.split("\n", 1)
         title = re.sub(r"^R\d+\s+[—-]\s*", "", title)
-        out.append(f"## {title}\n\n{body.strip()}")
-    if not out:
+        out.append((m.group(1), f"## {title}\n\n{body.strip()}"))
+    if not ids:
         sys.exit(f"{rules_path}: no rules found")
-    return PREAMBLE + "\n" + "\n\n".join(out) + "\n" + CLOSING
+    for r in (only | ablate) - set(ids):
+        sys.exit(f"unknown rule id: {r}")
+    if not out:
+        sys.exit("no rules left after filtering")
+    guide = PREAMBLE + "\n" + "\n\n".join(b for _, b in out) + "\n" + CLOSING
+    return guide, [i for i, _ in out]
 
 
 def main() -> int:
@@ -89,7 +110,7 @@ def main() -> int:
     ap.add_argument("--out", default=str(Path.home() / ".claude" / "CLAUDE.md"))
     args = ap.parse_args()
 
-    guide = build(Path(args.rules))
+    guide, _ = build(Path(args.rules))
 
     leaks = sorted(set(m.group(0) for m in BANNED.finditer(guide)))
     if leaks:

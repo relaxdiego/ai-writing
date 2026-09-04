@@ -345,6 +345,16 @@ the repo. A second copy is a second thing to drift, and a `CLAUDE.md` at the rep
 root sits in the memory-discovery chain of every clean-room sample (section 5).
 The guide is installed as the user's own `~/.claude/CLAUDE.md`.
 
+**A release of the guide is a git tag here and a directory outside.** Cutting
+one for somebody else's machine means running the packager to a path outside the
+repo and tagging the commit whose `style/rules.md` produced it, so the wording
+can be rebuilt from the tag alone. `style-guide-v1.0` is the first, cut from
+style sha `daee39bf` at `d1e4d10`, to `~/releases/prose-style-guide-1.0/` as the
+guide plus a README covering installation. The release directory is not tracked
+and is not a second copy to maintain: it is disposable output, and the tag plus
+the packager is the real artifact. A release must never be committed here, for
+the reason in section 5.
+
 The output-style adapter is still deferred.
 
 ## 13. Known project risk, and what the baseline settled

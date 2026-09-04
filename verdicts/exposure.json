@@ -1,5 +1,33 @@
 [
   {
+    "script": "galley/k5-pairs",
+    "run": "20260903T003018Z",
+    "labelled": true,
+    "what": "published artifact 9f698f27, every paired em-dash interruption as whole sentences, control arm named, for the K5 ruling",
+    "keys": [
+      "a-control-c02-r1",
+      "a-control-c03-r2",
+      "a-control-c04-r1",
+      "a-control-c04-r2",
+      "a-control-c04-r3",
+      "a-control-c05-r1",
+      "a-control-c07-r1",
+      "a-control-c07-r2",
+      "a-control-c07-r3",
+      "a-control-d01-r2",
+      "a-control-d01-r3",
+      "a-control-d02-r1",
+      "a-control-d02-r2",
+      "a-control-d03-r1",
+      "a-control-d03-r3",
+      "a-control-d04-r1",
+      "a-control-d04-r2",
+      "a-control-d05-r1",
+      "a-control-d05-r2",
+      "a-control-d05-r3"
+    ]
+  },
+  {
     "script": "galley/list-to-table",
     "run": "20260903T202317Z-v2-control",
     "labelled": true,
